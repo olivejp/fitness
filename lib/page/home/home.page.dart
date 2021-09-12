@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:fitnc_user/page/calendar/calendar.page.dart';
+import 'package:fitnc_user/page/my_programs/my_program.page.dart';
 import 'package:fitnc_user/page/profil/profil.page.dart';
 import 'package:fitnc_user/page/search/search.page.dart';
 import 'package:fitness_domain/service/auth.service.dart';
@@ -56,7 +57,7 @@ class HomePage extends StatelessWidget {
                 splashRadius: 30,
                 iconSize: 50,
                 icon: Icon(
-                  Icons.message,
+                  Icons.account_tree_outlined,
                   color: (controller.currentPageIndex.value != 2) ? Colors.grey : Colors.white,
                 ),
                 onPressed: () => controller.currentPageIndex.value = 2,
@@ -88,6 +89,8 @@ class HomePage extends StatelessWidget {
             switch (controller.currentPageIndex.value) {
               case 0:
                 return CalendarPage();
+              case 2:
+                return MyProgramsPage();
               case 3:
                 return SearchPage();
               case 4:

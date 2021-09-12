@@ -16,6 +16,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   rxdart: ^0.27.1
   firebase_auth: ^3.1.0
+  firebase_storage: ^10.0.3
   firebase_core: ^1.6.0
   cloud_firestore: ^2.5.1
   date_picker_timeline: ^1.2.3

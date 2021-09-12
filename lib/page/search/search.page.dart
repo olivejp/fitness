@@ -1,5 +1,6 @@
 import 'package:badges/badges.dart';
 import 'package:fitnc_user/controller/display-type.controller.dart';
+import 'package:fitnc_user/page/search/program_detail/program_detail.page.dart';
 import 'package:fitnc_user/page/search/search.controller.dart';
 import 'package:fitness_domain/domain/published_programme.domain.dart';
 import 'package:flutter/cupertino.dart';
@@ -31,18 +32,22 @@ class SearchPage extends StatelessWidget {
             child: StreamBuilder<List<PublishedProgramme>>(
               stream: controller.streamList,
               initialData: const <PublishedProgramme>[],
-              builder: (_, AsyncSnapshot<List<PublishedProgramme>> snapshot) => Obx(
-                () => GridView.count(
-                  shrinkWrap: true,
-                  childAspectRatio: 16 / 9,
-                  crossAxisCount: displayTypeController.displayType.value == DisplayType.desktop
-                      ? 4
-                      : displayTypeController.displayType.value == DisplayType.tablet
-                          ? 2
-                          : 1,
-                  children: snapshot.data!.map((PublishedProgramme programme) => PublishedProgrammeCard(publishedProgramme: programme)).toList(),
-                ),
-              ),
+              builder: (_, AsyncSnapshot<List<PublishedProgramme>> snapshot) =>
+                  Obx(
+                        () =>
+                        GridView.count(
+                          shrinkWrap: true,
+                          childAspectRatio: 16 / 9,
+                          crossAxisCount: displayTypeController.displayType.value == DisplayType.desktop
+                              ? 4
+                              : displayTypeController.displayType.value == DisplayType.tablet
+                              ? 2
+                              : 1,
+                          children: snapshot.data!
+                              .map((PublishedProgramme programme) => PublishedProgrammeCard(publishedProgramme: programme))
+                              .toList(),
+                        ),
+                  ),
             ),
           ),
         ],
@@ -63,6 +68,9 @@ class PublishedProgrammeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Va récupérer les programmes de l'utilisateur connecté.
+    controller.initMyPrograms();
+
     final int indexUnderscore = publishedProgramme.numberWeeks != null ? publishedProgramme.numberWeeks!.indexOf('_') : 0;
     final int numberWeekInt = int.parse(publishedProgramme.numberWeeks!.substring(0, indexUnderscore));
 
@@ -71,6 +79,14 @@ class PublishedProgrammeCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
       elevation: 2,
       child: InkWell(
+        onTap: () {
+          controller.selectProgramme(publishedProgramme);
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ProgramDetailPage(),
+            ),
+          );
+        },
         child: Stack(
           children: <Widget>[
             Column(
@@ -85,42 +101,79 @@ class PublishedProgrammeCard extends StatelessWidget {
                 Flexible(
                   child: Center(
                       child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(publishedProgramme.name),
-                      ButtonBar(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          IconButton(
-                            icon: const Icon(Icons.add_box),
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  controller
-                                      .register(publishedProgramme)
-                                      .then(
-                                        (_) => Navigator.of(context).pop(),
-                                      )
-                                      .catchError((error) {
-                                    showToast(
-                                      error.toString(),
-                                      position: ToastPosition.bottom,
-                                      backgroundColor: Colors.red,
-                                      duration: const Duration(seconds: 5),
-                                    );
-                                    Navigator.of(context).pop();
-                                  });
-                                  return Card(
-                                    child: LoadingBouncingGrid.circle(),
-                                  );
-                                },
-                              );
-                            },
+                          Padding(
+                            padding: const EdgeInsets.only(left: 15),
+                            child: Text(publishedProgramme.name),
                           ),
+                          ButtonBar(
+                            children: <Widget>[
+                              Obx(
+                                    () {
+                                  if (!controller.listMyPrograms.map((e) => e.uid).contains(publishedProgramme.uid)) {
+                                    return IconButton(
+                                      icon: const Icon(Icons.add_box),
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            controller
+                                                .register(publishedProgramme)
+                                                .then(
+                                                  (_) => Navigator.of(context).pop(),
+                                            )
+                                                .catchError((error) {
+                                              showToast(
+                                                error.toString(),
+                                                position: ToastPosition.bottom,
+                                                backgroundColor: Colors.red,
+                                                duration: const Duration(seconds: 5),
+                                              );
+                                              Navigator.of(context).pop();
+                                            });
+                                            return Card(
+                                              child: LoadingBouncingGrid.circle(),
+                                            );
+                                          },
+                                        );
+                                      },
+                                    );
+                                  } else {
+                                    return IconButton(
+                                      icon: const Icon(Icons.indeterminate_check_box),
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            controller
+                                                .unregister(publishedProgramme)
+                                                .then(
+                                                  (_) => Navigator.of(context).pop(),
+                                            )
+                                                .catchError((error) {
+                                              showToast(
+                                                error.toString(),
+                                                position: ToastPosition.bottom,
+                                                backgroundColor: Colors.red,
+                                                duration: const Duration(seconds: 5),
+                                              );
+                                              Navigator.of(context).pop();
+                                            });
+                                            return Card(
+                                              child: LoadingBouncingGrid.circle(),
+                                            );
+                                          },
+                                        );
+                                      },
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
+                          )
                         ],
-                      )
-                    ],
-                  )),
+                      )),
                 ),
               ],
             ),
@@ -129,26 +182,28 @@ class PublishedProgrammeCard extends StatelessWidget {
               left: padding,
               child: (publishedProgramme.creatorImageUrl?.isNotEmpty == true)
                   ? CircleAvatar(
-                      foregroundImage: NetworkImage(publishedProgramme.creatorImageUrl!),
-                    )
+                foregroundImage: NetworkImage(publishedProgramme.creatorImageUrl!),
+              )
                   : Container(
-                      decoration: const BoxDecoration(color: Colors.amber),
-                    ),
+                decoration: const BoxDecoration(color: Colors.amber),
+              ),
             ),
             Positioned(
               top: padding,
               right: padding,
               child: (publishedProgramme.numberWeeks != null)
                   ? Badge(
-                      toAnimate: false,
-                      shape: BadgeShape.square,
-                      badgeColor: Theme.of(context).primaryColor,
-                      borderRadius: BorderRadius.circular(8),
-                      badgeContent: Text(
-                        '$numberWeekInt semaines',
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    )
+                toAnimate: false,
+                shape: BadgeShape.square,
+                badgeColor: Theme
+                    .of(context)
+                    .primaryColor,
+                borderRadius: BorderRadius.circular(8),
+                badgeContent: Text(
+                  '$numberWeekInt semaines',
+                  style: const TextStyle(color: Colors.white),
+                ),
+              )
                   : Container(),
             )
           ],

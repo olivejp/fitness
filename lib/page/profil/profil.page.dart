@@ -154,16 +154,18 @@ class ProfilPage extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: Obx(
-                () => TextFormField(
+              child: Obx(() {
+                TextEditingController control =
+                    TextEditingController(text: (controller.user.value?.telephone1) != null ? controller.user.value!.telephone1.toString() : '');
+                return TextFormField(
+                  controller: control,
                   maxLength: 6,
                   keyboardType: TextInputType.phone,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  initialValue: (controller.user.value?.telephone1) != null ? controller.user.value!.telephone1.toString() : '',
                   onChanged: (String value) => controller.user.value?.telephone1 = int.parse(value),
                   decoration: const InputDecoration(labelText: 'Téléphone'),
-                ),
-              ),
+                );
+              }),
             ),
           ],
         ),
