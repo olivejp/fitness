@@ -37,7 +37,7 @@ class HomePage extends StatelessWidget {
                 splashRadius: 30,
                 iconSize: 50,
                 icon: Icon(
-                  Icons.calendar_today,
+                  Icons.search,
                   color: (controller.currentPageIndex.value != 0) ? Colors.grey : Colors.white,
                 ),
                 onPressed: () => controller.currentPageIndex.value = 0,
@@ -67,7 +67,7 @@ class HomePage extends StatelessWidget {
                 splashRadius: 30,
                 iconSize: 50,
                 icon: Icon(
-                  Icons.search,
+                  Icons.calendar_today,
                   color: (controller.currentPageIndex.value != 3) ? Colors.grey : Colors.white,
                 ),
                 onPressed: () => controller.currentPageIndex.value = 3,
@@ -88,11 +88,11 @@ class HomePage extends StatelessWidget {
           body: Obx(() {
             switch (controller.currentPageIndex.value) {
               case 0:
-                return CalendarPage();
+                return SearchPage();
               case 2:
                 return MyProgramsPage();
               case 3:
-                return SearchPage();
+                return CalendarPage();
               case 4:
                 return ProfilPage();
               default:

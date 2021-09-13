@@ -6,20 +6,25 @@ import 'package:fitness_domain/domain/published_programme.domain.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animations/loading_animations.dart';
-import 'package:oktoast/oktoast.dart';
 
 class SearchPage extends StatelessWidget {
   SearchPage({Key? key}) : super(key: key);
   final SearchPageController controller = Get.put(SearchPageController());
   final DisplayTypeController displayTypeController = Get.find();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(20.0),
       child: Column(
         children: <Widget>[
+          Text(
+            'Explorer',
+            style: Theme.of(context).textTheme.headline4,
+          ),
           TextFormField(
             onChanged: (String value) => controller.query(value),
             decoration: const InputDecoration(
@@ -32,22 +37,54 @@ class SearchPage extends StatelessWidget {
             child: StreamBuilder<List<PublishedProgramme>>(
               stream: controller.streamList,
               initialData: const <PublishedProgramme>[],
-              builder: (_, AsyncSnapshot<List<PublishedProgramme>> snapshot) =>
-                  Obx(
-                        () =>
-                        GridView.count(
-                          shrinkWrap: true,
-                          childAspectRatio: 16 / 9,
-                          crossAxisCount: displayTypeController.displayType.value == DisplayType.desktop
-                              ? 4
-                              : displayTypeController.displayType.value == DisplayType.tablet
-                              ? 2
-                              : 1,
-                          children: snapshot.data!
-                              .map((PublishedProgramme programme) => PublishedProgrammeCard(publishedProgramme: programme))
-                              .toList(),
+              builder: (_, AsyncSnapshot<List<PublishedProgramme>> snapshot) {
+                if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                  return Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text("${snapshot.data!.length} résultats"),
+                        ],
+                      ),
+                      Expanded(
+                        child: Obx(
+                          () {
+                            int crossAxisCount;
+                            switch (displayTypeController.displayType.value) {
+                              case DisplayType.desktop:
+                                crossAxisCount = 4;
+                                break;
+                              case DisplayType.tablet:
+                                crossAxisCount = 2;
+                                break;
+                              default:
+                                crossAxisCount = 1;
+                            }
+                            return GridView.count(
+                              controller: _scrollController,
+                              semanticChildCount: snapshot.data!.length,
+                              shrinkWrap: true,
+                              mainAxisSpacing: 20,
+                              childAspectRatio: 16 / 9,
+                              crossAxisCount: crossAxisCount,
+                              children: snapshot.data!
+                                  .map((PublishedProgramme programme) => PublishedProgrammeCard(publishedProgramme: programme))
+                                  .toList(),
+                            );
+                          },
                         ),
-                  ),
+                      ),
+                    ],
+                  );
+                }
+                if (!snapshot.hasData) {
+                  return const Center(
+                    child: Text('Aucun programme publié'),
+                  );
+                }
+                return LoadingBouncingGrid.circle();
+              },
             ),
           ),
         ],
@@ -73,7 +110,6 @@ class PublishedProgrammeCard extends StatelessWidget {
 
     final int indexUnderscore = publishedProgramme.numberWeeks != null ? publishedProgramme.numberWeeks!.indexOf('_') : 0;
     final int numberWeekInt = int.parse(publishedProgramme.numberWeeks!.substring(0, indexUnderscore));
-
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
@@ -89,123 +125,105 @@ class PublishedProgrammeCard extends StatelessWidget {
         },
         child: Stack(
           children: <Widget>[
+            (publishedProgramme.imageUrl?.isNotEmpty == true)
+                ? Ink.image(image: NetworkImage(publishedProgramme.imageUrl!), fit: BoxFit.cover)
+                : Container(decoration: const BoxDecoration(color: Colors.amber)),
             Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Flexible(
-                  flex: 3,
-                  child: (publishedProgramme.imageUrl?.isNotEmpty == true)
-                      ? Ink.image(image: NetworkImage(publishedProgramme.imageUrl!), fit: BoxFit.cover)
-                      : Container(decoration: const BoxDecoration(color: Colors.amber)),
+              children: [
+                Expanded(
+                  child: Container(),
                 ),
-                Flexible(
-                  child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(left: 15),
-                            child: Text(publishedProgramme.name),
-                          ),
-                          ButtonBar(
-                            children: <Widget>[
-                              Obx(
-                                    () {
-                                  if (!controller.listMyPrograms.map((e) => e.uid).contains(publishedProgramme.uid)) {
-                                    return IconButton(
-                                      icon: const Icon(Icons.add_box),
-                                      onPressed: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            controller
-                                                .register(publishedProgramme)
-                                                .then(
-                                                  (_) => Navigator.of(context).pop(),
-                                            )
-                                                .catchError((error) {
-                                              showToast(
-                                                error.toString(),
-                                                position: ToastPosition.bottom,
-                                                backgroundColor: Colors.red,
-                                                duration: const Duration(seconds: 5),
-                                              );
-                                              Navigator.of(context).pop();
-                                            });
-                                            return Card(
-                                              child: LoadingBouncingGrid.circle(),
-                                            );
-                                          },
-                                        );
-                                      },
-                                    );
-                                  } else {
-                                    return IconButton(
-                                      icon: const Icon(Icons.indeterminate_check_box),
-                                      onPressed: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            controller
-                                                .unregister(publishedProgramme)
-                                                .then(
-                                                  (_) => Navigator.of(context).pop(),
-                                            )
-                                                .catchError((error) {
-                                              showToast(
-                                                error.toString(),
-                                                position: ToastPosition.bottom,
-                                                backgroundColor: Colors.red,
-                                                duration: const Duration(seconds: 5),
-                                              );
-                                              Navigator.of(context).pop();
-                                            });
-                                            return Card(
-                                              child: LoadingBouncingGrid.circle(),
-                                            );
-                                          },
-                                        );
-                                      },
-                                    );
-                                  }
-                                },
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.black, Colors.white.withOpacity(0)],
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Flexible(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 15),
+                                child: Text(
+                                  publishedProgramme.name,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.cabinCondensed(color: Colors.white, fontSize: 25),
+                                ),
                               ),
-                            ],
-                          )
-                        ],
-                      )),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Row(
+                                children: <Widget>[
+                                  Builder(builder: (context) {
+                                    return (publishedProgramme.creatorImageUrl?.isNotEmpty == true)
+                                        ? CircleAvatar(
+                                            maxRadius: 15,
+                                            minRadius: 5,
+                                            foregroundImage: NetworkImage(publishedProgramme.creatorImageUrl!),
+                                          )
+                                        : Container(
+                                            decoration: const BoxDecoration(color: Colors.amber),
+                                          );
+                                  }),
+                                  if (publishedProgramme.creatorName != null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 10),
+                                      child: Text(
+                                        publishedProgramme.creatorName!,
+                                        style: GoogleFonts.cabin(color: Colors.white),
+                                      ),
+                                    ),
+                                  if (publishedProgramme.creatorPrenom != null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 10),
+                                      child: Text(
+                                        publishedProgramme.creatorPrenom!,
+                                        style: GoogleFonts.cabin(color: Colors.white),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Builder(builder: (context) {
+                                return (publishedProgramme.numberWeeks != null)
+                                    ? Badge(
+                                        toAnimate: false,
+                                        shape: BadgeShape.square,
+                                        badgeColor: Theme.of(context).primaryColor,
+                                        borderRadius: BorderRadius.circular(8),
+                                        badgeContent: Text(
+                                          '$numberWeekInt semaines',
+                                          style: const TextStyle(color: Colors.white),
+                                        ),
+                                      )
+                                    : Container();
+                              }),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
-            Positioned(
-              top: padding,
-              left: padding,
-              child: (publishedProgramme.creatorImageUrl?.isNotEmpty == true)
-                  ? CircleAvatar(
-                foregroundImage: NetworkImage(publishedProgramme.creatorImageUrl!),
-              )
-                  : Container(
-                decoration: const BoxDecoration(color: Colors.amber),
-              ),
-            ),
-            Positioned(
-              top: padding,
-              right: padding,
-              child: (publishedProgramme.numberWeeks != null)
-                  ? Badge(
-                toAnimate: false,
-                shape: BadgeShape.square,
-                badgeColor: Theme
-                    .of(context)
-                    .primaryColor,
-                borderRadius: BorderRadius.circular(8),
-                badgeContent: Text(
-                  '$numberWeekInt semaines',
-                  style: const TextStyle(color: Colors.white),
-                ),
-              )
-                  : Container(),
-            )
           ],
         ),
       ),

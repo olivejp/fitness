@@ -109,6 +109,7 @@ class ProfilPage extends StatelessWidget {
               child: Obx(
                 () => FitnessDecorationTextFormField(
                     controller: TextEditingController(text: controller.user.value?.email),
+                    inputBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
                     autofocus: true,
                     onChanged: (String email) => controller.user.value?.email = email,
                     labelText: 'Email',
@@ -125,6 +126,7 @@ class ProfilPage extends StatelessWidget {
               child: Obx(
                 () => FitnessDecorationTextFormField(
                     controller: TextEditingController(text: controller.user.value?.name),
+                    inputBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
                     autofocus: true,
                     onChanged: (String name) => controller.user.value?.name = name,
                     labelText: 'Nom',
@@ -141,6 +143,7 @@ class ProfilPage extends StatelessWidget {
               child: Obx(
                 () => FitnessDecorationTextFormField(
                     controller: TextEditingController(text: controller.user.value?.prenom),
+                    inputBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
                     autofocus: true,
                     onChanged: (String prenom) => controller.user.value?.prenom = prenom,
                     labelText: 'Prénom',
@@ -163,7 +166,14 @@ class ProfilPage extends StatelessWidget {
                   keyboardType: TextInputType.phone,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   onChanged: (String value) => controller.user.value?.telephone1 = int.parse(value),
-                  decoration: const InputDecoration(labelText: 'Téléphone'),
+                  decoration: const InputDecoration(
+                    labelText: 'Téléphone',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(5),
+                      ),
+                    ),
+                  ),
                 );
               }),
             ),

@@ -13,10 +13,10 @@ import 'package:oktoast/oktoast.dart';
 class FitnessUserService extends AbstractFitnessStorageService<FitnessUser> {
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   final PublishedProgrammeService publishedProgrammeService = Get.find();
+  final AuthService authService = Get.find();
   final String collectionName = 'users';
   final String collectionMyPrograms = 'programme';
   final String collectionProgramWorkouts = 'workouts';
-  final AuthService authService = Get.find();
 
   @override
   FitnessUser fromJson(Map<String, dynamic> map) {
