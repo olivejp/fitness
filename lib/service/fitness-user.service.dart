@@ -39,7 +39,11 @@ class FitnessUserService extends AbstractFitnessStorageService<FitnessUser> {
         event.docs.map((QueryDocumentSnapshot<Map<String, dynamic>> doc) => FitnessUser.fromJson(doc.data())).toList());
   }
 
-  Future<FitnessUser> checkFitnessUserConnected() async {
+  Stream<FitnessUser?> listenFitnessUser() {
+    return authService.listenUserConnected().asyncMap((event) => read(event!.uid));
+  }
+
+  Future<FitnessUser> _checkFitnessUserConnected() async {
     String userUid = checkUserConnected().uid;
     FitnessUser? fitnessUser;
     fitnessUser = await read(userUid);
@@ -48,7 +52,7 @@ class FitnessUserService extends AbstractFitnessStorageService<FitnessUser> {
   }
 
   Stream<List<PublishedProgramme>> listenMyPrograms() async* {
-    FitnessUser fitnessUser = await checkFitnessUserConnected();
+    FitnessUser fitnessUser = await _checkFitnessUserConnected();
     yield* getCollectionReference()
         .doc(fitnessUser.uid)
         .collection(collectionMyPrograms)
@@ -57,13 +61,13 @@ class FitnessUserService extends AbstractFitnessStorageService<FitnessUser> {
   }
 
   Future<List<PublishedProgramme>> getMyPrograms() async {
-    FitnessUser fitnessUser = await checkFitnessUserConnected();
+    FitnessUser fitnessUser = await _checkFitnessUserConnected();
     QuerySnapshot query = await getCollectionReference().doc(fitnessUser.uid).collection(collectionMyPrograms).get();
     return query.docs.map((e) => PublishedProgramme.fromJson(e.data() as Map<String, dynamic>)).toList();
   }
 
   Future<void> register(PublishedProgramme publishedProgramme) async {
-    FitnessUser fitnessUser = await checkFitnessUserConnected();
+    FitnessUser fitnessUser = await _checkFitnessUserConnected();
 
     // Vérification que le programme n'a pas déjà enregistré.
     if ((await getMyPrograms()).map((e) => e.uid).contains(publishedProgramme.uid)) {
@@ -93,7 +97,7 @@ class FitnessUserService extends AbstractFitnessStorageService<FitnessUser> {
   }
 
   Future<void> unregister(PublishedProgramme publishedProgramme) async {
-    FitnessUser fitnessUser = await checkFitnessUserConnected();
+    FitnessUser fitnessUser = await _checkFitnessUserConnected();
 
     // Création d'un batch
     WriteBatch batch = firebaseFirestore.batch();

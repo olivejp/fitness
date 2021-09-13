@@ -1,5 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:fitnc_user/page/calendar/calendar.page.dart';
 import 'package:fitnc_user/page/my_programs/my_program.page.dart';
 import 'package:fitnc_user/page/profil/profil.page.dart';
@@ -12,92 +10,140 @@ import 'package:get/get.dart';
 import 'home.controller.dart';
 
 class HomePage extends StatelessWidget {
+  HomePage({Key? key}) : super(key: key);
+
   final AuthService authService = Get.find();
   final HomeController controller = Get.put(HomeController());
+
+  final int searchIndex = 0;
+  final int calendarIndex = 1;
+  final int myProgramsIndex = 2;
+  final int chartsIndex = 3;
+  final int profilIndex = 4;
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Obx(
         () => Scaffold(
-          floatingActionButton: FabCircularMenu(
-            fabOpenIcon: const Icon(
-              Icons.menu,
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {},
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+          bottomNavigationBar: SizedBox(
+            height: 70,
+            child: BottomAppBar(
               color: Colors.white,
-            ),
-            fabCloseIcon: const Icon(
-              Icons.close,
-              color: Colors.white,
-            ),
-            animationDuration: const Duration(milliseconds: 150),
-            ringColor: Colors.amberAccent,
-            children: <Widget>[
-              IconButton(
-                hoverColor: Color(Colors.transparent.value),
-                splashRadius: 30,
-                iconSize: 50,
-                icon: Icon(
-                  Icons.search,
-                  color: (controller.currentPageIndex.value != 0) ? Colors.grey : Colors.white,
-                ),
-                onPressed: () => controller.currentPageIndex.value = 0,
-              ),
-              IconButton(
-                hoverColor: Color(Colors.transparent.value),
-                splashRadius: 30,
-                iconSize: 50,
-                icon: Icon(
-                  Icons.bar_chart,
-                  color: (controller.currentPageIndex.value != 1) ? Colors.grey : Colors.white,
-                ),
-                onPressed: () => controller.currentPageIndex.value = 1,
-              ),
-              IconButton(
-                hoverColor: Color(Colors.transparent.value),
-                splashRadius: 30,
-                iconSize: 50,
-                icon: Icon(
-                  Icons.account_tree_outlined,
-                  color: (controller.currentPageIndex.value != 2) ? Colors.grey : Colors.white,
-                ),
-                onPressed: () => controller.currentPageIndex.value = 2,
-              ),
-              IconButton(
-                hoverColor: Color(Colors.transparent.value),
-                splashRadius: 30,
-                iconSize: 50,
-                icon: Icon(
-                  Icons.calendar_today,
-                  color: (controller.currentPageIndex.value != 3) ? Colors.grey : Colors.white,
-                ),
-                onPressed: () => controller.currentPageIndex.value = 3,
-              ),
-              IconButton(
-                hoverColor: Color(Colors.transparent.value),
-                splashRadius: 30,
-                iconSize: 50,
-                icon: const CircleAvatar(
-                  foregroundImage: CachedNetworkImageProvider(
-                    'https://firebasestorage.googleapis.com/v0/b/fitnc-7be2e.appspot.com/o/trainers%2F3JRhaFnStYXbGDiLfzTRQH2QOQn2%2Fexercices%2F3PQjyBoHliMGjrYaZF2n%2Fsquat-sumo.jpg?alt=media&token=a8b755c4-6d3d-4cde-89e0-ad8a9e8dd0e9',
+              notchMargin: 5.0,
+              clipBehavior: Clip.antiAlias,
+              elevation: 50,
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 5,
+                    child: BottomNavigationBar(
+                      elevation: 0,
+                      showSelectedLabels: false,
+                      showUnselectedLabels: false,
+                      items: <BottomNavigationBarItem>[
+                        BottomNavigationBarItem(
+                          label: '',
+                          activeIcon: Icon(
+                            Icons.search,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          icon: IconButton(
+                              onPressed: () => controller.currentPageIndex.value = searchIndex,
+                              icon: const Icon(
+                                Icons.search,
+                                color: Colors.grey,
+                              )),
+                        ),
+                        BottomNavigationBarItem(
+                          label: '',
+                          activeIcon: Icon(
+                            Icons.calendar_today,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          icon: IconButton(
+                              onPressed: () => controller.currentPageIndex.value = calendarIndex,
+                              icon: Icon(
+                                Icons.calendar_today,
+                                color: Colors.grey,
+                              )),
+                        ),
+                        BottomNavigationBarItem(
+                          label: '',
+                          activeIcon: Icon(
+                            Icons.account_tree_outlined,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          icon: IconButton(
+                              onPressed: () => controller.currentPageIndex.value = myProgramsIndex,
+                              icon: Icon(
+                                Icons.account_tree_outlined,
+                                color: Colors.grey,
+                              )),
+                        ),
+                        BottomNavigationBarItem(
+                          label: '',
+                          activeIcon: Icon(
+                            Icons.bar_chart,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          icon: IconButton(
+                              onPressed: () => controller.currentPageIndex.value = chartsIndex,
+                              icon: Icon(
+                                Icons.bar_chart,
+                                color: Colors.grey,
+                              )),
+                        ),
+                        BottomNavigationBarItem(
+                          label: '',
+                          icon: IconButton(
+                            icon: Obx(
+                              () {
+                                if (controller.user.value?.imageUrl != null) {
+                                  return CircleAvatar(
+                                    radius: 25,
+                                    foregroundImage: NetworkImage(controller.user.value!.imageUrl!),
+                                  );
+                                }
+                                return CircleAvatar(
+                                  radius: 25,
+                                  backgroundColor: Theme.of(context).primaryColor,
+                                );
+                              },
+                            ),
+                            onPressed: () => controller.currentPageIndex.value = profilIndex,
+                          ),
+                        ),
+                      ],
+                      currentIndex: controller.currentPageIndex.value,
+                    ),
                   ),
-                ),
-                onPressed: () => controller.currentPageIndex.value = 4,
+                  Expanded(
+                    flex: 1,
+                    child: Container(),
+                  )
+                ],
               ),
-            ],
+            ),
           ),
           body: Obx(() {
-            switch (controller.currentPageIndex.value) {
-              case 0:
-                return SearchPage();
-              case 2:
-                return MyProgramsPage();
-              case 3:
-                return CalendarPage();
-              case 4:
-                return ProfilPage();
-              default:
-                throw Exception('Aucune page pour index ${controller.currentPageIndex.value}');
+            if (controller.currentPageIndex.value == searchIndex) {
+              return SearchPage();
+            } else if (controller.currentPageIndex.value == calendarIndex) {
+              return CalendarPage();
+            } else if (controller.currentPageIndex.value == myProgramsIndex) {
+              return MyProgramsPage();
+            } else if (controller.currentPageIndex.value == chartsIndex) {
+              // TODO Faire la page des charts.
+              throw Exception('Aucune page pour index ${controller.currentPageIndex.value}');
+            } else if (controller.currentPageIndex.value == profilIndex) {
+              return ProfilPage();
             }
+            throw Exception('Aucune page pour index ${controller.currentPageIndex.value}');
           }),
         ),
       ),

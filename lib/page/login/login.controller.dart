@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitness_domain/service/auth.service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -8,14 +9,15 @@ class LoginPageController extends GetxController {
   final RxString _email = ''.obs;
   final RxString _password = ''.obs;
   final RxBool _hidePassword = true.obs;
+  final AuthService authService = Get.find();
 
   bool get hidePassword => _hidePassword.value;
 
   void authenticate(GlobalKey<FormState> formKey) {
     _loginMsgError.value = '';
     if (formKey.currentState?.validate() == true) {
-      FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password).then((UserCredential value) {
-        userConnected = FirebaseAuth.instance.currentUser;
+      authService.signInWithEmailPassword(email, password).then((UserCredential value) {
+        userConnected = authService.getCurrentUser();
         _password.value = '';
       }).catchError((Object? error) {
         if (error is FirebaseAuthException) {

@@ -7,7 +7,6 @@ import 'package:fitness_domain/service/abstract.service.dart';
 
 class PublishedProgrammeService extends AbstractFitnessStorageService<PublishedProgramme> {
   final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
-  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final String publishedProgrammeCollectionName = 'publishedProgrammes';
 
   @override
@@ -17,8 +16,11 @@ class PublishedProgrammeService extends AbstractFitnessStorageService<PublishedP
 
   @override
   Stream<List<PublishedProgramme>> listenAll() {
-    return getCollectionReference().orderBy('name').snapshots().map((QuerySnapshot<Object?> event) =>
-        event.docs.map((QueryDocumentSnapshot<Object?> e) => PublishedProgramme.fromJson(e.data() as Map<String, dynamic>)).toList());
+    return getCollectionReference().orderBy('name').snapshots().map((QuerySnapshot<Object?> event) {
+      return event.docs.map((QueryDocumentSnapshot<Object?> e) {
+        return PublishedProgramme.fromJson(e.data() as Map<String, dynamic>);
+      }).toList();
+    });
   }
 
   @override

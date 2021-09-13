@@ -52,6 +52,10 @@ class ProfilPageController extends GetxController {
       throw Exception('Aucun domain Trainer a sauvegardé');
     }
   }
+
+  void signOut() {
+    authService.signOut();
+  }
 }
 
 class ProfilPage extends StatelessWidget {
@@ -177,6 +181,14 @@ class ProfilPage extends StatelessWidget {
                 );
               }),
             ),
+            ButtonBar(
+              children: [
+                TextButton(
+                  child: const Text('Se déconnecter'),
+                  onPressed: () => controller.signOut(),
+                )
+              ],
+            )
           ],
         ),
       ),

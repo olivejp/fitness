@@ -17,8 +17,9 @@ class SearchPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    controller.refreshSearchController();
     return Padding(
-      padding: const EdgeInsets.all(20.0),
+      padding: const EdgeInsets.only(top:20, left: 20, right: 20),
       child: Column(
         children: <Widget>[
           Text(
@@ -109,7 +110,7 @@ class PublishedProgrammeCard extends StatelessWidget {
     controller.initMyPrograms();
 
     final int indexUnderscore = publishedProgramme.numberWeeks != null ? publishedProgramme.numberWeeks!.indexOf('_') : 0;
-    final int numberWeekInt = int.parse(publishedProgramme.numberWeeks!.substring(0, indexUnderscore));
+
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
@@ -176,8 +177,20 @@ class PublishedProgrammeCard extends StatelessWidget {
                                             minRadius: 5,
                                             foregroundImage: NetworkImage(publishedProgramme.creatorImageUrl!),
                                           )
-                                        : Container(
-                                            decoration: const BoxDecoration(color: Colors.amber),
+                                        : CircleAvatar(
+                                            maxRadius: 15,
+                                            minRadius: 5,
+                                            foregroundColor: Theme.of(context).primaryColor,
+                                            child: Builder(builder: (context) {
+                                              String firstLetter = '';
+                                              if (publishedProgramme.creatorName != null) {
+                                                firstLetter = publishedProgramme.creatorName!.substring(0, 0);
+                                              }
+                                              if (publishedProgramme.creatorPrenom != null) {
+                                                firstLetter = publishedProgramme.creatorPrenom!.substring(0, 0);
+                                              }
+                                              return Text(firstLetter);
+                                            }),
                                           );
                                   }),
                                   if (publishedProgramme.creatorName != null)
@@ -202,18 +215,21 @@ class PublishedProgrammeCard extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.all(15.0),
                               child: Builder(builder: (context) {
-                                return (publishedProgramme.numberWeeks != null)
-                                    ? Badge(
-                                        toAnimate: false,
-                                        shape: BadgeShape.square,
-                                        badgeColor: Theme.of(context).primaryColor,
-                                        borderRadius: BorderRadius.circular(8),
-                                        badgeContent: Text(
-                                          '$numberWeekInt semaines',
-                                          style: const TextStyle(color: Colors.white),
-                                        ),
-                                      )
-                                    : Container();
+                                if (publishedProgramme.numberWeeks != null) {
+                                  final int numberWeekInt = int.parse(publishedProgramme.numberWeeks!.substring(0, indexUnderscore));
+                                  return Badge(
+                                    toAnimate: false,
+                                    shape: BadgeShape.square,
+                                    badgeColor: Theme.of(context).primaryColor,
+                                    borderRadius: BorderRadius.circular(8),
+                                    badgeContent: Text(
+                                      '$numberWeekInt semaines',
+                                      style: const TextStyle(color: Colors.white),
+                                    ),
+                                  );
+                                } else {
+                                  return Container();
+                                }
                               }),
                             )
                           ],
