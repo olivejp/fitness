@@ -1,8 +1,9 @@
+import 'package:fitnc_user/controller/day-selection.controller.dart';
 import 'package:fitnc_user/page/calendar/calendar.page.dart';
 import 'package:fitnc_user/page/my_programs/my_program.page.dart';
 import 'package:fitnc_user/page/profil/profil.page.dart';
 import 'package:fitnc_user/page/search/search.page.dart';
-import 'package:fitness_domain/service/auth.service.dart';
+import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,8 +13,9 @@ import 'home.controller.dart';
 class HomePage extends StatelessWidget {
   HomePage({Key? key}) : super(key: key);
 
-  final AuthService authService = Get.find();
+  final WorkoutInstanceService workoutInstanceService = Get.find();
   final HomeController controller = Get.put(HomeController());
+  final DaySelectionController daySelectionController = Get.find();
 
   final int searchIndex = 0;
   final int calendarIndex = 1;
@@ -27,14 +29,21 @@ class HomePage extends StatelessWidget {
       child: Obx(
         () => Scaffold(
           floatingActionButton: FloatingActionButton(
-            onPressed: () {},
+            child: const Icon(
+              Icons.add,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              if (controller.currentPageIndex.value == 1) {
+                controller.createNewWorkoutInstance(daySelectionController.selectedDate).then((_) => print('Création instance'));
+              }
+            },
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
           bottomNavigationBar: SizedBox(
             height: 70,
             child: BottomAppBar(
               color: Colors.white,
-              notchMargin: 5.0,
               clipBehavior: Clip.antiAlias,
               elevation: 50,
               child: Row(
@@ -42,12 +51,13 @@ class HomePage extends StatelessWidget {
                   Expanded(
                     flex: 5,
                     child: BottomNavigationBar(
+                      type: BottomNavigationBarType.fixed,
                       elevation: 0,
                       showSelectedLabels: false,
                       showUnselectedLabels: false,
                       items: <BottomNavigationBarItem>[
                         BottomNavigationBarItem(
-                          label: '',
+                          label: 'Rechercher',
                           activeIcon: Icon(
                             Icons.search,
                             color: Theme.of(context).primaryColor,
@@ -60,7 +70,7 @@ class HomePage extends StatelessWidget {
                               )),
                         ),
                         BottomNavigationBarItem(
-                          label: '',
+                          label: 'Calendrier',
                           activeIcon: Icon(
                             Icons.calendar_today,
                             color: Theme.of(context).primaryColor,
@@ -73,7 +83,7 @@ class HomePage extends StatelessWidget {
                               )),
                         ),
                         BottomNavigationBarItem(
-                          label: '',
+                          label: 'Programmes',
                           activeIcon: Icon(
                             Icons.account_tree_outlined,
                             color: Theme.of(context).primaryColor,
@@ -86,7 +96,7 @@ class HomePage extends StatelessWidget {
                               )),
                         ),
                         BottomNavigationBarItem(
-                          label: '',
+                          label: 'Suivi',
                           activeIcon: Icon(
                             Icons.bar_chart,
                             color: Theme.of(context).primaryColor,
@@ -99,7 +109,7 @@ class HomePage extends StatelessWidget {
                               )),
                         ),
                         BottomNavigationBarItem(
-                          label: '',
+                          label: 'Profil',
                           icon: IconButton(
                             icon: Obx(
                               () {

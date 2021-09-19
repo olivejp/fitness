@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 
 import 'constants.dart';
+import 'controller/day-selection.controller.dart';
 import 'controller/display-type.controller.dart';
 
 void main() {
@@ -17,12 +18,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.put(DisplayTypeController());
+    Get.put(DaySelectionController());
     return OKToast(
       child: GetMaterialApp(
         title: FitnessConstants.appTitle,
         theme: ThemeData(
           bottomAppBarTheme: const BottomAppBarTheme(
-            shape: CircularNotchedRectangle(),
             color: FitnessNcColors.darkChipBackground,
           ),
           appBarTheme: const AppBarTheme(

@@ -6,7 +6,7 @@ import 'package:fitness_domain/domain/published_programme.domain.dart';
 import 'package:fitness_domain/domain/trainers.domain.dart';
 import 'package:get/get.dart';
 
-class SearchPageController extends SearchControllerMixin<PublishedProgramme, PublishedProgrammeService> {
+class SearchPageController extends LocalSearchControllerMixin<PublishedProgramme, PublishedProgrammeService> {
   SearchPageController() : super();
 
   final PublishedProgrammeService publishedProgrammeService = Get.find();

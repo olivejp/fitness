@@ -19,7 +19,7 @@ class SearchPage extends StatelessWidget {
   Widget build(BuildContext context) {
     controller.refreshSearchController();
     return Padding(
-      padding: const EdgeInsets.only(top:20, left: 20, right: 20),
+      padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
       child: Column(
         children: <Widget>[
           Text(
@@ -127,7 +127,7 @@ class PublishedProgrammeCard extends StatelessWidget {
         child: Stack(
           children: <Widget>[
             (publishedProgramme.imageUrl?.isNotEmpty == true)
-                ? Ink.image(image: NetworkImage(publishedProgramme.imageUrl!), fit: BoxFit.cover)
+                ? Hero(tag: 'hero_program', child: Ink.image(image: NetworkImage(publishedProgramme.imageUrl!), fit: BoxFit.cover))
                 : Container(decoration: const BoxDecoration(color: Colors.amber)),
             Column(
               children: [
@@ -146,22 +146,24 @@ class PublishedProgrammeCard extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Flexible(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 15),
-                                child: Text(
-                                  publishedProgramme.name,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.cabinCondensed(color: Colors.white, fontSize: 25),
+                        Flexible(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Flexible(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                                  child: Text(
+                                    publishedProgramme.name,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.cabinCondensed(color: Colors.white, fontSize: 25),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,

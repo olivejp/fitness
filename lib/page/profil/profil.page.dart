@@ -114,7 +114,6 @@ class ProfilPage extends StatelessWidget {
                 () => FitnessDecorationTextFormField(
                     controller: TextEditingController(text: controller.user.value?.email),
                     inputBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-                    autofocus: true,
                     onChanged: (String email) => controller.user.value?.email = email,
                     labelText: 'Email',
                     validator: (String? value) {
@@ -131,7 +130,6 @@ class ProfilPage extends StatelessWidget {
                 () => FitnessDecorationTextFormField(
                     controller: TextEditingController(text: controller.user.value?.name),
                     inputBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-                    autofocus: true,
                     onChanged: (String name) => controller.user.value?.name = name,
                     labelText: 'Nom',
                     validator: (String? value) {
@@ -148,7 +146,6 @@ class ProfilPage extends StatelessWidget {
                 () => FitnessDecorationTextFormField(
                     controller: TextEditingController(text: controller.user.value?.prenom),
                     inputBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-                    autofocus: true,
                     onChanged: (String prenom) => controller.user.value?.prenom = prenom,
                     labelText: 'Prénom',
                     validator: (String? value) {

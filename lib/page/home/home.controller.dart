@@ -1,17 +1,8 @@
 import 'package:fitnc_user/service/fitness-user.service.dart';
+import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:fitness_domain/domain/fitness-user.domain.dart';
+import 'package:fitness_domain/domain/workout-instance.domain.dart';
 import 'package:get/get.dart';
-
-class DaySelectionController extends GetxController {
-  DateTime _selectedValue = DateTime.now();
-
-  DateTime get selectedDate => _selectedValue;
-
-  set selectedDate(DateTime dateTime) {
-    _selectedValue = dateTime;
-    update();
-  }
-}
 
 class HomeController extends GetxController {
   HomeController() {
@@ -21,6 +12,13 @@ class HomeController extends GetxController {
   }
 
   final FitnessUserService fitnessUserService = Get.find();
+  final WorkoutInstanceService workoutInstanceService = Get.find();
   final RxInt currentPageIndex = 0.obs;
   final Rx<FitnessUser?> user = FitnessUser().obs;
+
+  Future<void> createNewWorkoutInstance(DateTime dateTime) {
+    WorkoutInstance instance = WorkoutInstance();
+    instance.date = dateTime;
+    return workoutInstanceService.create(instance);
+  }
 }

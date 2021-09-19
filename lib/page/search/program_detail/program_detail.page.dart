@@ -10,34 +10,42 @@ class ProgramDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(children: [
-        Column(
-          children: <Widget>[
-            Center(
-              child: SizedBox(
-                height: 300,
-                width: double.infinity,
-                child: Obx(
-                  () => Image(
+      body: SafeArea(
+        child: Stack(children: [
+          Column(
+            children: <Widget>[
+              Obx(
+                () => Hero(
+                  tag: 'hero_program',
+                  child: Image(
                     image: NetworkImage(controller.selectedProgramme.value!.imageUrl!),
-                    fit: BoxFit.cover,
+                    fit: BoxFit.fill,
+                    width: double.infinity,
                   ),
                 ),
               ),
-            ),
-            Obx(() => CreatorWidget(trainers: controller.trainer.value, addToFavorite: (trainer)=>controller.addToFavorite(trainer),)),
-            if (controller.selectedProgramme.value?.description != null) Text(controller.selectedProgramme.value!.description!),
-          ],
-        ),
-        Positioned(
-          top: 10,
-          left: 10,
-          child: FloatingActionButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Icon(Icons.arrow_back, color: Colors.white,),
+              Obx(
+                () => CreatorWidget(
+                  trainers: controller.trainer.value,
+                  addToFavorite: (trainer) => controller.addToFavorite(trainer),
+                ),
+              ),
+              if (controller.selectedProgramme.value?.description != null) Text(controller.selectedProgramme.value!.description!),
+            ],
           ),
-        ),
-      ]),
+          Positioned(
+            top: 10,
+            left: 10,
+            child: FloatingActionButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ]),
+      ),
     );
   }
 }
