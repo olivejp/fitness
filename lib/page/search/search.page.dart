@@ -127,7 +127,7 @@ class PublishedProgrammeCard extends StatelessWidget {
         child: Stack(
           children: <Widget>[
             (publishedProgramme.imageUrl?.isNotEmpty == true)
-                ? Hero(tag: 'hero_program', child: Ink.image(image: NetworkImage(publishedProgramme.imageUrl!), fit: BoxFit.cover))
+                ? Ink.image(image: NetworkImage(publishedProgramme.imageUrl!), fit: BoxFit.cover)
                 : Container(decoration: const BoxDecoration(color: Colors.amber)),
             Column(
               children: [

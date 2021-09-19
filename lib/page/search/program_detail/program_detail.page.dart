@@ -15,13 +15,10 @@ class ProgramDetailPage extends StatelessWidget {
           Column(
             children: <Widget>[
               Obx(
-                () => Hero(
-                  tag: 'hero_program',
-                  child: Image(
-                    image: NetworkImage(controller.selectedProgramme.value!.imageUrl!),
-                    fit: BoxFit.fill,
-                    width: double.infinity,
-                  ),
+                () => Image(
+                  image: NetworkImage(controller.selectedProgramme.value!.imageUrl!),
+                  fit: BoxFit.fill,
+                  width: double.infinity,
                 ),
               ),
               Obx(
