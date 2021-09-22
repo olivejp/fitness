@@ -1,8 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:fitnc_user/controller/day-selection.controller.dart';
+import 'package:fitnc_user/page/exercice/add_exercice.page.dart';
 import 'package:fitnc_user/page/home/home.controller.dart';
+import 'package:fitnc_user/page/workout/add_workout.page.dart';
+import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
+import 'package:fitness_domain/controller/abstract.controller.dart';
+import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -91,19 +95,15 @@ class CalendarPage extends StatelessWidget {
                       },
                     );
                   } else {
-                    return Expanded(
-                      child: Center(
-                        child: Text('Aucun élément'),
-                      ),
+                    return Center(
+                      child: Text('Aucun élément'),
                     );
                   }
                 }
                 if (snapshot.hasError) {
                   return Text(snapshot.error.toString());
                 }
-                return Expanded(
-                  child: LoadingBouncingGrid.circle(),
-                );
+                return LoadingBouncingGrid.circle();
               },
             ),
           )
@@ -118,6 +118,7 @@ class WorkoutInstanceCard extends StatelessWidget {
 
   final CalendarController controller = Get.find();
   final WorkoutInstance instance;
+  final ExerciceService exerciceService = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -167,11 +168,16 @@ class WorkoutInstanceCard extends StatelessWidget {
                     ButtonBar(
                       children: [
                         TextButton.icon(
-                          onPressed: () {},
-                          icon: Icon(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => ExerciceChoiceDialog(),
+                            );
+                          },
+                          icon: const Icon(
                             Icons.add,
                           ),
-                          label: Text(
+                          label: const Text(
                             'Ajouter un exercice',
                           ),
                         ),
@@ -183,6 +189,123 @@ class WorkoutInstanceCard extends StatelessWidget {
             )
           ],
         ),
+      ),
+    );
+  }
+}
+
+class ExerciceChoiceDialogController extends LocalSearchControllerMixin<Exercice, ExerciceService> {
+  Stream<List<Exercice>> listenAllExercice() {
+    return service.listenAll();
+  }
+}
+
+class ExerciceChoiceDialog extends StatelessWidget {
+  ExerciceChoiceDialog({Key? key}) : super(key: key);
+  final ExerciceChoiceDialogController controller = Get.put(ExerciceChoiceDialogController());
+
+  @override
+  Widget build(BuildContext context) {
+    controller.refreshSearchController();
+    return AlertDialog(
+      title: Text("Choix de l'exercice"),
+      scrollable: false,
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => AddExercicePage(
+                exercice: null,
+              ),
+            ),
+            (Route route) => false,
+          ),
+          child: Text('Créer un exercice'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text('Annuler'),
+        ),
+      ],
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Obx(
+            () => TextFormField(
+              controller: TextEditingController(text: controller.query.value),
+              onChanged: (String value) => controller.query.value = value,
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: IconButton(
+                  onPressed: () => controller.query(''),
+                  icon: const Icon(Icons.clear),
+                ),
+                hintText: 'Recherche...',
+              ),
+            ),
+          ),
+          Flexible(
+            child: SizedBox(
+              width: 1000,
+              child: StreamBuilder<List<Exercice>>(
+                stream: controller.streamList,
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Text(snapshot.error.toString());
+                  }
+                  if (snapshot.hasData) {
+                    final List<Exercice> listExercice = snapshot.data!;
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: listExercice.length,
+                      itemBuilder: (context, index) {
+                        final Exercice exercice = listExercice.elementAt(index);
+                        return InkWell(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => AddWorkoutInstance(
+                                  exercice: exercice,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Card(
+                            child: SizedBox(
+                              height: 80,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  if (exercice.imageUrl != null)
+                                    CircleAvatar(
+                                      foregroundImage: NetworkImage(exercice.imageUrl!),
+                                    ),
+                                  Text(exercice.name),
+                                  IconButton(
+                                    onPressed: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => AddExercicePage(
+                                          exercice: exercice,
+                                        ),
+                                      ),
+                                    ),
+                                    icon: Icon(Icons.edit),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                  return LoadingBouncingGrid.circle();
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

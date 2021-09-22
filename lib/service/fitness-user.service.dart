@@ -73,9 +73,8 @@ class FitnessUserService extends AbstractFitnessStorageService<FitnessUser> {
     return getCollectionReference().doc(user.uid).collection(collectionMyWorkoutInstance);
   }
 
-  Stream<List<PublishedProgramme>> listenMyPrograms() async* {
-    CollectionReference<Map<String, dynamic>> colRef = getMyProgramsReference();
-    yield* colRef.snapshots().map((event) => event.docs.map((e) => PublishedProgramme.fromJson(e.data())).toList());
+  Stream<List<PublishedProgramme>> listenMyPrograms() {
+    return getMyProgramsReference().snapshots().map((event) => event.docs.map((e) => PublishedProgramme.fromJson(e.data())).toList());
   }
 
   Stream<List<Exercice>> listenMyExercices() async* {

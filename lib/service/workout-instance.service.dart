@@ -15,10 +15,17 @@ class WorkoutInstanceService extends AbstractFitnessStorageService<WorkoutInstan
   Stream<List<WorkoutInstance>> listenByDate(DateTime dateTime) {
     DateTime dateMinus = DateTime(dateTime.year, dateTime.month, dateTime.day);
     DateTime dateMax = DateTime(dateTime.year, dateTime.month, dateTime.day, 23, 59, 59);
-    return getCollectionReference()
-        .where('date', isGreaterThanOrEqualTo: dateMinus.millisecondsSinceEpoch, isLessThanOrEqualTo: dateMax.millisecondsSinceEpoch)
-        .snapshots()
-        .map((event) => event.docs.map((e) => WorkoutInstance.fromJson(e.data() as Map<String, dynamic>)).toList());
+    return whereListen(
+      'date',
+      isGreaterThanOrEqualTo: dateMinus.millisecondsSinceEpoch,
+      isLessThanOrEqualTo: dateMax.millisecondsSinceEpoch,
+    );
+  }
+
+  String getWorkoutStoragePath(WorkoutInstance workout) {
+    final User? user = authService.getCurrentUser();
+    if (user == null) throw Exception('Aucun utilisateur connecté');
+    return 'users/${user.uid}/workouts/${workout.uid}/mainImage';
   }
 
   @override
@@ -39,11 +46,5 @@ class WorkoutInstanceService extends AbstractFitnessStorageService<WorkoutInstan
   @override
   String getStorageRef(User user, WorkoutInstance domain) {
     return 'trainers/${user.uid}/workouts/${domain.uid}/mainImage';
-  }
-
-  String getWorkoutStoragePath(WorkoutInstance workout) {
-    final User? user = authService.getCurrentUser();
-    if (user == null) throw Exception('Aucun utilisateur connecté');
-    return 'users/${user.uid}/workouts/${workout.uid}/mainImage';
   }
 }

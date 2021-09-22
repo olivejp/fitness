@@ -14,7 +14,14 @@ class AddExercicePageController extends LocalSearchControllerMixin<Exercice, Exe
   final ExerciceService exerciceService = Get.find();
   final Rx<Exercice> exercice = Exercice().obs;
 
-  // TODO
+  void init(Exercice? exercice) {
+    if (exercice == null) {
+      this.exercice.value = Exercice();
+    } else {
+      this.exercice.value = exercice;
+    }
+  }
+
   Future<void> save() {
     return exerciceService.save(exercice.value);
   }
@@ -29,12 +36,15 @@ class AddExercicePageController extends LocalSearchControllerMixin<Exercice, Exe
 }
 
 class AddExercicePage extends StatelessWidget {
-  AddExercicePage({Key? key}) : super(key: key);
+  AddExercicePage({Key? key, this.exercice}) : super(key: key);
   final AddExercicePageController controller = Get.put(AddExercicePageController());
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final Exercice? exercice;
 
   @override
   Widget build(BuildContext context) {
+    controller.init(exercice);
+
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         label: Text('Enregistrer'),
