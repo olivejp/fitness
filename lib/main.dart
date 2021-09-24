@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
     return OKToast(
       child: GetMaterialApp(
         title: FitnessConstants.appTitle,
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           bottomAppBarTheme: const BottomAppBarTheme(
             color: FitnessNcColors.darkChipBackground,

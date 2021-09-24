@@ -48,7 +48,7 @@ class FitnessUserService extends AbstractFitnessStorageService<FitnessUser> {
   }
 
   Future<FitnessUser> _checkFitnessUserConnected() async {
-    String userUid = checkUserConnected().uid;
+    String userUid = getUserConnectedOrThrow().uid;
     FitnessUser? fitnessUser;
     fitnessUser = await read(userUid);
     if (fitnessUser == null) throw Exception("Aucun utilisateur trouvé pour l'uid $userUid");

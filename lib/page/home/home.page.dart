@@ -28,18 +28,6 @@ class HomePage extends StatelessWidget {
     return SafeArea(
       child: Obx(
         () => Scaffold(
-          floatingActionButton: FloatingActionButton(
-            child: const Icon(
-              Icons.add,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              if (controller.currentPageIndex.value == 1) {
-                controller.createNewWorkoutInstance(daySelectionController.selectedDate).then((_) => print('Création instance'));
-              }
-            },
-          ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
           bottomNavigationBar: SizedBox(
             height: 70,
             child: BottomAppBar(
@@ -115,12 +103,12 @@ class HomePage extends StatelessWidget {
                               () {
                                 if (controller.user.value?.imageUrl != null) {
                                   return CircleAvatar(
-                                    radius: 25,
+                                    radius: 30,
                                     foregroundImage: NetworkImage(controller.user.value!.imageUrl!),
                                   );
                                 }
                                 return CircleAvatar(
-                                  radius: 25,
+                                  radius: 30,
                                   backgroundColor: Theme.of(context).primaryColor,
                                 );
                               },
@@ -132,10 +120,6 @@ class HomePage extends StatelessWidget {
                       currentIndex: controller.currentPageIndex.value,
                     ),
                   ),
-                  Expanded(
-                    flex: 1,
-                    child: Container(),
-                  )
                 ],
               ),
             ),
