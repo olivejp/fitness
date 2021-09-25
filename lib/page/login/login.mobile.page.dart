@@ -9,6 +9,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'login.controller.dart';
 
 class LoginMobilePage extends StatelessWidget {
+  LoginMobilePage({Key? key}) : super(key: key);
+
   final LoginPageController controller = Get.find();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 

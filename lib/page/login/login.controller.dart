@@ -16,7 +16,8 @@ class LoginPageController extends GetxController {
   void authenticate(GlobalKey<FormState> formKey) {
     _loginMsgError.value = '';
     if (formKey.currentState?.validate() == true) {
-      authService.signInWithEmailPassword(email, password).then((UserCredential value) {
+      String emailTrimmed = email.trim();
+      authService.signInWithEmailPassword(emailTrimmed, password).then((UserCredential value) {
         userConnected = authService.getCurrentUser();
         _password.value = '';
       }).catchError((Object? error) {

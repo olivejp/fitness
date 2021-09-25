@@ -84,12 +84,13 @@ class LoginForm extends StatelessWidget {
                 onChanged: (String value) => controller.email = value,
                 onFieldSubmitted: (String value) => controller.authenticate(formKey),
                 validator: (String? value) {
-                  if (value == null || value.isEmpty) {
+                  String? emailTrimmed = value?.trim();
+                  if (emailTrimmed == null || emailTrimmed.isEmpty) {
                     return 'Merci de renseigner votre adresse email.';
                   }
                   if (!RegExp(
                     r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
-                  ).hasMatch(value)) {
+                  ).hasMatch(emailTrimmed)) {
                     return "L'adresse mail n'est pas formatée correctement'.";
                   }
                   return null;
