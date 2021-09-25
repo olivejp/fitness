@@ -25,16 +25,40 @@ class SearchPage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(
-            'Explorer',
-            style: Theme.of(context).textTheme.headline4,
-          ),
-          TextFormField(
-            onChanged: (String value) => controller.query(value),
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.search),
-              hintText: 'Recherche...',
+          LimitedBox(
+            maxHeight: 35,
+            child: TextFormField(
+              onChanged: (String value) => controller.query(value),
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.all(5),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(25),
+                  ),
+                  borderSide: BorderSide(
+                    width: 1,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(25),
+                  ),
+                  borderSide: BorderSide(
+                    width: 1,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(25),
+                  ),
+                  borderSide: BorderSide(
+                    width: 1,
+                  ),
+                ),
+                prefixIcon: Icon(Icons.search),
+                hintText: 'Recherche...',
+              ),
             ),
           ),
           Expanded(
@@ -112,7 +136,8 @@ class ListPublishedPrograms extends StatelessWidget {
                         mainAxisSpacing: 20,
                         childAspectRatio: 16 / 9,
                         crossAxisCount: crossAxisCount,
-                        children: snapshot.data!.map((PublishedProgramme programme) => PublishedProgrammeCard(publishedProgramme: programme)).toList(),
+                        children:
+                            snapshot.data!.map((PublishedProgramme programme) => PublishedProgrammeCard(publishedProgramme: programme)).toList(),
                       );
                     },
                   ),
@@ -387,7 +412,6 @@ class TrainerCard extends StatelessWidget {
     );
   }
 }
-
 
 class test extends StatelessWidget {
   const test({Key? key}) : super(key: key);
