@@ -2,13 +2,10 @@ import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitness_domain/controller/abstract.controller.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/storage-file.dart';
-import 'package:fitness_domain/widget/firestore_param_dropdown.widget.dart';
-import 'package:fitness_domain/widget/generic_container.widget.dart';
 import 'package:fitness_domain/widget/storage_image.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../../constants.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AddExercicePageController extends LocalSearchControllerMixin<Exercice, ExerciceService> {
   final ExerciceService exerciceService = Get.find();
@@ -45,28 +42,37 @@ class AddExercicePage extends StatelessWidget {
   Widget build(BuildContext context) {
     controller.init(exercice);
 
-    return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
-        label: Text('Enregistrer'),
-        onPressed: () {
-          if (formKey.currentState?.validate() == true) {
-            controller.save().then((_) => Navigator.of(context).pop());
-          }
-        },
-      ),
-      appBar: AppBar(
-        foregroundColor: Colors.transparent,
-        backgroundColor: Colors.amber,
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
+    return SafeArea(
+      child: Scaffold(
+        bottomNavigationBar: BottomAppBar(
+          elevation: 5,
+          color: Colors.white,
+          child: SizedBox(
+            height: 60,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8, right: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton.icon(
+                    icon: Icon(Icons.save),
+                    label: Text('Enregistrer'),
+                    onPressed: () {
+                      if (formKey.currentState?.validate() == true) {
+                        controller.save().then((_) => Navigator.of(context).pop());
+                      }
+                    },
+                  ),
+                  TextButton(
+                    child: Text('Retour'),
+                    onPressed: () => Navigator.of(context).pop(),
+                  )
+                ],
+              ),
+            ),
           ),
         ),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
+        body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Form(
             key: formKey,
@@ -91,17 +97,39 @@ class AddExercicePage extends StatelessWidget {
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 20),
                                 child: Obx(
-                                  () => FitnessDecorationTextFormField(
-                                      controller: TextEditingController(text: controller.exercice.value.name),
-                                      autofocus: true,
-                                      onChanged: (String name) => controller.exercice.value.name = name,
+                                  () => TextFormField(
+                                    controller: TextEditingController(text: controller.exercice.value.name),
+                                    autofocus: true,
+                                    onChanged: (String name) => controller.exercice.value.name = name,
+                                    validator: (String? value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Merci de renseigner le nom du exercice.';
+                                      }
+                                      return null;
+                                    },
+                                    decoration: InputDecoration(
                                       labelText: 'Nom',
-                                      validator: (String? value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Merci de renseigner le nom du exercice.';
-                                        }
-                                        return null;
-                                      }),
+                                      hintStyle: GoogleFonts.roboto(fontSize: 15),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          width: 0.5,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ),
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          width: 0.5,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          width: 0.5,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -110,22 +138,15 @@ class AddExercicePage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                          child: Obx(
-                        () => ParamDropdownButton(
-                          decoration: const InputDecoration(
-                              labelText: "Type d'exercice",
-                              constraints: BoxConstraints(maxHeight: FitnessConstants.textFormFieldHeight),
-                              contentPadding: EdgeInsets.symmetric(horizontal: 10)),
-                          paramName: 'type_exercice',
-                          initialValue: controller.exercice.value.typeExercice,
-                          onChanged: (String? onChangedValue) => controller.exercice.value.typeExercice = onChangedValue,
-                        ),
-                      ))
-                    ],
-                  ),
+                  // ParamDropdownButton(
+                  //   decoration: const InputDecoration(
+                  //       labelText: "Type d'exercice",
+                  //       constraints: BoxConstraints(maxHeight: FitnessConstants.textFormFieldHeight),
+                  //       contentPadding: EdgeInsets.symmetric(horizontal: 10)),
+                  //   paramName: 'type_exercice',
+                  //   initialValue: controller.exercice.value.typeExercice,
+                  //   onChanged: (String? onChangedValue) => controller.exercice.value.typeExercice = onChangedValue,
+                  // ),
                   Padding(
                     padding: const EdgeInsets.only(top: 20),
                     child: Obx(
@@ -135,7 +156,28 @@ class AddExercicePage extends StatelessWidget {
                         minLines: 5,
                         maxLines: 20,
                         onChanged: (String description) => controller.exercice.value.description = description,
-                        decoration: const InputDecoration(labelText: 'Description', helperText: 'Optionnel'),
+                        decoration: InputDecoration(
+                          labelText: 'Description',
+                          helperText: 'Optionnel',
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              width: 0.5,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              width: 0.5,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              width: 0.5,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),

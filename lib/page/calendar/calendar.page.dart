@@ -18,12 +18,13 @@ class CalendarController extends GetxController {
   final UserSetService userSetService = Get.find();
 
   Stream<List<UserSet>> listenUserSet(WorkoutInstance workoutInstance) {
-    return userSetService.listenAll(workoutInstance.uid!);
+    return userSetService.orderByListen(workoutInstance.uid!, 'createDate', false);
   }
 
   Future<void> createNewWorkoutInstance(DateTime dateTime) {
+    DateTime now = DateTime.now();
     WorkoutInstance instance = WorkoutInstance();
-    instance.date = dateTime;
+    instance.date = DateTime(dateTime.year, dateTime.month, dateTime.day, now.hour, now.minute, now.second);
     return workoutInstanceService.create(instance);
   }
 
@@ -114,7 +115,7 @@ class CalendarPage extends StatelessWidget {
                   initialData: const <WorkoutInstance>[],
                   stream: controller.listenWorkoutInstanceByDate(daySelectionController.selectedDate),
                   builder: (_, snapshot) {
-                    datePickerController.animateToDate(DateTime.now());
+                    datePickerController.animateToSelection();
                     if (snapshot.hasData) {
                       final List<WorkoutInstance> list = snapshot.data!;
                       if (list.isNotEmpty) {
@@ -138,7 +139,7 @@ class CalendarPage extends StatelessWidget {
                     if (snapshot.hasError) {
                       return Text(snapshot.error.toString());
                     }
-                    return LoadingBouncingGrid.circle();
+                    return LoadingBouncingGrid.circle(backgroundColor: Theme.of(context).primaryColor,);
                   },
                 ),
               ),
@@ -166,7 +167,7 @@ class WorkoutInstanceCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-      elevation: 2,
+      elevation: 5,
       child: InkWell(
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute(
@@ -230,6 +231,7 @@ class WorkoutInstanceCard extends StatelessWidget {
                         return Container();
                       } else {
                         return ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                           itemCount: userSets.length,
                           itemBuilder: (context, index) {
@@ -266,7 +268,7 @@ class WorkoutInstanceCard extends StatelessWidget {
                         );
                       }
                     }
-                    return LoadingBouncingGrid.circle();
+                    return LoadingBouncingGrid.circle(backgroundColor: Theme.of(context).primaryColor,);
                   },
                 ),
                 Row(

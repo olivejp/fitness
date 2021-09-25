@@ -48,7 +48,7 @@ class MyProgramsPage extends StatelessWidget {
                     );
                   }
                 }
-                return Center(child: LoadingBouncingGrid.circle());
+                return Center(child: LoadingBouncingGrid.circle(backgroundColor: Theme.of(context).primaryColor,));
               },
             ),
           ),

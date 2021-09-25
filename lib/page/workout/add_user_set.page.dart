@@ -15,6 +15,7 @@ class UserSetController extends GetxController {
   final UserSetService userSetService = Get.find();
   final Rx<UserSet> userSet = UserSet().obs;
   final Rx<Workout> workout = Workout().obs;
+  final RxList<UserLine> listLines = <UserLine>[].obs;
   final int debounceTime = 200;
   Timer? _debounce;
 
@@ -25,10 +26,17 @@ class UserSetController extends GetxController {
     this.userSet.value = userSet;
   }
 
+  void initList(List<UserLine> lines) {
+    listLines.clear();
+    listLines.addAll(lines);
+    listLines.refresh();
+  }
+
   void addLine() {
     userSet.update((val) {
       val!.lines.add(UserLine());
     });
+    initList(userSet.value.lines);
   }
 
   void afterDebounce(void Function() callback) {
@@ -39,39 +47,33 @@ class UserSetController extends GetxController {
   }
 
   void removeLastLine() {
-    afterDebounce(() {
-      userSet.update((val) {
-        val!.lines.removeAt(val.lines.length - 1);
-      });
-      userSetService.save(userSet.value);
+    userSet.update((val) {
+      val!.lines.removeAt(val.lines.length - 1);
+    });
+    userSetService.save(userSet.value).then((value) {
+      initList(userSet.value.lines);
     });
   }
 
   void changeReps(int index, String reps) {
+    userSet.value.lines[index].reps = reps;
     afterDebounce(() {
-      userSet.update((val) {
-        val!.lines.elementAt(index).reps = reps;
-      });
       userSetService.save(userSet.value);
     });
   }
 
   void changeWeight(int index, String weight) {
+    userSet.value.lines[index].weight = weight;
     afterDebounce(() {
-      userSet.update((val) {
-        val!.lines.elementAt(index).weight = weight;
-      });
       userSetService.save(userSet.value);
     });
   }
 
   void changeCheck(int index, bool checked) {
-    afterDebounce(() {
-      userSet.update((val) {
-        val!.lines.elementAt(index).checked = checked;
-      });
-      userSetService.save(userSet.value);
-    });
+    userSet.value.lines[index].checked = checked;
+    userSetService.save(userSet.value);
+    listLines[index].checked = checked;
+    listLines.refresh();
   }
 }
 
@@ -90,6 +92,7 @@ class OpenUserSetInstance extends StatelessWidget {
 
 class UserSetUpdate extends StatelessWidget {
   UserSetUpdate({Key? key, required this.userSet}) : super(key: key);
+
   final UserSet userSet;
   final double padding = 15;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -97,6 +100,7 @@ class UserSetUpdate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final UserSetController controller = Get.find(tag: userSet.uid);
+    controller.initList(userSet.lines);
     return SingleChildScrollView(
       child: Form(
         key: formKey,
@@ -173,13 +177,12 @@ class UserSetUpdate extends StatelessWidget {
             Obx(
               () => ListView.builder(
                   shrinkWrap: true,
-                  itemCount: controller.userSet.value.lines.length,
+                  itemCount: controller.listLines.length,
                   itemBuilder: (BuildContext context, int index) {
                     final GlobalKey keyReps = GlobalKey();
                     final GlobalKey keyWeight = GlobalKey();
                     final GlobalKey keyTime = GlobalKey();
-                    final GlobalKey keyChecked = GlobalKey();
-                    final UserLine userLine = controller.userSet.value.lines.elementAt(index);
+                    final UserLine userLine = controller.listLines.elementAt(index);
                     return Padding(
                       padding: EdgeInsets.only(right: padding, left: padding, top: 5),
                       child: Row(
@@ -205,8 +208,9 @@ class UserSetUpdate extends StatelessWidget {
                                       constraints: BoxConstraints(maxHeight: 36),
                                       border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
                                       focusedBorder: OutlineInputBorder(
-                                          borderRadius: const BorderRadius.all(Radius.circular(5)),
-                                          borderSide: BorderSide(width: 1, color: Theme.of(context).primaryColor)),
+                                        borderRadius: const BorderRadius.all(Radius.circular(5)),
+                                        borderSide: BorderSide(width: 1, color: Theme.of(context).primaryColor),
+                                      ),
                                       hintStyle: const TextStyle(fontSize: 14),
                                       hintText: '0'),
                                   onChanged: (value) => controller.changeReps(index, value),
@@ -242,31 +246,10 @@ class UserSetUpdate extends StatelessWidget {
                           ),
                           Flexible(
                             child: Center(
-                              child: Obx(
-                                () {
-                                  UserLine line = controller.userSet.value.lines.elementAt(index);
-                                  if (line.checked) {
-                                    return IconButton(
-                                      key: keyChecked,
-                                      onPressed: () => controller.changeCheck(index, false),
-                                      icon: Icon(
-                                        Icons.check_circle,
-                                        size: 30,
-                                      ),
-                                      color: Colors.green,
-                                    );
-                                  } else {
-                                    return IconButton(
-                                      key: keyChecked,
-                                      onPressed: () => controller.changeCheck(index, true),
-                                      icon: Icon(
-                                        Icons.circle_outlined,
-                                        size: 30,
-                                      ),
-                                      color: Colors.green,
-                                    );
-                                  }
-                                },
+                              child: UserLineCheckWidget(
+                                index: index,
+                                userLine: userLine,
+                                onPress: controller.changeCheck,
                               ),
                             ),
                           ),
@@ -322,6 +305,33 @@ class UserSetUpdate extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class UserLineCheckWidget extends StatelessWidget {
+  UserLineCheckWidget({
+    Key? key,
+    required this.userLine,
+    required this.index,
+    required this.onPress,
+  }) : super(key: key);
+
+  final UserLine userLine;
+  final int index;
+  final void Function(int index, bool value) onPress;
+  final GlobalKey<State<StatefulWidget>> keyChecked = GlobalKey();
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      key: keyChecked,
+      onPressed: () => onPress(index, !userLine.checked),
+      icon: Icon(
+        (userLine.checked) ? Icons.check_circle : Icons.circle_outlined,
+        size: 30,
+      ),
+      color: Colors.green,
     );
   }
 }

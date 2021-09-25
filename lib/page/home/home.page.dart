@@ -43,6 +43,7 @@ class HomePage extends StatelessWidget {
                       elevation: 0,
                       showSelectedLabels: false,
                       showUnselectedLabels: false,
+                      currentIndex: controller.currentPageIndex.value,
                       items: <BottomNavigationBarItem>[
                         BottomNavigationBarItem(
                           label: 'Rechercher',
@@ -117,14 +118,13 @@ class HomePage extends StatelessWidget {
                           ),
                         ),
                       ],
-                      currentIndex: controller.currentPageIndex.value,
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          body: Obx(() {
+          body: Builder(builder: (context) {
             if (controller.currentPageIndex.value == searchIndex) {
               return SearchPage();
             } else if (controller.currentPageIndex.value == calendarIndex) {

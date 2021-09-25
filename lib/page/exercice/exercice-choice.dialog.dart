@@ -1,3 +1,4 @@
+import 'package:fitnc_user/page/workout/add_user_set.page.dart';
 import 'package:fitnc_user/page/workout/workout-instance.page.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
@@ -19,7 +20,7 @@ class ExerciceChoiceDialogController extends LocalSearchControllerMixin<Exercice
     return service.listenAll();
   }
 
-  Future<void> addUserSet(WorkoutInstance workoutInstance, Exercice exercice) {
+  Future<UserSet> addUserSet(WorkoutInstance workoutInstance, Exercice exercice) {
     final UserSet userSet = UserSet(
       uidExercice: exercice.uid!,
       uidWorkout: workoutInstance.uid!,
@@ -27,13 +28,14 @@ class ExerciceChoiceDialogController extends LocalSearchControllerMixin<Exercice
       imageUrlExercice: exercice.imageUrl,
       typeExercice: exercice.typeExercice,
     );
-    return userSetService.save(userSet);
+    return userSetService.save(userSet).then((_) => userSet);
   }
 }
 
 class ExerciceChoiceDialog extends StatelessWidget {
   ExerciceChoiceDialog({Key? key, required this.workoutInstance, this.popOnChoice = false}) : super(key: key);
   final ExerciceChoiceDialogController controller = Get.put(ExerciceChoiceDialogController());
+  final WorkoutPageController workoutPageController = Get.put(WorkoutPageController());
   final WorkoutInstance workoutInstance;
   final bool popOnChoice;
 
@@ -81,7 +83,7 @@ class ExerciceChoiceDialog extends StatelessWidget {
       ),
       bottomNavigationBar: BottomAppBar(
         elevation: 5,
-        color: Colors.transparent,
+        color: Colors.white,
         child: SizedBox(
           height: 60,
           child: Padding(
@@ -115,59 +117,64 @@ class ExerciceChoiceDialog extends StatelessWidget {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: SizedBox(
-                width: 1000,
-                child: StreamBuilder<List<Exercice>>(
-                  stream: controller.streamList,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return Text(snapshot.error.toString());
-                    }
-                    if (snapshot.hasData) {
-                      final List<Exercice> listExercice = snapshot.data!;
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: listExercice.length,
-                        itemBuilder: (context, index) {
-                          final Exercice exercice = listExercice.elementAt(index);
-                          return InkWell(
-                            onTap: () {
-                              controller.addUserSet(workoutInstance, exercice).then(
-                                (_) {
-                                  if (popOnChoice) {
-                                    Navigator.of(context).pop();
-                                  } else {
-                                    Navigator.of(context).pop();
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => WorkoutPage(
-                                          instance: workoutInstance,
-                                          goToLastPage: true,
-                                        ),
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            child: SizedBox(
+              width: 1000,
+              child: StreamBuilder<List<Exercice>>(
+                stream: controller.streamList,
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Text(snapshot.error.toString());
+                  }
+                  if (snapshot.hasData) {
+                    final List<Exercice> listExercice = snapshot.data!;
+                    return ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: listExercice.length,
+                      itemBuilder: (context, index) {
+                        final Exercice exercice = listExercice.elementAt(index);
+                        return InkWell(
+                          onTap: () {
+                            controller.addUserSet(workoutInstance, exercice).then(
+                              (userSet) {
+                                if (popOnChoice) {
+                                  // TODO Sur le clik on doit rafraichir le UserSet.
+                                  workoutPageController.refreshWorkoutPage();
+                                  Navigator.of(context).pop();
+                                } else {
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => WorkoutPage(
+                                        instance: workoutInstance,
+                                        goToLastPage: true,
                                       ),
-                                    );
-                                  }
-                                },
-                              );
-                            },
-                            child: ExerciceChoiceCard(exercice: exercice),
-                          );
-                        },
-                      );
-                    }
-                    return LoadingBouncingGrid.circle();
-                  },
-                ),
+                                    ),
+                                  );
+                                }
+                              },
+                            );
+                          },
+                          child: ExerciceChoiceCard(exercice: exercice),
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) => const Divider(
+                        height: 2.0,
+                        color: Colors.grey,
+                      ),
+                    );
+                  }
+                  return LoadingBouncingGrid.circle(
+                    backgroundColor: Theme.of(context).primaryColor,
+                  );
+                },
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -179,45 +186,43 @@ class ExerciceChoiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: SizedBox(
-        height: 80,
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              if (exercice.imageUrl != null)
-                CircleAvatar(
-                  foregroundImage: NetworkImage(exercice.imageUrl!),
-                ),
-              if (exercice.imageUrl == null)
-                CircleAvatar(
-                  backgroundColor: Theme.of(context).primaryColor,
-                ),
-              Expanded(
-                  child: Padding(
-                padding: const EdgeInsets.only(left: 12, right: 12),
-                child: Text(
-                  exercice.name,
-                  textAlign: TextAlign.start,
-                ),
-              )),
-              IconButton(
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => AddExercicePage(
-                      exercice: exercice,
-                    ),
+    return SizedBox(
+      height: 80,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            if (exercice.imageUrl != null)
+              CircleAvatar(
+                foregroundImage: NetworkImage(exercice.imageUrl!),
+              ),
+            if (exercice.imageUrl == null)
+              CircleAvatar(
+                backgroundColor: Theme.of(context).primaryColor,
+              ),
+            Expanded(
+                child: Padding(
+              padding: const EdgeInsets.only(left: 12, right: 12),
+              child: Text(
+                exercice.name,
+                textAlign: TextAlign.start,
+              ),
+            )),
+            IconButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => AddExercicePage(
+                    exercice: exercice,
                   ),
                 ),
-                icon: Icon(
-                  Icons.edit,
-                  color: Colors.grey,
-                ),
-              )
-            ],
-          ),
+              ),
+              icon: const Icon(
+                Icons.edit,
+                color: Colors.grey,
+              ),
+            )
+          ],
         ),
       ),
     );

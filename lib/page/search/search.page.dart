@@ -7,6 +7,7 @@ import 'package:fitness_domain/domain/published_programme.domain.dart';
 import 'package:fitness_domain/domain/trainers.domain.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animations/loading_animations.dart';
@@ -19,63 +20,62 @@ class SearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     controller.refreshSearchController();
-    return Padding(
-      padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          LimitedBox(
-            maxHeight: 35,
-            child: TextFormField(
-              onChanged: (String value) => controller.query(value),
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.all(5),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(25),
-                  ),
-                  borderSide: BorderSide(
-                    width: 1,
-                  ),
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            // LimitedBox(
+            //   maxHeight: 35,
+            //   child: TextFormField(
+            //     onChanged: (String value) => controller.query(value),
+            //     decoration: InputDecoration(
+            //       contentPadding: EdgeInsets.all(5),
+            //       border: OutlineInputBorder(
+            //         borderRadius: BorderRadius.all(
+            //           Radius.circular(25),
+            //         ),
+            //         borderSide: BorderSide(
+            //           width: 1,
+            //         ),
+            //       ),
+            //       focusedBorder: OutlineInputBorder(
+            //         borderRadius: BorderRadius.all(
+            //           Radius.circular(25),
+            //         ),
+            //         borderSide: BorderSide(
+            //           width: 1,
+            //           color: Theme.of(context).primaryColor,
+            //         ),
+            //       ),
+            //       enabledBorder: OutlineInputBorder(
+            //         borderRadius: BorderRadius.all(
+            //           Radius.circular(25),
+            //         ),
+            //         borderSide: BorderSide(
+            //           width: 1,
+            //         ),
+            //       ),
+            //       prefixIcon: Icon(Icons.search),
+            //       hintText: 'Recherche...',
+            //     ),
+            //   ),
+            // ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ListTrainers(height: 200, width: 100),
+                    ListPublishedPrograms(),
+                  ],
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(25),
-                  ),
-                  borderSide: BorderSide(
-                    width: 1,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(25),
-                  ),
-                  borderSide: BorderSide(
-                    width: 1,
-                  ),
-                ),
-                prefixIcon: Icon(Icons.search),
-                hintText: 'Recherche...',
               ),
-            ),
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TrainerList(
-                    height: 200,
-                    width: 100,
-                  ),
-                  ListPublishedPrograms()
-                ],
-              ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -150,7 +150,10 @@ class ListPublishedPrograms extends StatelessWidget {
               child: Text('Aucun programme publié'),
             );
           }
-          return LoadingBouncingGrid.circle();
+          return Center(
+              child: LoadingBouncingGrid.circle(
+            backgroundColor: Theme.of(context).primaryColor,
+          ));
         },
       ),
     );
@@ -179,7 +182,7 @@ class PublishedProgrammeCard extends StatelessWidget {
       child: Card(
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-        elevation: 2,
+        elevation: 5,
         child: InkWell(
           onTap: () {
             controller.selectProgramme(publishedProgramme);
@@ -316,8 +319,8 @@ class PublishedProgrammeCard extends StatelessWidget {
   }
 }
 
-class TrainerList extends StatelessWidget {
-  TrainerList({Key? key, this.height = 200, this.width = 100}) : super(key: key);
+class ListTrainers extends StatelessWidget {
+  ListTrainers({Key? key, this.height = 200, this.width = 100}) : super(key: key);
   final double height;
   final TrainersService trainersService = Get.find();
   final double width;
@@ -326,6 +329,7 @@ class TrainerList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
@@ -337,27 +341,31 @@ class TrainerList extends StatelessWidget {
         ),
         SizedBox(
           height: height,
-          child: FutureBuilder<List<Trainers>>(
-              future: trainersService.getTrainersWithPublishedProgram(),
-              builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                if (snapshot.hasError) {
-                  return Text('Erreur : ${snapshot.error.toString()}');
-                }
-                if (snapshot.hasData) {
-                  List<Trainers> listTrainers = snapshot.data!;
-                  return ListView.builder(
-                    itemCount: listTrainers.length,
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (_, int index) => TrainerCard(
-                      trainer: listTrainers.elementAt(index),
-                      height: height,
-                      width: width,
-                    ),
-                  );
-                }
-                return LoadingBouncingGrid.circle();
-              }),
+          child: Row(
+            children: [
+              FutureBuilder<List<Trainers>>(
+                  future: trainersService.getTrainersWithPublishedProgram(),
+                  builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('Erreur : ${snapshot.error.toString()}');
+                    }
+                    if (snapshot.hasData) {
+                      List<Trainers> listTrainers = snapshot.data!;
+                      return ListView.builder(
+                        itemCount: listTrainers.length,
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (_, int index) => TrainerCard(
+                          trainer: listTrainers.elementAt(index),
+                          height: height,
+                          width: width,
+                        ),
+                      );
+                    }
+                    return Expanded(child: LoadingBouncingGrid.circle(backgroundColor: Theme.of(context).primaryColor,));
+                  }),
+            ],
+          ),
         ),
       ],
     );
@@ -384,6 +392,7 @@ class TrainerCard extends StatelessWidget {
           );
     return Card(
       clipBehavior: Clip.antiAlias,
+      elevation: 5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
       child: SizedBox(
         height: height,
@@ -401,7 +410,7 @@ class TrainerCard extends StatelessWidget {
                 ),
                 child: Text(
                   '${trainer.name} ${trainer.prenom}',
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                   maxLines: 2,
                 ),
               ),
