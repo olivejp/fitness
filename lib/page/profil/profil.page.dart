@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnc_user/main.dart';
 import 'package:fitnc_user/page/exercice/exercice.page.dart';
 import 'package:fitnc_user/service/fitness-user.service.dart';
 import 'package:fitness_domain/domain/fitness-user.domain.dart';
@@ -62,6 +63,7 @@ class ProfilPageController extends GetxController {
 class ProfilPage extends StatelessWidget {
   ProfilPage({Key? key}) : super(key: key);
   final ProfilPageController controller = Get.put(ProfilPageController());
+  final DarkModeController darkModeController = Get.find();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -182,6 +184,24 @@ class ProfilPage extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Mode sombre'),
+                    ValueListenableBuilder<bool>(
+                      valueListenable: darkModeController.notifier,
+                      builder: (_, isDarkMode, __) => Checkbox(
+                        value: isDarkMode,
+                        onChanged: (bool? changeDarkMode) {
+                          darkModeController.notifier.switchMode(changeDarkMode!);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
                 child: OutlinedButton(
                   onPressed: () {
                     Navigator.of(context).push(
@@ -189,13 +209,6 @@ class ProfilPage extends StatelessWidget {
                     );
                   },
                   child: Text('Mes exercices'),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: OutlinedButton(
-                  onPressed: () => controller.signOut(),
-                  child: Text('Mes workouts'),
                 ),
               ),
               Padding(

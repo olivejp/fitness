@@ -8,6 +8,24 @@ class CalendarController extends GetxController {
   final WorkoutInstanceService workoutInstanceService = Get.find();
   final UserSetService userSetService = Get.find();
 
+  final Rx<DateTime> _selectedValue = DateTime.now().obs;
+  final Rx<DateTime> _initialDate = DateTime.now().obs;
+
+  DateTime get selectedDate => _selectedValue.value;
+
+  set selectedDate(DateTime dateTime) {
+    _selectedValue.value = dateTime;
+    update();
+  }
+
+
+  DateTime get initialDate => _initialDate.value;
+
+  set initialDate(DateTime dateTime) {
+    _initialDate.value = dateTime;
+    update();
+  }
+
   Stream<List<UserSet>> listenUserSet(WorkoutInstance workoutInstance) {
     return userSetService.orderByListen(workoutInstance.uid!, 'createDate', false);
   }

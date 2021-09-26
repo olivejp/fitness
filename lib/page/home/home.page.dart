@@ -1,4 +1,3 @@
-import 'package:fitnc_user/controller/day-selection.controller.dart';
 import 'package:fitnc_user/page/calendar/calendar.page.dart';
 import 'package:fitnc_user/page/my_programs/my_program.page.dart';
 import 'package:fitnc_user/page/profil/profil.page.dart';
@@ -15,7 +14,6 @@ class HomePage extends StatelessWidget {
 
   final WorkoutInstanceService workoutInstanceService = Get.find();
   final HomeController controller = Get.put(HomeController());
-  final DaySelectionController daySelectionController = Get.find();
 
   final int searchIndex = 0;
   final int calendarIndex = 1;
@@ -31,14 +29,13 @@ class HomePage extends StatelessWidget {
           bottomNavigationBar: SizedBox(
             height: 70,
             child: Container(
-              decoration: const BoxDecoration(boxShadow: [
+              decoration: BoxDecoration(boxShadow: [
                 BoxShadow(
-                  color: Colors.grey,
+                  color: Theme.of(context).shadowColor,
                   blurRadius: 5,
                 )
               ]),
               child: BottomAppBar(
-                color: Colors.white,
                 clipBehavior: Clip.antiAlias,
                 child: Row(
                   children: [
