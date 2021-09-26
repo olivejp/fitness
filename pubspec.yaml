@@ -26,6 +26,7 @@ dependencies:
   fab_circular_menu: ^1.0.2
   get: ^4.3.8
   badges: ^2.0.1
+  get_storage: ^2.0.3
   firebase:
     path: ../fitnc_trainer/packages/firebase
   fitness_domain:

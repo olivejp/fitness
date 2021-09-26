@@ -192,8 +192,8 @@ class ProfilPage extends StatelessWidget {
                       valueListenable: darkModeController.notifier,
                       builder: (_, isDarkMode, __) => Checkbox(
                         value: isDarkMode,
-                        onChanged: (bool? changeDarkMode) {
-                          darkModeController.notifier.switchMode(changeDarkMode!);
+                        onChanged: (_) {
+                          darkModeController.switchDarkMode();
                         },
                       ),
                     ),
@@ -201,27 +201,34 @@ class ProfilPage extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: OutlinedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const ExercicePage()),
-                    );
-                  },
-                  child: Text('Mes exercices'),
+                padding: const EdgeInsets.only(top: 8, bottom: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => const ExercicePage()),
+                        );
+                      },
+                      child: Text('Gérer mes exercices'),
+                    ),
+                  ],
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: OutlinedButton(
-                  style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) {
-                    return Colors.red;
-                  })),
-                  onPressed: () => controller.signOut(),
-                  child: Text(
-                    'Se déconnecter',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                padding: const EdgeInsets.only(top: 16, bottom: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    TextButton(
+                      onPressed: () => controller.signOut(),
+                      child: Text(
+                        'Me déconnecter',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

@@ -43,13 +43,6 @@ class ExerciceChoiceDialog extends StatelessWidget {
     controller.refreshSearchController();
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: Icon(
-            Icons.arrow_back,
-            color: Theme.of(context).primaryColor,
-          ),
-        ),
         elevation: 0,
         title: Text(
           "Choix de l'exercice",
@@ -67,7 +60,7 @@ class ExerciceChoiceDialog extends StatelessWidget {
                 onChanged: (String value) => controller.query.value = value,
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.all(5),
-                  border: const OutlineInputBorder(),
+                  border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(25))),
                   prefixIcon: const Icon(Icons.search),
                   suffixIcon: IconButton(
                     onPressed: () => controller.query(''),

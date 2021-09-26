@@ -11,6 +11,7 @@ import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animations/loading_animations.dart';
 
 import 'calendar.page.controller.dart';
 
@@ -38,62 +39,90 @@ class CalendarPage extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: Column(
         children: <Widget>[
-          StreamBuilder<List<WorkoutInstance>>(
-              stream: controller.workoutInstanceService.listenAll(),
-              builder: (_, snapshot) {
-                List<WorkoutInstance> list = snapshot.hasData ? snapshot.data! : [];
-                return Obx(
-                  () => FitnessDatePicker(
-                    trailing: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: OutlinedButton(
-                            onPressed: () {
-                              controller.initialDate = DateTime.now();
-                              controller.selectedDate = DateTime.now();
-                            },
-                            child: Text('Today'),
-                          ),
-                        ),
-                      ],
-                    ),
-                    widthMonth: 150,
-                    initialDate: controller.initialDate,
-                    onDateChange: (date) {
-                      controller.selectedDate = date;
-                    },
-                    builder: (dateTime, selected) {
-                      List<DateTime> listWorkoutForTheDay = list
-                          .where((workout) => workout.date != null)
-                          .map((workout) => workout.date)
-                          .map((date) => DateTime(date!.year, date.month, date.day))
-                          .where((date) => date.compareTo(dateTime) == 0)
-                          .take(4)
-                          .toList();
-                      return CalendarDayCard(
-                        dateTime: dateTime,
-                        listWorkoutForTheDay: listWorkoutForTheDay,
-                        selected: selected,
-                      );
-                    },
-                    selectedDayTextStyle: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                );
-              }),
+          Material(
+            elevation: 5,
+            child: StreamBuilder<List<WorkoutInstance>>(
+                stream: controller.workoutInstanceService.listenAll(),
+                builder: (_, snapshot) {
+                  List<WorkoutInstance> list = snapshot.hasData ? snapshot.data! : [];
+                  return Timeline(list: list);
+                }),
+          ),
           Expanded(
             child: Obx(
               () => StreamList<WorkoutInstance>(
                 stream: controller.listenWorkoutInstanceByDate(controller.selectedDate),
                 builder: (BuildContext context, WorkoutInstance domain) => WorkoutInstanceCard(instance: domain),
+                padding: EdgeInsets.all(10),
+                emptyWidget: Column(
+                  children: const [
+                    Expanded(
+                      child: Center(
+                        child: Text('Aucun élément'),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           )
         ],
+      ),
+    );
+  }
+}
+
+class Timeline extends StatelessWidget {
+  const Timeline({
+    Key? key,
+    required this.list,
+  }) : super(key: key);
+
+  final List<WorkoutInstance> list;
+
+  @override
+  Widget build(BuildContext context) {
+    final CalendarController controller = Get.find();
+    return Obx(
+      () => FitnessDatePicker(
+        heigthMonth: 48,
+        initialDate: controller.initialDate,
+        onDateChange: (date) {
+          controller.selectedDate = date;
+        },
+        selectedDayTextStyle: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+        trailing: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: OutlinedButton(
+                onPressed: () {
+                  controller.initialDate = DateTime.now();
+                  controller.selectedDate = DateTime.now();
+                },
+                child: Text('Today'),
+              ),
+            ),
+          ],
+        ),
+        builder: (dateTime, selected) {
+          List<DateTime> listWorkoutForTheDay = list
+              .where((workout) => workout.date != null)
+              .map((workout) => workout.date)
+              .map((date) => DateTime(date!.year, date.month, date.day))
+              .where((date) => date.compareTo(dateTime) == 0)
+              .take(4)
+              .toList();
+          return CalendarDayCard(
+            dateTime: dateTime,
+            listWorkoutForTheDay: listWorkoutForTheDay,
+            selected: selected,
+          );
+        },
       ),
     );
   }
@@ -113,10 +142,17 @@ class CalendarDayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: selected ? Theme.of(context).primaryColor : Theme.of(context).cardColor,
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Theme.of(context).primaryColor,
+            width: selected ? 3 : 0,
+          ),
+        ),
+      ),
       child: SizedBox(
-        height: 40,
+        height: 30,
         width: 50,
         child: Column(
           children: [
@@ -126,7 +162,7 @@ class CalendarDayCard extends StatelessWidget {
                 child: Text(
                   dateTime.day.toString(),
                   style: GoogleFonts.roboto(
-                    color: selected ? Colors.white : Colors.black,
+                    color: selected ? Theme.of(context).primaryColor : null,
                     fontSize: 18,
                   ),
                 ),
@@ -139,7 +175,7 @@ class CalendarDayCard extends StatelessWidget {
                     .map((e) => Icon(
                           Icons.circle,
                           size: 5,
-                          color: selected ? Colors.white : Colors.black,
+                          color: selected ? Theme.of(context).primaryColor : null,
                         ))
                     .toList(),
               ),

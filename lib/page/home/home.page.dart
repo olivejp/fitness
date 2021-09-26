@@ -31,7 +31,7 @@ class HomePage extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(boxShadow: [
                 BoxShadow(
-                  color: Theme.of(context).shadowColor,
+                  color: Theme.of(context).shadowColor.withOpacity(0.3),
                   blurRadius: 5,
                 )
               ]),

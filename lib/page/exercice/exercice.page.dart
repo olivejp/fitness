@@ -18,7 +18,7 @@ class ExercicePage extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             StreamList<Exercice>(
-              padding: EdgeInsets.only(bottom: bottomAppBarHeigth),
+              padding: EdgeInsets.only(bottom: bottomAppBarHeigth, top: 8, left: 8, right: 8),
               stream: exerciceService.listenAll(),
               builder: (_, domain) => ExerciceCard(
                 exercice: domain,
@@ -36,8 +36,8 @@ class ExercicePage extends StatelessWidget {
               left: 0,
               right: 0,
               child: BottomAppBar(
+                color: Theme.of(context).bottomAppBarTheme.color,
                 elevation: 10,
-                color: Colors.white,
                 child: SizedBox(
                   height: bottomAppBarHeigth,
                   child: Padding(

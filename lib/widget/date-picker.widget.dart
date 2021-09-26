@@ -110,7 +110,7 @@ class MonthDropDown extends StatelessWidget {
   final double? width;
   final ValueChanged<int?> onChanged;
 
-  final List<String> monthList = ['Jan.', 'Fév.', 'Mar.', 'Avr.', 'Mai', 'Juin', 'Juil.', 'Aout', 'Sep.', 'Oct.', 'Nov.', 'Déc.'];
+  final List<String> monthList = ['JAN.', 'FÉV.', 'MAR.', 'AVR.', 'MAI', 'JUIN', 'JUIL.', 'AOUT', 'SEP.', 'OCT.', 'NOV.', 'DÉC.'];
   final GlobalKey gkKey = GlobalKey();
 
   @override
@@ -129,7 +129,7 @@ class MonthDropDown extends StatelessWidget {
                 ),
                 children: [
                   TextSpan(
-                    text: year.toString(),
+                    text: year.toString().substring(2, 4),
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -149,10 +149,11 @@ class MonthDropDown extends StatelessWidget {
       child: DropdownButtonFormField<int>(
         key: gkKey,
         decoration: InputDecoration(
+            enabledBorder: InputBorder.none,
             constraints: BoxConstraints(
-          minHeight: height ?? 50,
-          minWidth: width ?? double.infinity,
-        )),
+              minHeight: height ?? 50,
+              minWidth: width ?? double.infinity,
+            )),
         items: listDropdown,
         value: month - 1,
         elevation: month,
