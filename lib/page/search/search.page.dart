@@ -22,47 +22,11 @@ class SearchPage extends StatelessWidget {
     controller.refreshSearchController();
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
+        padding: const EdgeInsets.only(left: 10, right: 10),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            // LimitedBox(
-            //   maxHeight: 35,
-            //   child: TextFormField(
-            //     onChanged: (String value) => controller.query(value),
-            //     decoration: InputDecoration(
-            //       contentPadding: EdgeInsets.all(5),
-            //       border: OutlineInputBorder(
-            //         borderRadius: BorderRadius.all(
-            //           Radius.circular(25),
-            //         ),
-            //         borderSide: BorderSide(
-            //           width: 1,
-            //         ),
-            //       ),
-            //       focusedBorder: OutlineInputBorder(
-            //         borderRadius: BorderRadius.all(
-            //           Radius.circular(25),
-            //         ),
-            //         borderSide: BorderSide(
-            //           width: 1,
-            //           color: Theme.of(context).primaryColor,
-            //         ),
-            //       ),
-            //       enabledBorder: OutlineInputBorder(
-            //         borderRadius: BorderRadius.all(
-            //           Radius.circular(25),
-            //         ),
-            //         borderSide: BorderSide(
-            //           width: 1,
-            //         ),
-            //       ),
-            //       prefixIcon: Icon(Icons.search),
-            //       hintText: 'Recherche...',
-            //     ),
-            //   ),
-            // ),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(

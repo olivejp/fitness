@@ -30,97 +30,104 @@ class HomePage extends StatelessWidget {
         () => Scaffold(
           bottomNavigationBar: SizedBox(
             height: 70,
-            child: BottomAppBar(
-              color: Colors.white,
-              clipBehavior: Clip.antiAlias,
-              elevation: 50,
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 5,
-                    child: BottomNavigationBar(
-                      type: BottomNavigationBarType.fixed,
-                      elevation: 0,
-                      showSelectedLabels: false,
-                      showUnselectedLabels: false,
-                      currentIndex: controller.currentPageIndex.value,
-                      items: <BottomNavigationBarItem>[
-                        BottomNavigationBarItem(
-                          label: 'Rechercher',
-                          activeIcon: Icon(
-                            Icons.search,
-                            color: Theme.of(context).primaryColor,
+            child: Container(
+              decoration: const BoxDecoration(boxShadow: [
+                BoxShadow(
+                  color: Colors.grey,
+                  blurRadius: 5,
+                )
+              ]),
+              child: BottomAppBar(
+                color: Colors.white,
+                clipBehavior: Clip.antiAlias,
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 5,
+                      child: BottomNavigationBar(
+                        type: BottomNavigationBarType.fixed,
+                        elevation: 0,
+                        showSelectedLabels: false,
+                        showUnselectedLabels: false,
+                        currentIndex: controller.currentPageIndex.value,
+                        items: <BottomNavigationBarItem>[
+                          BottomNavigationBarItem(
+                            label: 'Rechercher',
+                            activeIcon: Icon(
+                              Icons.search,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            icon: IconButton(
+                                onPressed: () => controller.currentPageIndex.value = searchIndex,
+                                icon: const Icon(
+                                  Icons.search,
+                                  color: Colors.grey,
+                                )),
                           ),
-                          icon: IconButton(
-                              onPressed: () => controller.currentPageIndex.value = searchIndex,
-                              icon: const Icon(
-                                Icons.search,
-                                color: Colors.grey,
-                              )),
-                        ),
-                        BottomNavigationBarItem(
-                          label: 'Calendrier',
-                          activeIcon: Icon(
-                            Icons.calendar_today,
-                            color: Theme.of(context).primaryColor,
+                          BottomNavigationBarItem(
+                            label: 'Calendrier',
+                            activeIcon: Icon(
+                              Icons.calendar_today,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            icon: IconButton(
+                                onPressed: () => controller.currentPageIndex.value = calendarIndex,
+                                icon: Icon(
+                                  Icons.calendar_today,
+                                  color: Colors.grey,
+                                )),
                           ),
-                          icon: IconButton(
-                              onPressed: () => controller.currentPageIndex.value = calendarIndex,
-                              icon: Icon(
-                                Icons.calendar_today,
-                                color: Colors.grey,
-                              )),
-                        ),
-                        BottomNavigationBarItem(
-                          label: 'Programmes',
-                          activeIcon: Icon(
-                            Icons.account_tree_outlined,
-                            color: Theme.of(context).primaryColor,
+                          BottomNavigationBarItem(
+                            label: 'Programmes',
+                            activeIcon: Icon(
+                              Icons.account_tree_outlined,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            icon: IconButton(
+                                onPressed: () => controller.currentPageIndex.value = myProgramsIndex,
+                                icon: Icon(
+                                  Icons.account_tree_outlined,
+                                  color: Colors.grey,
+                                )),
                           ),
-                          icon: IconButton(
-                              onPressed: () => controller.currentPageIndex.value = myProgramsIndex,
-                              icon: Icon(
-                                Icons.account_tree_outlined,
-                                color: Colors.grey,
-                              )),
-                        ),
-                        BottomNavigationBarItem(
-                          label: 'Suivi',
-                          activeIcon: Icon(
-                            Icons.bar_chart,
-                            color: Theme.of(context).primaryColor,
+                          BottomNavigationBarItem(
+                            label: 'Suivi',
+                            activeIcon: Icon(
+                              Icons.bar_chart,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            icon: IconButton(
+                                onPressed: () => controller.currentPageIndex.value = chartsIndex,
+                                icon: Icon(
+                                  Icons.bar_chart,
+                                  color: Colors.grey,
+                                )),
                           ),
-                          icon: IconButton(
-                              onPressed: () => controller.currentPageIndex.value = chartsIndex,
-                              icon: Icon(
-                                Icons.bar_chart,
-                                color: Colors.grey,
-                              )),
-                        ),
-                        BottomNavigationBarItem(
-                          label: 'Profil',
-                          icon: IconButton(
-                            icon: Obx(
-                              () {
-                                if (controller.user.value?.imageUrl != null) {
+                          BottomNavigationBarItem(
+                            label: 'Profil',
+                            icon: IconButton(
+                              icon: Obx(
+                                () {
+                                  if (controller.user.value?.imageUrl != null) {
+                                    return CircleAvatar(
+                                      radius: 30,
+                                      foregroundImage: NetworkImage(controller.user.value!.imageUrl!),
+                                    );
+                                  }
                                   return CircleAvatar(
                                     radius: 30,
-                                    foregroundImage: NetworkImage(controller.user.value!.imageUrl!),
+                                    backgroundColor: Theme.of(context).primaryColor,
                                   );
-                                }
-                                return CircleAvatar(
-                                  radius: 30,
-                                  backgroundColor: Theme.of(context).primaryColor,
-                                );
-                              },
+                                },
+                              ),
+                              onPressed: () => controller.currentPageIndex.value = profilIndex,
                             ),
-                            onPressed: () => controller.currentPageIndex.value = profilIndex,
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
