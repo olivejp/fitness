@@ -1,4 +1,3 @@
-import 'package:fitnc_user/page/workout/add_user_set.page.dart';
 import 'package:fitnc_user/page/workout/workout-instance.page.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';

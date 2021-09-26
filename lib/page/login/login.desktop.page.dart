@@ -12,6 +12,8 @@ class LoginDesktopPage extends StatelessWidget {
   final LoginPageController controller = Get.find();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
+  LoginDesktopPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Stack(
