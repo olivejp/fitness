@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitnc_user/main.dart';
+import 'package:fitnc_user/controller/dark-mode.controller.dart';
 import 'package:fitnc_user/page/exercice/exercice.page.dart';
 import 'package:fitnc_user/service/fitness-user.service.dart';
 import 'package:fitness_domain/domain/fitness-user.domain.dart';

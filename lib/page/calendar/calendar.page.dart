@@ -256,6 +256,7 @@ class WorkoutInstanceCard extends StatelessWidget {
                   ),
                 ),
                 StreamList<UserSet>(
+                  showLoading: true,
                   stream: controller.listenUserSet(instance),
                   physics: const NeverScrollableScrollPhysics(),
                   builder: (context, set) {

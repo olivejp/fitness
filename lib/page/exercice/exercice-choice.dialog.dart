@@ -83,7 +83,9 @@ class ExerciceChoiceDialog extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                TextButton(
+                TextButton.icon(
+                  label: Text('Créer un exercice'),
+                  icon: Icon(Icons.add_circle_outline_rounded),
                   onPressed: () {
                     if (popOnChoice) {
                       Navigator.of(context).pop();
@@ -98,7 +100,6 @@ class ExerciceChoiceDialog extends StatelessWidget {
                       );
                     }
                   },
-                  child: Text('Créer un exercice'),
                 ),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),

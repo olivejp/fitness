@@ -27,6 +27,7 @@ dependencies:
   get: ^4.3.8
   badges: ^2.0.1
   get_storage: ^2.0.3
+  cron: ^0.3.2
   firebase:
     path: ../fitnc_trainer/packages/firebase
   fitness_domain:
