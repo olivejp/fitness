@@ -8,10 +8,6 @@ import 'package:fitness_domain/service/abstract.service.dart';
 import 'package:fitness_domain/service/auth.service.dart';
 import 'package:get/get.dart';
 
-abstract class ChildFirestoreCollectionService<U extends AbstractFirebaseCrudService> extends AbstractFitnessStorageService<Exercice> {
-  U parentService = Get.find();
-}
-
 class ExerciceService extends AbstractFitnessStorageService<Exercice> {
   final FitnessUserService fitnessUserService = Get.find();
   final AuthService authService = Get.find();
