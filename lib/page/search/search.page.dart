@@ -1,7 +1,9 @@
 import 'package:badges/badges.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnc_user/controller/display-type.controller.dart';
 import 'package:fitnc_user/page/search/program_detail/program_detail.page.dart';
 import 'package:fitnc_user/page/search/search.controller.dart';
+import 'package:fitnc_user/service/published_programme.service.dart';
 import 'package:fitnc_user/service/trainers.service.dart';
 import 'package:fitness_domain/domain/published_programme.domain.dart';
 import 'package:fitness_domain/domain/trainers.domain.dart';
@@ -159,7 +161,7 @@ class PublishedProgrammeCard extends StatelessWidget {
           child: Stack(
             children: <Widget>[
               (publishedProgramme.imageUrl?.isNotEmpty == true)
-                  ? Ink.image(image: NetworkImage(publishedProgramme.imageUrl!), fit: BoxFit.cover)
+                  ? Ink.image(image: CachedNetworkImageProvider(publishedProgramme.imageUrl!), fit: BoxFit.cover)
                   : Container(decoration: const BoxDecoration(color: Colors.amber)),
               Column(
                 children: [
@@ -216,7 +218,7 @@ class PublishedProgrammeCard extends StatelessWidget {
                                           ? CircleAvatar(
                                               maxRadius: 15,
                                               minRadius: 5,
-                                              foregroundImage: NetworkImage(publishedProgramme.creatorImageUrl!),
+                                              foregroundImage: CachedNetworkImageProvider(publishedProgramme.creatorImageUrl!),
                                             )
                                           : CircleAvatar(
                                               maxRadius: 15,
@@ -285,8 +287,8 @@ class PublishedProgrammeCard extends StatelessWidget {
 
 class ListTrainers extends StatelessWidget {
   ListTrainers({Key? key, this.height = 200, this.width = 100}) : super(key: key);
+  final PublishedProgrammeService publishedProgrammeService = Get.find();
   final double height;
-  final TrainersService trainersService = Get.find();
   final double width;
 
   @override
@@ -308,7 +310,7 @@ class ListTrainers extends StatelessWidget {
           child: Row(
             children: [
               FutureBuilder<List<Trainers>>(
-                  future: trainersService.getTrainersWithPublishedProgram(),
+                  future: publishedProgrammeService.getTrainersWithPublishedProgram(),
                   builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                     if (snapshot.hasError) {
                       return Text('Erreur : ${snapshot.error.toString()}');
@@ -346,7 +348,7 @@ class TrainerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget imageOrContainer = trainer.imageUrl != null
         ? Image(
-            image: NetworkImage(trainer.imageUrl!),
+            image: CachedNetworkImageProvider(trainer.imageUrl!),
             fit: BoxFit.fitHeight,
             width: double.infinity,
             height: double.infinity,

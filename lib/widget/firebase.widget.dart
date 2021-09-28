@@ -17,16 +17,9 @@ import 'auth.widget.dart';
 class FirebaseWidget extends StatelessWidget {
   const FirebaseWidget({Key? key}) : super(key: key);
 
-  void afterFirebaseAppInitialized() {
+  instanciateAuthService() {
     Get.put(AuthService());
-    Get.put(FirebaseService());
-    Get.put(PublishedProgrammeService());
-    Get.put(FitnessUserService());
-    Get.put(FirebaseStorageService());
     Get.put(TrainersService());
-    Get.put(ExerciceService());
-    Get.put(WorkoutInstanceService());
-    Get.put(UserSetService());
   }
 
   @override
@@ -35,7 +28,7 @@ class FirebaseWidget extends StatelessWidget {
       future: Firebase.initializeApp(),
       builder: (_, AsyncSnapshot<FirebaseApp> snapshot) {
         if (snapshot.hasData) {
-          afterFirebaseAppInitialized();
+          instanciateAuthService();
           return AuthWidget();
         }
         if (snapshot.hasError) {

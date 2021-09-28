@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnc_user/page/search/search.controller.dart';
 import 'package:fitness_domain/domain/trainers.domain.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class ProgramDetailPage extends StatelessWidget {
             children: <Widget>[
               Obx(
                 () => Image(
-                  image: NetworkImage(controller.selectedProgramme.value!.imageUrl!),
+                  image: CachedNetworkImageProvider(controller.selectedProgramme.value!.imageUrl!),
                   fit: BoxFit.fill,
                   width: double.infinity,
                 ),
@@ -68,7 +69,7 @@ class CreatorWidget extends StatelessWidget {
               children: <Widget>[
                 if (trainers.imageUrl != null)
                   CircleAvatar(
-                    foregroundImage: NetworkImage(trainers.imageUrl!),
+                    foregroundImage: CachedNetworkImageProvider(trainers.imageUrl!),
                   ),
                 if (trainers.imageUrl == null)
                   CircleAvatar(

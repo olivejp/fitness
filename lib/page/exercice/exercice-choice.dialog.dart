@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnc_user/page/workout/workout-instance.page.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
@@ -188,7 +189,7 @@ class ExerciceChoiceCard extends StatelessWidget {
           children: [
             if (exercice.imageUrl != null)
               CircleAvatar(
-                foregroundImage: NetworkImage(exercice.imageUrl!),
+                foregroundImage: CachedNetworkImageProvider(exercice.imageUrl!),
               ),
             if (exercice.imageUrl == null)
               CircleAvatar(

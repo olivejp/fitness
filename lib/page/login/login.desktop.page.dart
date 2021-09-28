@@ -49,6 +49,10 @@ class LoginDesktopPage extends StatelessWidget {
                         padding: const EdgeInsets.all(60.0),
                         child: Column(
                           children: <Widget>[
+                            Text(
+                              'Connectez-vous à votre compte',
+                              style: GoogleFonts.robotoTextTheme().headline6!.copyWith(fontSize: 28, fontWeight: FontWeight.bold),
+                            ),
                             LoginForm(formKey: formKey),
                             Padding(
                               padding: const EdgeInsets.only(top: 30),

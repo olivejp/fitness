@@ -43,6 +43,10 @@ class FitnessUserService extends AbstractFitnessStorageService<FitnessUser> {
         event.docs.map((QueryDocumentSnapshot<Map<String, dynamic>> doc) => FitnessUser.fromJson(doc.data())).toList());
   }
 
+  Future<FitnessUser?> getConnectedUser() {
+    return read(FirebaseAuth.instance.currentUser!.uid);
+  }
+
   Stream<FitnessUser?> listenFitnessUser() {
     return authService.listenUserConnected().asyncMap((event) => read(event!.uid));
   }

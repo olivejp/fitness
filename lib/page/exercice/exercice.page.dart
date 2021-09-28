@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnc_user/page/exercice/add_exercice.page.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
@@ -162,7 +163,7 @@ class ExerciceImage extends StatelessWidget {
             borderRadius: BorderRadius.circular(5),
           ),
           child: Ink.image(
-            image: NetworkImage(exerciceImageUrl!),
+            image: CachedNetworkImageProvider(exerciceImageUrl!),
             fit: BoxFit.cover,
           ),
         ),

@@ -9,13 +9,6 @@ import 'package:get/get.dart';
 class TrainersService extends AbstractFitnessStorageService<Trainers> {
   final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
   final FirebaseAuth authInstance = FirebaseAuth.instance;
-  final PublishedProgrammeService publishedProgrammeService = Get.find();
-
-  Future<List<Trainers>> getTrainersWithPublishedProgram() async {
-    List<PublishedProgramme> allPublishedPrograms = await publishedProgrammeService.getAll();
-    List<String?> listTrainersUid = allPublishedPrograms.map((e) => e.creatorUid).toList();
-    return where('uid', whereIn: listTrainersUid);
-  }
 
   @override
   Trainers fromJson(Map<String, dynamic> map) {
@@ -36,10 +29,5 @@ class TrainersService extends AbstractFitnessStorageService<Trainers> {
   Stream<List<Trainers>> listenAll() {
     return getCollectionReference().snapshots().map((QuerySnapshot querySnapshot) =>
         querySnapshot.docs.map((QueryDocumentSnapshot docSnapshot) => Trainers.fromJson(docSnapshot.data() as Map<String, dynamic>)).toList());
-  }
-
-  @override
-  Trainers mapSnapshotToModel(DocumentSnapshot<Map<String, dynamic>> snapshot) {
-    return Trainers.fromJson(snapshot.data()!);
   }
 }

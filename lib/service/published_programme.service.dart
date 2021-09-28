@@ -2,11 +2,15 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnc_user/service/trainers.service.dart';
 import 'package:fitness_domain/domain/published_programme.domain.dart';
+import 'package:fitness_domain/domain/trainers.domain.dart';
 import 'package:fitness_domain/service/abstract.service.dart';
+import 'package:get/get.dart';
 
 class PublishedProgrammeService extends AbstractFitnessStorageService<PublishedProgramme> {
   final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
+  final TrainersService trainersService = Get.find();
   final String publishedProgrammeCollectionName = 'publishedProgrammes';
 
   @override
@@ -32,4 +36,11 @@ class PublishedProgrammeService extends AbstractFitnessStorageService<PublishedP
   String getStorageRef(User user, PublishedProgramme programme) {
     return '$publishedProgrammeCollectionName/${programme.uid}';
   }
+
+  Future<List<Trainers>> getTrainersWithPublishedProgram() async {
+    List<PublishedProgramme> allPublishedPrograms = await getAll();
+    List<String?> listTrainersUid = allPublishedPrograms.map((e) => e.creatorUid).toList();
+    return trainersService.where('uid', whereIn: listTrainersUid);
+  }
+
 }

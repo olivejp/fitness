@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnc_user/page/calendar/calendar.page.dart';
 import 'package:fitnc_user/page/my_programs/my_program.page.dart';
 import 'package:fitnc_user/page/profil/profil.page.dart';
@@ -108,7 +109,7 @@ class HomePage extends StatelessWidget {
                                   if (controller.user.value?.imageUrl != null) {
                                     return CircleAvatar(
                                       radius: 30,
-                                      foregroundImage: NetworkImage(controller.user.value!.imageUrl!),
+                                      foregroundImage: CachedNetworkImageProvider(controller.user.value!.imageUrl!),
                                     );
                                   }
                                   return CircleAvatar(

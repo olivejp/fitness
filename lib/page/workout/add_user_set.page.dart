@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitness_domain/domain/user.line.domain.dart';
@@ -121,7 +122,7 @@ class UserSetUpdate extends StatelessWidget {
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: Image(
-                          image: NetworkImage(controller.userSet.value.imageUrlExercice!),
+                          image: CachedNetworkImageProvider(controller.userSet.value.imageUrlExercice!),
                           fit: BoxFit.cover,
                         ),
                       ),

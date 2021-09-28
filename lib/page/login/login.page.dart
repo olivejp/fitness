@@ -49,10 +49,6 @@ class LoginForm extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          Text(
-            'Connectez-vous à votre compte',
-            style: GoogleFonts.robotoTextTheme().headline6!.copyWith(fontSize: 28, fontWeight: FontWeight.bold),
-          ),
           Padding(
             padding: const EdgeInsets.only(top: 30),
             child: Obx(
