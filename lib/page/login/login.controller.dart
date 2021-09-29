@@ -11,6 +11,9 @@ class LoginPageController extends GetxController {
   final RxBool _hidePassword = true.obs;
   final AuthService authService = Get.find();
 
+  String? resetPasswordCode;
+  String? newPassword;
+
   bool get hidePassword => _hidePassword.value;
 
   void authenticate(GlobalKey<FormState> formKey) {
@@ -54,5 +57,16 @@ class LoginPageController extends GetxController {
 
   set loginMsgError(String error) {
     _loginMsgError.value = error;
+  }
+
+  Future<void> sendPasswordResetEmail() {
+    return FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+  }
+
+  Future<void> confirmPasswordReset() async {
+    if (resetPasswordCode != null && newPassword != null) {
+      return await FirebaseAuth.instance.confirmPasswordReset(code: resetPasswordCode!, newPassword: newPassword!);
+    }
+    return;
   }
 }

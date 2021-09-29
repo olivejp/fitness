@@ -2,6 +2,7 @@ import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitness_domain/controller/abstract.controller.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/storage-file.dart';
+import 'package:fitness_domain/service/param.service.dart';
 import 'package:fitness_domain/widget/storage_image.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -35,6 +36,7 @@ class AddExercicePageController extends LocalSearchControllerMixin<Exercice, Exe
 class AddExercicePage extends StatelessWidget {
   AddExercicePage({Key? key, this.exercice}) : super(key: key);
   final AddExercicePageController controller = Get.put(AddExercicePageController());
+  final ParamService paramService = ParamService.getInstance();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final Exercice? exercice;
 
@@ -44,34 +46,7 @@ class AddExercicePage extends StatelessWidget {
 
     return SafeArea(
       child: Scaffold(
-        bottomNavigationBar: BottomAppBar(
-          elevation: 5,
-          color: Colors.white,
-          child: SizedBox(
-            height: 60,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8, right: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton.icon(
-                    icon: Icon(Icons.save),
-                    label: Text('Enregistrer'),
-                    onPressed: () {
-                      if (formKey.currentState?.validate() == true) {
-                        controller.save().then((_) => Navigator.of(context).pop());
-                      }
-                    },
-                  ),
-                  TextButton(
-                    child: Text('Retour'),
-                    onPressed: () => Navigator.of(context).pop(),
-                  )
-                ],
-              ),
-            ),
-          ),
-        ),
+        bottomNavigationBar: AddExerciceBottomAppBar(formKey: formKey, controller: controller),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Form(
@@ -138,15 +113,26 @@ class AddExercicePage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  // ParamDropdownButton(
-                  //   decoration: const InputDecoration(
-                  //       labelText: "Type d'exercice",
-                  //       constraints: BoxConstraints(maxHeight: FitnessConstants.textFormFieldHeight),
-                  //       contentPadding: EdgeInsets.symmetric(horizontal: 10)),
-                  //   paramName: 'type_exercice',
-                  //   initialValue: controller.exercice.value.typeExercice,
-                  //   onChanged: (String? onChangedValue) => controller.exercice.value.typeExercice = onChangedValue,
-                  // ),
+                  FutureBuilder<List<DropdownMenuItem<String?>>>(
+                    initialData: const [],
+                    future: paramService.getFutureParamAsDropdown('type_exercice', onlyName: true),
+                    builder: (_, snapshot) {
+                      return DropdownButtonFormField<String?>(
+                        key: key,
+                        onChanged: (String? onChangedValue) => controller.exercice.value.typeExercice = onChangedValue,
+                        value: controller.exercice.value.typeExercice,
+                        items: snapshot.data,
+                        itemHeight: 50,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: "Type d\'exercice",
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Theme.of(context).primaryColor),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(top: 20),
                     child: Obx(
@@ -184,6 +170,49 @@ class AddExercicePage extends StatelessWidget {
                 ],
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AddExerciceBottomAppBar extends StatelessWidget {
+  const AddExerciceBottomAppBar({
+    Key? key,
+    required this.formKey,
+    required this.controller,
+  }) : super(key: key);
+
+  final GlobalKey<FormState> formKey;
+  final AddExercicePageController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return BottomAppBar(
+      elevation: 5,
+      color: Colors.white,
+      child: SizedBox(
+        height: 60,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 8, right: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton.icon(
+                icon: Icon(Icons.save),
+                label: Text('Enregistrer'),
+                onPressed: () {
+                  if (formKey.currentState?.validate() == true) {
+                    controller.save().then((_) => Navigator.of(context).pop());
+                  }
+                },
+              ),
+              TextButton(
+                child: Text('Retour'),
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            ],
           ),
         ),
       ),

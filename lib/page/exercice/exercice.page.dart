@@ -36,38 +36,52 @@ class ExercicePage extends StatelessWidget {
               bottom: 0,
               left: 0,
               right: 0,
-              child: BottomAppBar(
-                color: Theme.of(context).bottomAppBarTheme.color,
-                elevation: 10,
-                child: SizedBox(
-                  height: bottomAppBarHeigth,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 8, right: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextButton.icon(
-                          label: Text('Créer un exercice'),
-                          icon: Icon(Icons.add_circle_outline_rounded),
-                          onPressed: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => AddExercicePage(
-                                exercice: Exercice(),
-                              ),
-                            ),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: Text('Retour'),
-                        ),
-                      ],
+              child: ExerciceBottomAppBar(bottomAppBarHeigth: bottomAppBarHeigth),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ExerciceBottomAppBar extends StatelessWidget {
+  const ExerciceBottomAppBar({
+    Key? key,
+    required this.bottomAppBarHeigth,
+  }) : super(key: key);
+
+  final double bottomAppBarHeigth;
+
+  @override
+  Widget build(BuildContext context) {
+    return BottomAppBar(
+      color: Theme.of(context).bottomAppBarTheme.color,
+      elevation: 10,
+      child: SizedBox(
+        height: bottomAppBarHeigth,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 8, right: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton.icon(
+                label: Text('Créer un exercice'),
+                icon: Icon(Icons.add_circle_outline_rounded),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => AddExercicePage(
+                      exercice: Exercice(),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('Retour'),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -83,6 +97,10 @@ class ExerciceCard extends StatelessWidget {
 
   final Exercice exercice;
   final GestureTapCallback? onTap;
+  final double cardHeight = 80;
+  final double imageDimension = 60;
+  final double imagePadding = 10;
+  final double iconSize = 20;
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +110,7 @@ class ExerciceCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: SizedBox(
-          height: 80,
+          height: cardHeight,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -100,14 +118,14 @@ class ExerciceCard extends StatelessWidget {
               Row(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 10, right: 10),
-                    child: ExerciceImage(exerciceImageUrl: exercice.imageUrl, dimension: 60),
+                    padding: EdgeInsets.only(left: imagePadding, right: imagePadding),
+                    child: ExerciceImage(exerciceImageUrl: exercice.imageUrl, dimension: imageDimension),
                   ),
                   Text(exercice.name),
                 ],
               ),
               PopupMenuButton<dynamic>(
-                iconSize: 24,
+                iconSize: iconSize,
                 tooltip: 'Voir plus',
                 icon: const Icon(Icons.more_vert, color: Colors.grey),
                 itemBuilder: (_) => <PopupMenuEntry<dynamic>>[

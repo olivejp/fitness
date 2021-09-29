@@ -11,8 +11,8 @@ class FitnessDatePicker extends StatelessWidget {
     this.selectedDayTextStyle,
     this.unselectedDayTextStyle,
     this.builder,
-    this.heigthMonth,
-    this.widthMonth,
+    this.heigthMonth = 50,
+    this.widthMonth = 100,
     this.trailing,
     this.leading,
   }) : super(key: key);
@@ -21,8 +21,8 @@ class FitnessDatePicker extends StatelessWidget {
   final Color? selectedDayColor;
   final TextStyle? selectedDayTextStyle;
   final TextStyle? unselectedDayTextStyle;
-  final double? heigthMonth;
-  final double? widthMonth;
+  final double heigthMonth;
+  final double widthMonth;
   final ValueChanged<DateTime>? onDateChange;
   final ValueChanged<int?>? onMonthChange;
   final DateTime initialDate;
@@ -53,28 +53,27 @@ class FitnessDatePicker extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Row(
+        Stack(
+          alignment: Alignment.center,
           children: [
-            Flexible(child: leading != null ? leading! : Container()),
-            Expanded(
-              child: MonthDropDown(
-                year: initialYear,
-                month: initialMonth,
-                height: heigthMonth,
-                width: widthMonth,
-                onChanged: (value) {
-                  if (value == null) return;
-                  month = value + 1;
-                  vnMonthSelected.value = month;
-                  scrollController.animateTo(0, duration: const Duration(seconds: 1), curve: Curves.easeInSine);
-                  if (onMonthChange != null) {
-                    onMonthChange!(month);
-                  }
-                  emitNewDate(year, month, day);
-                },
-              ),
+            if (leading != null) leading!,
+            MonthDropDown(
+              year: initialYear,
+              month: initialMonth,
+              height: heigthMonth,
+              width: widthMonth,
+              onChanged: (monthValue) {
+                if (monthValue == null) return;
+                month = monthValue + 1;
+                vnMonthSelected.value = month;
+                scrollController.animateTo(0, duration: const Duration(seconds: 1), curve: Curves.easeInSine);
+                if (onMonthChange != null) {
+                  onMonthChange!(month);
+                }
+                emitNewDate(year, month, day);
+              },
             ),
-            Flexible(child: trailing != null ? trailing! : Container()),
+            if (trailing != null) trailing!,
           ],
         ),
         ValueListenableBuilder(
@@ -102,7 +101,8 @@ class FitnessDatePicker extends StatelessWidget {
 }
 
 class MonthDropDown extends StatelessWidget {
-  MonthDropDown({Key? key, required this.year, required this.month, required this.onChanged, this.height, this.width}) : super(key: key);
+  MonthDropDown({Key? key, required this.year, required this.month, required this.onChanged, this.height, this.width})
+      : super(key: key);
 
   final int year;
   final int month;
@@ -110,7 +110,20 @@ class MonthDropDown extends StatelessWidget {
   final double? width;
   final ValueChanged<int?> onChanged;
 
-  final List<String> monthList = ['JAN.', 'FÉV.', 'MAR.', 'AVR.', 'MAI', 'JUIN', 'JUIL.', 'AOUT', 'SEP.', 'OCT.', 'NOV.', 'DÉC.'];
+  final List<String> monthList = [
+    'JAN.',
+    'FÉV.',
+    'MAR.',
+    'AVR.',
+    'MAI',
+    'JUIN',
+    'JUIL.',
+    'AOUT',
+    'SEP.',
+    'OCT.',
+    'NOV.',
+    'DÉC.'
+  ];
   final GlobalKey gkKey = GlobalKey();
 
   @override
@@ -222,27 +235,63 @@ class DayTimeline extends StatelessWidget {
                 },
               );
             } else {
-              return Card(
-                color: isSelected ? (selectedColor ?? Colors.amber) : (unselectedColor ?? Colors.white),
-                child: InkWell(
-                  onTap: () {
-                    vnDaySelected.value = dateTime.day;
-                    onDaySelect(dateTime.day);
-                  },
-                  child: SizedBox(
-                    height: 50,
-                    width: 50,
-                    child: Center(
-                      child: Text(
-                        dateTime.day.toString(),
-                        style: isSelected ? selectedDayTextStyle : unselectedDayTextStyle,
-                      ),
-                    ),
-                  ),
-                ),
-              );
+              return DayCard(
+                  dateTime: dateTime,
+                  isSelected: isSelected,
+                  selectedColor: selectedColor,
+                  unselectedColor: unselectedColor,
+                  vnDaySelected: vnDaySelected,
+                  onDaySelect: onDaySelect,
+                  selectedDayTextStyle: selectedDayTextStyle,
+                  unselectedDayTextStyle: unselectedDayTextStyle);
             }
           }).toList(),
+        ),
+      ),
+    );
+  }
+}
+
+class DayCard extends StatelessWidget {
+  const DayCard({
+    Key? key,
+    required this.dateTime,
+    required this.isSelected,
+    required this.selectedColor,
+    required this.unselectedColor,
+    required this.vnDaySelected,
+    required this.onDaySelect,
+    required this.selectedDayTextStyle,
+    required this.unselectedDayTextStyle,
+  }) : super(key: key);
+
+  final DateTime dateTime;
+  final bool isSelected;
+  final Color? selectedColor;
+  final Color? unselectedColor;
+  final ValueNotifier<int> vnDaySelected;
+  final void Function(int daySelected) onDaySelect;
+  final TextStyle? selectedDayTextStyle;
+  final TextStyle? unselectedDayTextStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: isSelected ? (selectedColor ?? Colors.amber) : (unselectedColor ?? Colors.white),
+      child: InkWell(
+        onTap: () {
+          vnDaySelected.value = dateTime.day;
+          onDaySelect(dateTime.day);
+        },
+        child: SizedBox(
+          height: 50,
+          width: 50,
+          child: Center(
+            child: Text(
+              dateTime.day.toString(),
+              style: isSelected ? selectedDayTextStyle : unselectedDayTextStyle,
+            ),
+          ),
         ),
       ),
     );

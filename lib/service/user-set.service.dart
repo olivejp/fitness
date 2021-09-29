@@ -16,4 +16,5 @@ class UserSetService extends AbstractFirebaseSubcollectionCrudService<UserSet, W
   String getCollectionName() {
     return collectionName;
   }
+
 }

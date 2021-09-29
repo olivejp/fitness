@@ -11,7 +11,6 @@ import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:loading_animations/loading_animations.dart';
 
 import 'calendar.page.controller.dart';
 
@@ -40,7 +39,7 @@ class CalendarPage extends StatelessWidget {
       body: Column(
         children: <Widget>[
           Material(
-            elevation: 5,
+            elevation: 3,
             child: StreamBuilder<List<WorkoutInstance>>(
                 stream: controller.workoutInstanceService.listenAll(),
                 builder: (_, snapshot) {
@@ -53,7 +52,7 @@ class CalendarPage extends StatelessWidget {
               () => StreamList<WorkoutInstance>(
                 stream: controller.listenWorkoutInstanceByDate(controller.selectedDate),
                 builder: (BuildContext context, WorkoutInstance domain) => WorkoutInstanceCard(instance: domain),
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 emptyWidget: Column(
                   children: const [
                     Expanded(
@@ -144,12 +143,14 @@ class CalendarDayCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Theme.of(context).primaryColor,
-            width: selected ? 3 : 0,
-          ),
-        ),
+        border: (selected)
+            ? Border(
+                bottom: BorderSide(
+                  color: Theme.of(context).primaryColor,
+                  width: 4,
+                ),
+              )
+            : null,
       ),
       child: SizedBox(
         height: 30,

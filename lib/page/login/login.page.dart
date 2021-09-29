@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:oktoast/oktoast.dart';
 
 import '../../constants.dart';
 import 'login.controller.dart';
@@ -27,7 +28,8 @@ class LoginPage extends StatelessWidget {
       body: GetX<DisplayTypeController>(
         builder: (DisplayTypeController controller) {
           print('${displayTypeController.displayType.value}');
-          return (<DisplayType>[DisplayType.tablet, DisplayType.mobile].contains(displayTypeController.displayType.value))
+          return (<DisplayType>[DisplayType.tablet, DisplayType.mobile]
+                  .contains(displayTypeController.displayType.value))
               ? LoginMobilePage()
               : LoginDesktopPage();
         },
@@ -135,7 +137,27 @@ class LoginForm extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    /// TODO
+                    if (controller.email.isNotEmpty) {
+                      controller.sendPasswordResetEmail().then(
+                            (value) => showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                content: Text('Un email vous a été envoyé pour modifier votre mot de passe.\n\n'
+                                    'Rendez-vous dans votre boite de réception et activez le lien.\n\n'
+                                    'Choisissez ensuite un nouveau mot de passe.\n\n'
+                                    'Réessayez ensuite de vous connecter.'),
+                                actions: [
+                                  TextButton(
+                                    child: Text("J'ai compris"),
+                                    onPressed: () => Navigator.of(context).pop(),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                    } else {
+                      showToast('Merci de renseigner votre adresse mail.');
+                    }
                   },
                   child: const Text(
                     'Mot de passe oublié ?',

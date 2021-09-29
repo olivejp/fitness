@@ -25,125 +25,137 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      child: Scaffold(
+        bottomNavigationBar: HomeBottomAppBar(
+            controller: controller,
+            searchIndex: searchIndex,
+            calendarIndex: calendarIndex,
+            myProgramsIndex: myProgramsIndex,
+            chartsIndex: chartsIndex,
+            profilIndex: profilIndex),
+        body: Obx(() {
+          if (controller.currentPageIndex.value == searchIndex) {
+            return SearchPage();
+          } else if (controller.currentPageIndex.value == calendarIndex) {
+            return CalendarPage();
+          } else if (controller.currentPageIndex.value == myProgramsIndex) {
+            return MyProgramsPage();
+          } else if (controller.currentPageIndex.value == chartsIndex) {
+            // TODO Faire la page des charts.
+            throw Exception('Aucune page pour index ${controller.currentPageIndex.value}');
+          } else if (controller.currentPageIndex.value == profilIndex) {
+            return ProfilPage();
+          }
+          throw Exception('Aucune page pour index ${controller.currentPageIndex.value}');
+        }),
+      ),
+    );
+  }
+}
+
+class HomeBottomAppBar extends StatelessWidget {
+  const HomeBottomAppBar({
+    Key? key,
+    required this.controller,
+    required this.searchIndex,
+    required this.calendarIndex,
+    required this.myProgramsIndex,
+    required this.chartsIndex,
+    required this.profilIndex,
+  }) : super(key: key);
+
+  final HomeController controller;
+  final int searchIndex;
+  final int calendarIndex;
+  final int myProgramsIndex;
+  final int chartsIndex;
+  final int profilIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    return BottomAppBar(
+      clipBehavior: Clip.antiAlias,
       child: Obx(
-        () => Scaffold(
-          bottomNavigationBar: SizedBox(
-            height: 70,
-            child: Container(
-              decoration: BoxDecoration(boxShadow: [
-                BoxShadow(
-                  color: Theme.of(context).shadowColor.withOpacity(0.3),
-                  blurRadius: 5,
-                )
-              ]),
-              child: BottomAppBar(
-                clipBehavior: Clip.antiAlias,
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 5,
-                      child: BottomNavigationBar(
-                        type: BottomNavigationBarType.fixed,
-                        elevation: 0,
-                        showSelectedLabels: false,
-                        showUnselectedLabels: false,
-                        currentIndex: controller.currentPageIndex.value,
-                        items: <BottomNavigationBarItem>[
-                          BottomNavigationBarItem(
-                            label: 'Rechercher',
-                            activeIcon: Icon(
-                              Icons.search,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            icon: IconButton(
-                                onPressed: () => controller.currentPageIndex.value = searchIndex,
-                                icon: const Icon(
-                                  Icons.search,
-                                  color: Colors.grey,
-                                )),
-                          ),
-                          BottomNavigationBarItem(
-                            label: 'Calendrier',
-                            activeIcon: Icon(
-                              Icons.calendar_today,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            icon: IconButton(
-                                onPressed: () => controller.currentPageIndex.value = calendarIndex,
-                                icon: Icon(
-                                  Icons.calendar_today,
-                                  color: Colors.grey,
-                                )),
-                          ),
-                          BottomNavigationBarItem(
-                            label: 'Programmes',
-                            activeIcon: Icon(
-                              Icons.account_tree_outlined,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            icon: IconButton(
-                                onPressed: () => controller.currentPageIndex.value = myProgramsIndex,
-                                icon: Icon(
-                                  Icons.account_tree_outlined,
-                                  color: Colors.grey,
-                                )),
-                          ),
-                          BottomNavigationBarItem(
-                            label: 'Suivi',
-                            activeIcon: Icon(
-                              Icons.bar_chart,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            icon: IconButton(
-                                onPressed: () => controller.currentPageIndex.value = chartsIndex,
-                                icon: Icon(
-                                  Icons.bar_chart,
-                                  color: Colors.grey,
-                                )),
-                          ),
-                          BottomNavigationBarItem(
-                            label: 'Profil',
-                            icon: IconButton(
-                              icon: Obx(
-                                () {
-                                  if (controller.user.value?.imageUrl != null) {
-                                    return CircleAvatar(
-                                      radius: 30,
-                                      foregroundImage: CachedNetworkImageProvider(controller.user.value!.imageUrl!),
-                                    );
-                                  }
-                                  return CircleAvatar(
-                                    radius: 30,
-                                    backgroundColor: Theme.of(context).primaryColor,
-                                  );
-                                },
-                              ),
-                              onPressed: () => controller.currentPageIndex.value = profilIndex,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+        () => BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          elevation: 0,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          currentIndex: controller.currentPageIndex.value,
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              label: 'Rechercher',
+              activeIcon: Icon(
+                Icons.search,
+                color: Theme.of(context).primaryColor,
+              ),
+              icon: IconButton(
+                  onPressed: () => controller.currentPageIndex.value = searchIndex,
+                  icon: const Icon(
+                    Icons.search,
+                    color: Colors.grey,
+                  )),
+            ),
+            BottomNavigationBarItem(
+              label: 'Calendrier',
+              activeIcon: Icon(
+                Icons.calendar_today,
+                color: Theme.of(context).primaryColor,
+              ),
+              icon: IconButton(
+                  onPressed: () => controller.currentPageIndex.value = calendarIndex,
+                  icon: Icon(
+                    Icons.calendar_today,
+                    color: Colors.grey,
+                  )),
+            ),
+            BottomNavigationBarItem(
+              label: 'Programmes',
+              activeIcon: Icon(
+                Icons.account_tree_outlined,
+                color: Theme.of(context).primaryColor,
+              ),
+              icon: IconButton(
+                  onPressed: () => controller.currentPageIndex.value = myProgramsIndex,
+                  icon: Icon(
+                    Icons.account_tree_outlined,
+                    color: Colors.grey,
+                  )),
+            ),
+            BottomNavigationBarItem(
+              label: 'Suivi',
+              activeIcon: Icon(
+                Icons.bar_chart,
+                color: Theme.of(context).primaryColor,
+              ),
+              icon: IconButton(
+                  onPressed: () => controller.currentPageIndex.value = chartsIndex,
+                  icon: Icon(
+                    Icons.bar_chart,
+                    color: Colors.grey,
+                  )),
+            ),
+            BottomNavigationBarItem(
+              label: 'Profil',
+              icon: IconButton(
+                icon: Obx(
+                  () {
+                    if (controller.user.value?.imageUrl != null) {
+                      return CircleAvatar(
+                        radius: 30,
+                        foregroundImage: CachedNetworkImageProvider(controller.user.value!.imageUrl!),
+                      );
+                    }
+                    return CircleAvatar(
+                      radius: 30,
+                      backgroundColor: Theme.of(context).primaryColor,
+                    );
+                  },
                 ),
+                onPressed: () => controller.currentPageIndex.value = profilIndex,
               ),
             ),
-          ),
-          body: Builder(builder: (context) {
-            if (controller.currentPageIndex.value == searchIndex) {
-              return SearchPage();
-            } else if (controller.currentPageIndex.value == calendarIndex) {
-              return CalendarPage();
-            } else if (controller.currentPageIndex.value == myProgramsIndex) {
-              return MyProgramsPage();
-            } else if (controller.currentPageIndex.value == chartsIndex) {
-              // TODO Faire la page des charts.
-              throw Exception('Aucune page pour index ${controller.currentPageIndex.value}');
-            } else if (controller.currentPageIndex.value == profilIndex) {
-              return ProfilPage();
-            }
-            throw Exception('Aucune page pour index ${controller.currentPageIndex.value}');
-          }),
+          ],
         ),
       ),
     );
