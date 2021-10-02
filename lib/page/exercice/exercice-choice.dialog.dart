@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnc_user/page/workout/workout-instance.page.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
+import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:fitness_domain/controller/abstract.controller.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
@@ -15,34 +16,109 @@ import 'add_exercice.page.dart';
 
 class ExerciceChoiceDialogController extends LocalSearchControllerMixin<Exercice, ExerciceService> {
   final UserSetService userSetService = Get.find();
+  final WorkoutInstanceService workoutInstanceService = Get.find();
+  final RxList<Exercice> listChoosen = <Exercice>[].obs;
+  final WorkoutPageController workoutPageController = Get.put(WorkoutPageController());
+
+  Future<WorkoutInstance> createNewWorkoutInstance(DateTime dateTime) async {
+    DateTime now = DateTime.now();
+    WorkoutInstance instance = WorkoutInstance();
+    instance.date = DateTime(dateTime.year, dateTime.month, dateTime.day, now.hour, now.minute, now.second);
+    workoutInstanceService.create(instance);
+    return instance;
+  }
 
   Stream<List<Exercice>> listenAllExercice() {
     return service.listenAll();
   }
 
-  Future<UserSet> addUserSet(WorkoutInstance workoutInstance, Exercice exercice) {
-    final UserSet userSet = UserSet(
-      uidExercice: exercice.uid!,
-      uidWorkout: workoutInstance.uid!,
-      nameExercice: exercice.name,
-      imageUrlExercice: exercice.imageUrl,
-      typeExercice: exercice.typeExercice,
+  void validate(BuildContext context, bool popOnChoice, WorkoutInstance workoutInstance) {
+    _addUserSet(workoutInstance).then(
+      (userSet) {
+        if (popOnChoice) {
+          // TODO Sur le clik on doit rafraichir le UserSet.
+          workoutPageController.refreshWorkoutPage();
+          Navigator.of(context).pop();
+        } else {
+          Navigator.of(context).pop();
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => WorkoutPage(
+                instance: workoutInstance,
+                goToLastPage: true,
+              ),
+            ),
+          );
+        }
+      },
     );
-    return userSetService.save(userSet).then((_) => userSet);
+  }
+
+  Future<void> _addUserSet(WorkoutInstance workoutInstance) async {
+    for (Exercice exercice in listChoosen) {
+      final UserSet userSet = UserSet(
+        uidExercice: exercice.uid!,
+        uidWorkout: workoutInstance.uid!,
+        nameExercice: exercice.name,
+        imageUrlExercice: exercice.imageUrl,
+        typeExercice: exercice.typeExercice,
+      );
+      userSetService.save(userSet);
+    }
+  }
+
+  void toggle(Exercice exercice) {
+    if (listChoosen.map((element) => element.uid).toList().contains(exercice.uid)) {
+      listChoosen.removeWhere((element) => element.uid == exercice.uid);
+    } else {
+      listChoosen.add(exercice);
+    }
+  }
+
+  void initListSelected() {
+    listChoosen.clear();
   }
 }
 
 class ExerciceChoiceDialog extends StatelessWidget {
-  ExerciceChoiceDialog({Key? key, required this.workoutInstance, this.popOnChoice = false}) : super(key: key);
+  ExerciceChoiceDialog({
+    Key? key,
+    this.workoutInstance,
+    this.popOnChoice = false,
+    this.isCreation = false,
+    this.date,
+  })  : assert(((isCreation && workoutInstance == null) || (!isCreation && workoutInstance != null)),
+            "If isCreation then workoutInstance should be null."),
+        assert((isCreation && date != null) || ((!isCreation && date == null)),
+            "If isCreation, date should not be null."),
+        super(key: key);
   final ExerciceChoiceDialogController controller = Get.put(ExerciceChoiceDialogController());
   final WorkoutPageController workoutPageController = Get.put(WorkoutPageController());
-  final WorkoutInstance workoutInstance;
+  final WorkoutInstance? workoutInstance;
   final bool popOnChoice;
+  final bool isCreation;
+  final DateTime? date;
 
   @override
   Widget build(BuildContext context) {
+    controller.initListSelected();
     controller.refreshSearchController();
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          if (isCreation) {
+            controller
+                .createNewWorkoutInstance(date!)
+                .then((instance) => controller.validate(context, popOnChoice, instance));
+          } else {
+            controller.validate(context, popOnChoice, workoutInstance!);
+          }
+        },
+        child: const Icon(
+          Icons.check,
+          color: Colors.white,
+        ),
+      ),
       appBar: AppBar(
         elevation: 0,
         title: Text(
@@ -55,20 +131,18 @@ class ExerciceChoiceDialog extends StatelessWidget {
           preferredSize: Size(double.infinity, 50),
           child: Padding(
             padding: const EdgeInsets.only(left: 12, right: 12),
-            child: Obx(
-              () => TextFormField(
-                controller: TextEditingController(text: controller.query.value),
-                onChanged: (String value) => controller.query.value = value,
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.all(5),
-                  border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(25))),
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: IconButton(
-                    onPressed: () => controller.query(''),
-                    icon: const Icon(Icons.clear),
-                  ),
-                  hintText: 'Recherche...',
+            child: TextFormField(
+              controller: TextEditingController(text: controller.query.value),
+              onChanged: (String value) => controller.query.value = value,
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.all(5),
+                border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(25))),
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: IconButton(
+                  onPressed: () => controller.query(''),
+                  icon: const Icon(Icons.clear),
                 ),
+                hintText: 'Recherche...',
               ),
             ),
           ),
@@ -131,28 +205,14 @@ class ExerciceChoiceDialog extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final Exercice exercice = listExercice.elementAt(index);
                         return InkWell(
-                          onTap: () {
-                            controller.addUserSet(workoutInstance, exercice).then(
-                              (userSet) {
-                                if (popOnChoice) {
-                                  // TODO Sur le clik on doit rafraichir le UserSet.
-                                  workoutPageController.refreshWorkoutPage();
-                                  Navigator.of(context).pop();
-                                } else {
-                                  Navigator.of(context).pop();
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => WorkoutPage(
-                                        instance: workoutInstance,
-                                        goToLastPage: true,
-                                      ),
-                                    ),
-                                  );
-                                }
-                              },
-                            );
-                          },
-                          child: ExerciceChoiceCard(exercice: exercice),
+                          onTap: () => controller.toggle(exercice),
+                          child: Obx(
+                            () => ExerciceChoiceCard(
+                              exercice: exercice,
+                              selected:
+                                  controller.listChoosen.map((element) => element.uid).toList().contains(exercice.uid),
+                            ),
+                          ),
                         );
                       },
                       separatorBuilder: (BuildContext context, int index) => const Divider(
@@ -175,8 +235,13 @@ class ExerciceChoiceDialog extends StatelessWidget {
 }
 
 class ExerciceChoiceCard extends StatelessWidget {
-  const ExerciceChoiceCard({Key? key, required this.exercice}) : super(key: key);
+  const ExerciceChoiceCard({
+    Key? key,
+    required this.exercice,
+    required this.selected,
+  }) : super(key: key);
   final Exercice exercice;
+  final bool selected;
 
   @override
   Widget build(BuildContext context) {
@@ -203,18 +268,9 @@ class ExerciceChoiceCard extends StatelessWidget {
                 textAlign: TextAlign.start,
               ),
             )),
-            IconButton(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => AddExercicePage(
-                    exercice: exercice,
-                  ),
-                ),
-              ),
-              icon: const Icon(
-                Icons.edit,
-                color: Colors.grey,
-              ),
+            Icon(
+              selected ? Icons.check_circle : Icons.circle_outlined,
+              color: selected ? Colors.green : Colors.grey,
             )
           ],
         ),

@@ -1,4 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+
+class DateChangePicker extends StatelessWidget {
+  const DateChangePicker({Key? key, required this.initialDate, required this.onDateChanged}) : super(key: key);
+  final DateTime? initialDate;
+  final void Function(DateTime dateTime) onDateChanged;
+
+
+  @override
+  Widget build(BuildContext context) {
+    DateTime dateSelected = initialDate ?? DateTime.now();
+    DateTime timeSelected = initialDate ?? DateTime.now();
+    return Column(
+      children: [
+        SfDateRangePicker(
+          selectionMode: DateRangePickerSelectionMode.single,
+          initialDisplayDate: initialDate,
+          initialSelectedDate: initialDate,
+          onSelectionChanged: (dateRangePickerSelectionChangedArgs) {
+            DateTime dateItemSelected = dateRangePickerSelectionChangedArgs.value;
+            dateSelected = DateTime(dateItemSelected.year, dateItemSelected.month, dateItemSelected.day, timeSelected.hour, timeSelected.minute, timeSelected.second);
+            onDateChanged(dateSelected);
+          },
+        ),
+        TimePickerSpinner(
+          time: initialDate,
+          onTimeChange: (dateTime) {
+            timeSelected = DateTime(dateSelected.year, dateSelected.month, dateSelected.day, dateTime.hour, dateTime.minute, dateTime.second);
+            onDateChanged(timeSelected);
+          },
+        ),
+      ],
+    );
+  }
+}
 
 class FitnessDatePicker extends StatelessWidget {
   const FitnessDatePicker({

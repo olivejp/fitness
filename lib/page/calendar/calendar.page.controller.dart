@@ -18,7 +18,6 @@ class CalendarController extends GetxController {
     update();
   }
 
-
   DateTime get initialDate => _initialDate.value;
 
   set initialDate(DateTime dateTime) {
@@ -30,11 +29,12 @@ class CalendarController extends GetxController {
     return userSetService.orderByListen(workoutInstance.uid!, 'createDate', false);
   }
 
-  Future<void> createNewWorkoutInstance(DateTime dateTime) {
+  Future<WorkoutInstance> createNewWorkoutInstance(DateTime dateTime) async {
     DateTime now = DateTime.now();
     WorkoutInstance instance = WorkoutInstance();
     instance.date = DateTime(dateTime.year, dateTime.month, dateTime.day, now.hour, now.minute, now.second);
-    return workoutInstanceService.create(instance);
+    workoutInstanceService.create(instance);
+    return instance;
   }
 
   Stream<List<WorkoutInstance>> listenWorkoutInstanceByDate(DateTime dateTime) {
@@ -51,5 +51,10 @@ class CalendarController extends GetxController {
 
   Future<void> deleteUserSet(UserSet set) {
     return userSetService.delete(set);
+  }
+
+  Future<void> updateDate(WorkoutInstance instance, DateTime dateSelected) {
+    instance.date = dateSelected;
+    return workoutInstanceService.update(instance);
   }
 }

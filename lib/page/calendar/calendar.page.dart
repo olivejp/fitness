@@ -8,9 +8,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:oktoast/oktoast.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import 'calendar.page.controller.dart';
 
@@ -30,16 +33,22 @@ class CalendarPage extends StatelessWidget {
         ),
         onPressed: () {
           controller.initialDate = controller.selectedDate;
-          controller.createNewWorkoutInstance(controller.selectedDate).then((_) {
-            print('Création réussie');
-          });
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ExerciceChoiceDialog(
+                isCreation: true,
+                date: controller.selectedDate,
+                workoutInstance: null,
+              ),
+            ),
+          );
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: Column(
         children: <Widget>[
           Material(
-            elevation: 3,
+            elevation: 5,
             child: StreamBuilder<List<WorkoutInstance>>(
                 stream: controller.workoutInstanceService.listenAll(),
                 builder: (_, snapshot) {
@@ -52,7 +61,10 @@ class CalendarPage extends StatelessWidget {
               () => StreamList<WorkoutInstance>(
                 stream: controller.listenWorkoutInstanceByDate(controller.selectedDate),
                 builder: (BuildContext context, WorkoutInstance domain) => WorkoutInstanceCard(instance: domain),
-                padding: const EdgeInsets.all(10),
+                separatorBuilder: (_, index) => const Divider(
+                  height: 20,
+                  thickness: 20,
+                ),
                 emptyWidget: Column(
                   children: const [
                     Expanded(
@@ -201,18 +213,16 @@ class WorkoutInstanceCard extends StatelessWidget {
       dateStr = DateFormat('dd/MM/yyyy - kk:mm').format(instance.date!);
     }
 
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-      elevation: 5,
-      child: InkWell(
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => WorkoutPage(
-              instance: instance,
-            ),
+    return InkWell(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => WorkoutPage(
+            instance: instance,
           ),
         ),
+      ),
+      child: Material(
+        elevation: 1,
         child: Stack(
           children: <Widget>[
             Column(
@@ -228,17 +238,71 @@ class WorkoutInstanceCard extends StatelessWidget {
                     children: <Widget>[
                       Text(
                         dateStr,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
                       ),
-                      PopupMenuButton<dynamic>(
+                      PopupMenuButton<int>(
                         iconSize: 24,
                         tooltip: 'Voir plus',
                         icon: const Icon(Icons.more_horiz, color: Colors.grey),
-                        itemBuilder: (_) => <PopupMenuItem<dynamic>>[
-                          PopupMenuItem<dynamic>(
+                        onSelected: (value) {
+                          switch (value) {
+                            case 1:
+                              controller.initialDate = controller.selectedDate;
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  DateTime dateSelected = instance.date!;
+                                  return AlertDialog(
+                                    content: SizedBox(
+                                      height: 500,
+                                      width: 1200,
+                                      child: DateChangePicker(
+                                        initialDate: instance.date,
+                                        onDateChanged: (dateTime) => dateSelected = dateTime,
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton.icon(
+                                        onPressed: () {
+                                          controller.updateDate(instance, dateSelected);
+                                          Navigator.of(context).pop();
+                                        },
+                                        icon: Icon(Icons.check),
+                                        label: Text('Valider'),
+                                      ),
+                                      TextButton.icon(
+                                        onPressed: () => Navigator.of(context).pop(),
+                                        icon: Icon(Icons.clear),
+                                        label: Text('Annuler'),
+                                      )
+                                    ],
+                                  );
+                                },
+                              );
+                              break;
+                            case 2:
+                              controller.deleteWorkout(instance);
+                              break;
+                          }
+                        },
+                        itemBuilder: (BuildContext buildContext) => <PopupMenuItem<int>>[
+                          PopupMenuItem<int>(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: const <Widget>[
+                                Text('Modifier la date'),
+                                Icon(
+                                  Icons.calendar_today_outlined,
+                                  color: Colors.grey,
+                                ),
+                              ],
+                            ),
+                            value: 1,
+                          ),
+                          PopupMenuItem<int>(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: const <Widget>[
@@ -249,7 +313,7 @@ class WorkoutInstanceCard extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            onTap: () => controller.deleteWorkout(instance),
+                            value: 2,
                           ),
                         ],
                       ),

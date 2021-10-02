@@ -218,34 +218,48 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.15.0"
-  connectivity:
+  connectivity_plus:
     dependency: "direct main"
     description:
-      name: connectivity
+      name: connectivity_plus
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.6"
-  connectivity_for_web:
+    version: "1.2.0"
+  connectivity_plus_linux:
     dependency: transitive
     description:
-      name: connectivity_for_web
+      name: connectivity_plus_linux
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.0+1"
-  connectivity_macos:
+    version: "1.1.0"
+  connectivity_plus_macos:
     dependency: transitive
     description:
-      name: connectivity_macos
+      name: connectivity_plus_macos
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.1+2"
-  connectivity_platform_interface:
+    version: "1.1.0"
+  connectivity_plus_platform_interface:
     dependency: transitive
     description:
-      name: connectivity_platform_interface
+      name: connectivity_plus_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.1"
+    version: "1.1.0"
+  connectivity_plus_web:
+    dependency: transitive
+    description:
+      name: connectivity_plus_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0+1"
+  connectivity_plus_windows:
+    dependency: transitive
+    description:
+      name: connectivity_plus_windows
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0"
   convert:
     dependency: transitive
     description:
@@ -295,6 +309,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.3"
+  dbus:
+    dependency: transitive
+    description:
+      name: dbus
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.6"
   fab_circular_menu:
     dependency: "direct main"
     description:
@@ -473,6 +494,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_time_picker_spinner:
+    dependency: "direct main"
+    description:
+      name: flutter_time_picker_spinner
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -625,6 +653,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  nm:
+    dependency: transitive
+    description:
+      name: nm
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0"
   octo_image:
     dependency: transitive
     description:
@@ -695,6 +730,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.11.1"
+  petitparser:
+    dependency: transitive
+    description:
+      name: petitparser
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.3.0"
   platform:
     dependency: transitive
     description:
@@ -826,6 +868,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
+  syncfusion_flutter_core:
+    dependency: transitive
+    description:
+      name: syncfusion_flutter_core
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "19.3.43+1"
+  syncfusion_flutter_datepicker:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_datepicker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "19.3.43"
   synchronized:
     dependency: transitive
     description:
@@ -973,6 +1029,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.0"
+  xml:
+    dependency: transitive
+    description:
+      name: xml
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.3.0"
   yaml:
     dependency: transitive
     description:

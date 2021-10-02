@@ -112,13 +112,22 @@ class LoginForm extends StatelessWidget {
                     decoration: InputDecoration(
                       labelText: 'Mot de passe',
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(width: 0.5, color: Theme.of(context).primaryColor),
+                        borderSide: BorderSide(
+                          width: 0.5,
+                          color: Theme.of(context).primaryColor,
+                        ),
                       ),
                       border: OutlineInputBorder(
-                        borderSide: BorderSide(width: 0.5, color: Theme.of(context).primaryColor),
+                        borderSide: BorderSide(
+                          width: 0.5,
+                          color: Theme.of(context).primaryColor,
+                        ),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(width: 0.5, color: Theme.of(context).primaryColor),
+                        borderSide: BorderSide(
+                          width: 0.5,
+                          color: Theme.of(context).primaryColor,
+                        ),
                       ),
                       hintStyle: GoogleFonts.roboto(fontSize: 15),
                       suffixIcon: IconButton(
@@ -142,6 +151,7 @@ class LoginForm extends StatelessWidget {
                             (value) => showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
+                                title: Text('Perte de mot de passe'),
                                 content: Text('Un email vous a été envoyé pour modifier votre mot de passe.\n\n'
                                     'Rendez-vous dans votre boite de réception et activez le lien.\n\n'
                                     'Choisissez ensuite un nouveau mot de passe.\n\n'
