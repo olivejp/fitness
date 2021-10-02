@@ -17,4 +17,20 @@ class UserSetService extends AbstractFirebaseSubcollectionCrudService<UserSet, W
     return collectionName;
   }
 
+  Stream<bool> areAllChecked(String uidWorkout) {
+    return listenAll(uidWorkout).map((listUserSet) {
+      bool checked = true;
+      for(var userSet in listUserSet) {
+        if (userSet.lines.isEmpty){
+          checked = false;
+          break;
+        }
+        if (userSet.lines.any((element) => !element.checked)) {
+          checked = false;
+          break;
+        }
+      }
+      return checked;
+    });
+  }
 }

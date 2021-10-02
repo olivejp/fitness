@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fitnc_user/page/exercice/add_exercice.page.dart';
 import 'package:fitnc_user/page/exercice/exercice-choice.dialog.dart';
 import 'package:fitnc_user/page/workout/add_user_set.page.dart';
@@ -12,18 +14,39 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animations/loading_animations.dart';
 
+class Stepper {
+  Stepper({this.checked = false, required this.userSetUid, this.allExerciceDone = false});
+
+  bool checked;
+  String? userSetUid;
+  bool allExerciceDone;
+}
+
 class WorkoutPageController extends GetxController {
   final WorkoutInstanceService service = Get.find();
   final UserSetService userSetService = Get.find();
   RxInt initialPage = 0.obs;
   Rx<WorkoutInstance?> workoutInstance = WorkoutInstance().obs;
-  RxList<bool> stepperList = <bool>[].obs;
+  RxList<Stepper> stepperList = <Stepper>[].obs;
   bool goToLastPage = false;
   RxBool onRefresh = false.obs;
+  StreamSubscription? userSetSubscription;
 
   void init(WorkoutInstance workoutInstance, {bool goToLastPage = false}) {
     this.workoutInstance.value = workoutInstance;
     this.goToLastPage = goToLastPage;
+    if (userSetSubscription != null) {
+      userSetSubscription!.cancel();
+    }
+
+    // On écoute tous les userSet de ce workoutInstance.
+    userSetSubscription = userSetService.listenAll(workoutInstance.uid!).listen((listUserSet) {
+      for (var userSet in listUserSet) {
+        int index = stepperList.indexWhere((stepper) => stepper.userSetUid == userSet.uid);
+        stepperList[index].allExerciceDone = userSet.lines.isNotEmpty && userSet.lines.every((uset) => uset.checked);
+      }
+      stepperList.refresh();
+    });
   }
 
   void refreshWorkoutPage() {
@@ -35,7 +58,10 @@ class WorkoutPageController extends GetxController {
   Future<List<UserSet>> getAllUserSet() {
     return userSetService.orderByGet(workoutInstance.value!.uid!, 'createDate', false).then((listUserSet) {
       stepperList.clear();
-      listUserSet.forEach((element) => stepperList.add(false));
+      listUserSet.forEach((element) => stepperList.add(Stepper(
+          userSetUid: element.uid,
+          checked: false,
+          allExerciceDone: element.lines.isNotEmpty && element.lines.every((line) => line.checked))));
       if (goToLastPage) {
         changeStepper(stepperList.length - 1);
         initialPage.value = listUserSet.length - 1;
@@ -49,8 +75,9 @@ class WorkoutPageController extends GetxController {
 
   void changeStepper(int index) {
     for (int i = 0; i < stepperList.length; i++) {
-      stepperList[i] = (i == index);
+      stepperList[i].checked = (i == index);
     }
+    stepperList.refresh();
   }
 }
 
@@ -92,14 +119,13 @@ class WorkoutPage extends StatelessWidget {
                   tooltip: 'Voir plus',
                   icon: const Icon(Icons.more_vert, color: Colors.grey),
                   itemBuilder: (_) => <PopupMenuItem<dynamic>>[
-                    // TODO voir pour mettre des options.
                     PopupMenuItem<dynamic>(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const <Widget>[
-                          Text('Options'),
+                        children: <Widget>[
+                          Text('Opitions'),
                           Icon(
-                            Icons.shop_two,
+                            Icons.more_vert,
                             color: Colors.grey,
                           ),
                         ],
@@ -124,17 +150,19 @@ class WorkoutPage extends StatelessWidget {
             body: Column(
               children: <Widget>[
                 Obx(
-                  () => Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: controller.stepperList
-                        .map(
-                          (bool e) => Icon(
-                            e ? Icons.circle : Icons.circle_outlined,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        )
-                        .toList(),
-                  ),
+                  () {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: controller.stepperList.map(
+                        (Stepper e) {
+                          return Icon(
+                            e.checked ? Icons.circle : Icons.circle_outlined,
+                            color: e.allExerciceDone ? Colors.green : Theme.of(context).primaryColor,
+                          );
+                        },
+                      ).toList(),
+                    );
+                  },
                 ),
                 Flexible(
                   child: FutureBuilder<List<UserSet>>(
@@ -155,7 +183,8 @@ class WorkoutPage extends StatelessWidget {
                         if (snapshot.data!.isNotEmpty) {
                           List<UserSet> listUserSet = snapshot.data!;
                           return Obx(() {
-                            final PageController pageController = PageController(initialPage: controller.initialPage.value);
+                            final PageController pageController =
+                                PageController(initialPage: controller.initialPage.value);
                             return PageView(
                               controller: pageController,
                               children: listUserSet.map((e) => OpenUserSetInstance(userSet: e)).toList(),

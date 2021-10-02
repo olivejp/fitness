@@ -57,4 +57,9 @@ class CalendarController extends GetxController {
     instance.date = dateSelected;
     return workoutInstanceService.update(instance);
   }
+
+
+  Stream<bool> areAllChecked(String uidWorkout) {
+   return userSetService.areAllChecked(uidWorkout);
+  }
 }

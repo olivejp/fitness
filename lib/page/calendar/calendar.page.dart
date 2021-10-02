@@ -8,12 +8,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:oktoast/oktoast.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import 'calendar.page.controller.dart';
 
@@ -213,16 +210,16 @@ class WorkoutInstanceCard extends StatelessWidget {
       dateStr = DateFormat('dd/MM/yyyy - kk:mm').format(instance.date!);
     }
 
-    return InkWell(
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => WorkoutPage(
-            instance: instance,
+    return Material(
+      elevation: 1,
+      child: InkWell(
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => WorkoutPage(
+              instance: instance,
+            ),
           ),
         ),
-      ),
-      child: Material(
-        elevation: 1,
         child: Stack(
           children: <Widget>[
             Column(
@@ -236,21 +233,38 @@ class WorkoutInstanceCard extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text(
-                        dateStr,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            dateStr,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          StreamBuilder<bool>(
+                              stream: controller.areAllChecked(instance.uid!),
+                              initialData: false,
+                              builder: (_, snapshot) {
+                                if (snapshot.hasData && snapshot.data!) {
+                                  return Icon(
+                                    Icons.flag_outlined,
+                                    color: Colors.amberAccent,
+                                  );
+                                } else {
+                                  return Container();
+                                }
+                              }),
+                        ],
                       ),
                       PopupMenuButton<int>(
                         iconSize: 24,
                         tooltip: 'Voir plus',
                         icon: const Icon(Icons.more_horiz, color: Colors.grey),
                         onSelected: (value) {
+                          controller.initialDate = controller.selectedDate;
                           switch (value) {
                             case 1:
-                              controller.initialDate = controller.selectedDate;
                               showDialog(
                                 context: context,
                                 builder: (context) {
