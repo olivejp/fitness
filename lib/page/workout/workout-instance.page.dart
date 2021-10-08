@@ -104,7 +104,7 @@ class WorkoutPage extends StatelessWidget {
               elevation: 0,
               title: Text(
                 DateFormat('dd/MM/yy - kk:mm').format(instance.date!),
-                style: GoogleFonts.alfaSlabOne(fontSize: 18),
+                style: GoogleFonts.comfortaa(fontSize: 18),
               ),
               leading: IconButton(
                 onPressed: () {

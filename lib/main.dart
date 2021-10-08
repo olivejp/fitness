@@ -4,6 +4,7 @@ import 'package:fitnc_user/widget/firebase.widget.dart';
 import 'package:fitnc_user/widget/layout-display.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:oktoast/oktoast.dart';
 
 import 'constants.dart';
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
         color: FitnessNcColors.darkChipBackground,
         titleTextStyle: TextStyle(color: FitnessNcColors.amber),
       ),
-      textTheme: TextTheme(bodyText1: TextStyle())
+      textTheme: TextTheme(bodyText1: GoogleFonts.comfortaa())
     );
   }
 

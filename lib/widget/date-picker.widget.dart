@@ -180,7 +180,7 @@ class MonthDropDown extends StatelessWidget {
                   TextSpan(
                     text: year.toString().substring(2, 4),
                     style: const TextStyle(
-                      fontSize: 22,
+                      fontSize: 19,
                       fontWeight: FontWeight.bold,
                     ),
                   )

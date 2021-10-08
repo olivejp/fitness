@@ -6,6 +6,12 @@ class HomeController extends GetxController {
   HomeController() {
     fitnessUserService.listenFitnessUser().listen((FitnessUser? fitnessUser) {
       user.value = fitnessUser;
+      user.refresh();
+    });
+
+    fitnessUserService.listenFitnessUserChanges().listen((FitnessUser? fitnessUser) {
+      user.value = fitnessUser;
+      user.refresh();
     });
   }
 

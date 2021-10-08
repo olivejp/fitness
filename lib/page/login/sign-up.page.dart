@@ -55,259 +55,222 @@ class _SignUpPageState extends State<SignUpPage> {
       child: Scaffold(
         backgroundColor: FitnessNcColors.blue50,
         body: Stack(
-          children: <Widget>[
-            Transform(
-              transform: Matrix4.identity()
-                ..translate(MediaQuery.of(context).size.width)
-                ..add(Matrix4.skewX(-0.3)),
-              child: Container(
-                width: 200,
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.bottomLeft,
-                        end: Alignment.topRight,
-                        colors: <Color>[Colors.amber.withAlpha(100), Colors.amber.shade700])),
-              ),
-            ),
-            Transform(
-              transform: Matrix4.identity()
-                ..translate(MediaQuery.of(context).size.width - 80)
-                ..add(Matrix4.skewX(-0.3)),
-              child: Container(
-                width: 20,
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.bottomLeft,
-                        end: Alignment.topRight,
-                        colors: <Color>[Colors.amber.withAlpha(100), Colors.amber.shade700])),
-              ),
-            ),
-            Stack(children: <Widget>[
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Center(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(30.0),
-                          child: Form(
-                            key: _formKey,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: <Widget>[
-                                Text(
-                                  'Créez votre compte',
-                                  style: GoogleFonts.robotoTextTheme()
-                                      .headline6!
-                                      .copyWith(fontSize: 28, fontWeight: FontWeight.bold),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 30),
-                                  child: Row(
-                                    children: <Widget>[
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(right: 5),
-                                          child: TextFormField(
-                                              style: GoogleFonts.roboto(fontSize: 15),
-                                              decoration: InputDecoration(
-                                                fillColor: Colors.white,
-                                                filled: true,
-                                                labelStyle: GoogleFonts.roboto(fontSize: 15),
-                                                focusedBorder: defaultBorder,
-                                                border: defaultBorder,
-                                                enabledBorder: defaultBorder,
-                                                labelText: 'Nom',
-                                              ),
-                                              onChanged: (String value) => controller.name = value,
-                                              validator: (String? value) {
-                                                if (value == null || value.isEmpty) {
-                                                  return 'Merci de renseigner votre nom.';
-                                                }
-                                              }),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(left: 5),
-                                          child: TextFormField(
-                                              style: GoogleFonts.roboto(fontSize: 15),
-                                              decoration: InputDecoration(
-                                                fillColor: Colors.white,
-                                                filled: true,
-                                                labelText: 'Prénom',
-                                                focusedBorder: defaultBorder,
-                                                border: defaultBorder,
-                                                enabledBorder: defaultBorder,
-                                              ),
-                                              onChanged: (String value) => controller.prenom = value,
-                                              validator: (String? value) {
-                                                if (value == null || value.isEmpty) {
-                                                  return 'Merci de renseigner votre prénom.';
-                                                }
-                                              }),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 20),
-                                  child: TextFormField(
-                                    style: GoogleFonts.roboto(fontSize: 15),
-                                    decoration: InputDecoration(
-                                      fillColor: Colors.white,
-                                      filled: true,
-                                      suffixIcon: const Icon(Icons.email),
-                                      labelText: 'Email',
-                                      focusedBorder: defaultBorder,
-                                      border: defaultBorder,
-                                      enabledBorder: defaultBorder,
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.all(30.0),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            Text(
+                              'Créez votre compte',
+                              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 30),
+                              child: Row(
+                                children: <Widget>[
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(right: 5),
+                                      child: TextFormField(
+                                          style: GoogleFonts.roboto(fontSize: 15),
+                                          decoration: InputDecoration(
+                                            fillColor: Colors.white,
+                                            filled: true,
+                                            labelStyle: GoogleFonts.roboto(fontSize: 15),
+                                            focusedBorder: defaultBorder,
+                                            border: defaultBorder,
+                                            enabledBorder: defaultBorder,
+                                            labelText: 'Nom',
+                                          ),
+                                          onChanged: (String value) => controller.name = value,
+                                          validator: (String? value) {
+                                            if (value == null || value.isEmpty) {
+                                              return 'Merci de renseigner votre nom.';
+                                            }
+                                          }),
                                     ),
-                                    onChanged: (String value) => controller.email = value,
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 5),
+                                      child: TextFormField(
+                                          style: GoogleFonts.roboto(fontSize: 15),
+                                          decoration: InputDecoration(
+                                            fillColor: Colors.white,
+                                            filled: true,
+                                            labelText: 'Prénom',
+                                            focusedBorder: defaultBorder,
+                                            border: defaultBorder,
+                                            enabledBorder: defaultBorder,
+                                          ),
+                                          onChanged: (String value) => controller.prenom = value,
+                                          validator: (String? value) {
+                                            if (value == null || value.isEmpty) {
+                                              return 'Merci de renseigner votre prénom.';
+                                            }
+                                          }),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 20),
+                              child: TextFormField(
+                                style: GoogleFonts.roboto(fontSize: 15),
+                                decoration: InputDecoration(
+                                  fillColor: Colors.white,
+                                  filled: true,
+                                  suffixIcon: const Icon(Icons.email),
+                                  labelText: 'Email',
+                                  focusedBorder: defaultBorder,
+                                  border: defaultBorder,
+                                  enabledBorder: defaultBorder,
+                                ),
+                                onChanged: (String value) => controller.email = value,
+                                validator: (String? value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Merci de renseigner votre adresse email.';
+                                  }
+                                  if (!RegExp(
+                                          r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                                      .hasMatch(value)) {
+                                    return "L'adresse mail n'est pas formatée correctement'.";
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 20),
+                              child: TextFormField(
+                                style: GoogleFonts.roboto(fontSize: 15),
+                                onChanged: (String value) => controller.telephone = value,
+                                decoration: InputDecoration(
+                                  fillColor: Colors.white,
+                                  filled: true,
+                                  suffixIcon: const Icon(Icons.phone_android),
+                                  labelText: 'Téléphone',
+                                  focusedBorder: defaultBorder,
+                                  border: defaultBorder,
+                                  enabledBorder: defaultBorder,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 60),
+                              child: Obx(
+                                () => TextFormField(
+                                    style: GoogleFonts.roboto(fontSize: 15),
+                                    onChanged: (String value) => controller.password = value,
+                                    obscureText: hidePasswordController.hidePassword1.value,
+                                    decoration: InputDecoration(
+                                        fillColor: Colors.white,
+                                        filled: true,
+                                        labelText: 'Mot de passe',
+                                        focusedBorder: defaultBorder,
+                                        border: defaultBorder,
+                                        enabledBorder: defaultBorder,
+                                        suffixIcon: IconButton(
+                                          tooltip: hidePasswordController.hidePassword1.value
+                                              ? 'Afficher le mot de passe'
+                                              : 'Masquer le mot de passe',
+                                          onPressed: hidePasswordController.switchPassword1,
+                                          icon: hidePasswordController.hidePassword1.value
+                                              ? const Icon(Icons.visibility_outlined)
+                                              : const Icon(Icons.visibility_off_outlined),
+                                        )),
                                     validator: (String? value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Merci de renseigner votre adresse email.';
+                                        return 'Le mot de passe ne peut pas être vide.';
                                       }
-                                      if (!RegExp(
-                                              r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
-                                          .hasMatch(value)) {
-                                        return "L'adresse mail n'est pas formatée correctement'.";
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 20),
-                                  child: TextFormField(
-                                    style: GoogleFonts.roboto(fontSize: 15),
-                                    onChanged: (String value) => controller.telephone = value,
-                                    decoration: InputDecoration(
-                                      fillColor: Colors.white,
-                                      filled: true,
-                                      suffixIcon: const Icon(Icons.phone_android),
-                                      labelText: 'Téléphone',
-                                      focusedBorder: defaultBorder,
-                                      border: defaultBorder,
-                                      enabledBorder: defaultBorder,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 60),
-                                  child: Obx(
-                                    () => TextFormField(
-                                        style: GoogleFonts.roboto(fontSize: 15),
-                                        onChanged: (String value) => controller.password = value,
-                                        obscureText: hidePasswordController.hidePassword1.value,
-                                        decoration: InputDecoration(
-                                            fillColor: Colors.white,
-                                            filled: true,
-                                            labelText: 'Mot de passe',
-                                            focusedBorder: defaultBorder,
-                                            border: defaultBorder,
-                                            enabledBorder: defaultBorder,
-                                            suffixIcon: IconButton(
-                                              tooltip: hidePasswordController.hidePassword1.value
-                                                  ? 'Afficher le mot de passe'
-                                                  : 'Masquer le mot de passe',
-                                              onPressed: hidePasswordController.switchPassword1,
-                                              icon: hidePasswordController.hidePassword1.value
-                                                  ? const Icon(Icons.visibility_outlined)
-                                                  : const Icon(Icons.visibility_off_outlined),
-                                            )),
-                                        validator: (String? value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Le mot de passe ne peut pas être vide.';
-                                          }
-                                        }),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 20),
-                                  child: Obx(
-                                    () => TextFormField(
-                                        style: GoogleFonts.roboto(fontSize: 15),
-                                        onChanged: (String value) => controller.passwordCheck = value,
-                                        obscureText: hidePasswordController.hidePassword2.value,
-                                        decoration: InputDecoration(
-                                            fillColor: Colors.white,
-                                            filled: true,
-                                            focusedBorder: defaultBorder,
-                                            border: defaultBorder,
-                                            enabledBorder: defaultBorder,
-                                            labelText: 'Retaper votre mot de passe',
-                                            suffixIcon: IconButton(
-                                                tooltip: hidePasswordController.hidePassword2.value
-                                                    ? 'Afficher le mot de passe'
-                                                    : 'Masquer le mot de passe',
-                                                onPressed: hidePasswordController.switchPassword2,
-                                                icon: hidePasswordController.hidePassword2.value
-                                                    ? const Icon(Icons.visibility_outlined)
-                                                    : const Icon(Icons.visibility_off_outlined))),
-                                        validator: (String? value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Le mot de passe ne peut pas être vide.';
-                                          }
-                                          if (controller.password != controller.passwordCheck) {
-                                            return "Le mot de passe n'est pas identique.";
-                                          }
-                                        }),
-                                  ),
-                                ),
-                                Padding(
-                                    padding: const EdgeInsets.only(top: 20),
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 55)),
-                                      onPressed: () => onPressedEnter(),
-                                      child: Text('Créer un compte',
-                                          style: GoogleFonts.roboto(color: Color(Colors.white.value), fontSize: 15)),
-                                    )),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 30),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      const Text('Vous avez un compte ?'),
-                                      TextButton(
-                                          onPressed: () => Navigator.of(context).pop(),
-                                          child: const Text(
-                                            'Connexion.',
-                                          )),
-                                    ],
-                                  ),
-                                ),
-                                Obx(
-                                  () {
-                                    if (controller.errors.value.isNotEmpty == true) {
-                                      return Text(
-                                        controller.errors.value,
-                                        style: const TextStyle(color: Colors.red),
-                                      );
-                                    } else {
-                                      return Container();
-                                    }
-                                  },
-                                ),
-                              ],
+                                    }),
+                              ),
                             ),
-                          ),
-                        )
-                      ],
+                            Padding(
+                              padding: const EdgeInsets.only(top: 20),
+                              child: Obx(
+                                () => TextFormField(
+                                    style: GoogleFonts.roboto(fontSize: 15),
+                                    onChanged: (String value) => controller.passwordCheck = value,
+                                    obscureText: hidePasswordController.hidePassword2.value,
+                                    decoration: InputDecoration(
+                                        fillColor: Colors.white,
+                                        filled: true,
+                                        focusedBorder: defaultBorder,
+                                        border: defaultBorder,
+                                        enabledBorder: defaultBorder,
+                                        labelText: 'Retaper votre mot de passe',
+                                        suffixIcon: IconButton(
+                                            tooltip: hidePasswordController.hidePassword2.value
+                                                ? 'Afficher le mot de passe'
+                                                : 'Masquer le mot de passe',
+                                            onPressed: hidePasswordController.switchPassword2,
+                                            icon: hidePasswordController.hidePassword2.value
+                                                ? const Icon(Icons.visibility_outlined)
+                                                : const Icon(Icons.visibility_off_outlined))),
+                                    validator: (String? value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Le mot de passe ne peut pas être vide.';
+                                      }
+                                      if (controller.password != controller.passwordCheck) {
+                                        return "Le mot de passe n'est pas identique.";
+                                      }
+                                    }),
+                              ),
+                            ),
+                            Padding(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 55)),
+                                  onPressed: () => onPressedEnter(),
+                                  child: Text('Créer un compte',
+                                      style: GoogleFonts.roboto(color: Color(Colors.white.value), fontSize: 15)),
+                                )),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 30),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  const Text('Vous avez un compte ?'),
+                                  TextButton(
+                                      onPressed: () => Navigator.of(context).pop(),
+                                      child: const Text(
+                                        'Connexion.',
+                                      )),
+                                ],
+                              ),
+                            ),
+                            Obx(
+                              () {
+                                if (controller.errors.value.isNotEmpty == true) {
+                                  return Text(
+                                    controller.errors.value,
+                                    style: const TextStyle(color: Colors.red),
+                                  );
+                                } else {
+                                  return Container();
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
+                  )
                 ],
               ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                left: 0,
-                child: BottomCu(),
-              ),
-            ]),
+            )
           ],
         ),
       ),

@@ -19,7 +19,7 @@ class CalendarPage extends StatelessWidget {
 
   final CalendarController controller = Get.put(CalendarController());
 
-  void goToExerciceChoice(BuildContext context){
+  void goToExerciceChoice(BuildContext context) {
     controller.initialDate = controller.selectedDate;
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -37,6 +37,13 @@ class CalendarPage extends StatelessWidget {
     controller.initialDate = DateTime.now();
     controller.selectedDate = DateTime.now();
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => goToExerciceChoice(context),
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+      ),
       body: Column(
         children: <Widget>[
           Material(
@@ -122,7 +129,10 @@ class Timeline extends StatelessWidget {
                   controller.initialDate = DateTime.now();
                   controller.selectedDate = DateTime.now();
                 },
-                child: Text('Today'),
+                child: Text(
+                  'Today',
+                  style: GoogleFonts.comfortaa(),
+                ),
               ),
             ),
           ],
@@ -181,7 +191,7 @@ class CalendarDayCard extends StatelessWidget {
               child: Center(
                 child: Text(
                   dateTime.day.toString(),
-                  style: GoogleFonts.roboto(
+                  style: GoogleFonts.comfortaa(
                     color: selected ? Theme.of(context).primaryColor : null,
                     fontSize: 18,
                   ),

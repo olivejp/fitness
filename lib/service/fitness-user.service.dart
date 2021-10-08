@@ -51,6 +51,10 @@ class FitnessUserService extends AbstractFitnessStorageService<FitnessUser> {
     return authService.listenUserConnected().asyncMap((event) => read(event!.uid));
   }
 
+  Stream<FitnessUser?> listenFitnessUserChanges() {
+    return listen(FirebaseAuth.instance.currentUser!.uid);
+  }
+
   Future<FitnessUser> _checkFitnessUserConnected() async {
     String userUid = getUserConnectedOrThrow().uid;
     FitnessUser? fitnessUser;

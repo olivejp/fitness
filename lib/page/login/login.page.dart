@@ -39,10 +39,12 @@ class LoginPage extends StatelessWidget {
 }
 
 class LoginForm extends StatelessWidget {
-  LoginForm({Key? key, required this.formKey}) : super(key: key);
+  LoginForm({Key? key, required this.formKey, this.paddingTop = 30, this.paddingInBetween = 30}) : super(key: key);
 
   final GlobalKey<FormState> formKey;
   final LoginPageController controller = Get.find();
+  final double paddingTop;
+  final double paddingInBetween;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +54,7 @@ class LoginForm extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(top: 30),
+            padding: EdgeInsets.only(top: paddingTop),
             child: Obx(
               () => TextFormField(
                 initialValue: controller.email,
@@ -98,7 +100,7 @@ class LoginForm extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 30),
+            padding: EdgeInsets.only(top: paddingInBetween),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[

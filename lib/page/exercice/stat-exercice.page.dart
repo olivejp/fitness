@@ -7,9 +7,11 @@ import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/user.line.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/painting/text_style.dart' as textStyle;
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:tuple/tuple.dart';
@@ -142,6 +144,10 @@ class StatExercicePage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        title: Text(
+          'Stats : ${exercice.name}',
+          style: GoogleFonts.comfortaa(fontSize: 18),
+        ),
         leading: IconButton(
           onPressed: () {
             Navigator.of(context).pop();
@@ -165,10 +171,22 @@ class StatExercicePage extends StatelessWidget {
               controller.selectedUserSet.value = listUserSet.elementAt(0);
             }
             return Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Chart(exercice: exercice, listUserSet: listUserSet),
-                const BarButtons(),
-                Flexible(child: ListSeance(exercice: exercice, listUserSet: listUserSet)),
+                Material(
+                  elevation: 2,
+                  borderOnForeground: false,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 12),
+                        child: Chart(exercice: exercice, listUserSet: listUserSet),
+                      ),
+                      const BarButtons(),
+                    ],
+                  ),
+                ),
+                Expanded(child: ListSeance(exercice: exercice, listUserSet: listUserSet)),
               ],
             );
           }
@@ -253,10 +271,10 @@ class ListSeance extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text('Liste des séances'),
-        Flexible(
+        Expanded(
           child: SingleChildScrollView(
             child: ListView.separated(
+              physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: listUserSet.length,
               separatorBuilder: (_, __) => const Divider(
@@ -338,32 +356,46 @@ class UserSetCard extends StatelessWidget {
           title: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   DateFormat('dd/MM/yy - kk:mm').format(userSet.date!),
+                  style: textStyle.TextStyle(fontWeight: FontWeight.bold),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      children: [
-                        const Text('Volume'),
-                        Text('${controller.getVolume(userSet)}'),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        const Text('Max reps'),
-                        Text('${controller.getMaxReps(userSet)}'),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        const Text('Max weight'),
-                        Text('${controller.getMaxWeight(userSet)}'),
-                      ],
-                    ),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        children: [
+                          const Text(
+                            'volume',
+                            style: textStyle.TextStyle(fontSize: 12),
+                          ),
+                          Text('${controller.getVolume(userSet)}'),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          const Text(
+                            'max reps.',
+                            style: textStyle.TextStyle(fontSize: 12),
+                          ),
+                          Text('${controller.getMaxReps(userSet)}'),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Text(
+                            'max weight',
+                            style: textStyle.TextStyle(fontSize: 12),
+                          ),
+                          Text('${controller.getMaxWeight(userSet)}'),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

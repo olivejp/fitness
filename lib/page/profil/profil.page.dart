@@ -7,6 +7,7 @@ import 'package:fitness_domain/domain/storage-file.dart';
 import 'package:fitness_domain/service/auth.service.dart';
 import 'package:fitness_domain/widget/generic_container.widget.dart';
 import 'package:fitness_domain/widget/storage_image.widget.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -72,166 +73,156 @@ class ProfilPage extends StatelessWidget {
       body: Form(
         key: _formKey,
         child: Padding(
-          padding: const EdgeInsets.all(30.0),
-          child: Column(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Column(
-                      children: <Widget>[
-                        Obx(
-                          () => StorageImageWidget(
-                            imageUrl: controller.user.value?.imageUrl,
-                            storageFile: controller.user.value?.storageFile,
-                            onSaved: controller.setStoragePair,
-                            onDeleted: () => controller.setStoragePair(null),
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(top: 30, bottom: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Obx(
+                        () => StorageImageWidget(
+                          radius: 80,
+                          imageUrl: controller.user.value?.imageUrl,
+                          storageFile: controller.user.value?.storageFile,
+                          onSaved: controller.setStoragePair,
+                          onDeleted: () => controller.setStoragePair(null),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: Obx(
+                    () => Text(
+                      '${controller.user.value?.email}',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Obx(
+                    () => FitnessDecorationTextFormField(
+                        controller: TextEditingController(text: controller.user.value?.name),
+                        inputBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
+                        onChanged: (String name) => controller.user.value?.name = name,
+                        labelText: 'Nom',
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Merci de renseigner votre nom.';
+                          }
+                          return null;
+                        }),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Obx(
+                    () => FitnessDecorationTextFormField(
+                        controller: TextEditingController(text: controller.user.value?.prenom),
+                        inputBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
+                        onChanged: (String prenom) => controller.user.value?.prenom = prenom,
+                        labelText: 'Prénom',
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Merci de renseigner votre prénom.';
+                          }
+                          return null;
+                        }),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Obx(() {
+                    TextEditingController control = TextEditingController(
+                        text: (controller.user.value?.telephone1) != null
+                            ? controller.user.value!.telephone1.toString()
+                            : '');
+                    return TextFormField(
+                      controller: control,
+                      maxLength: 6,
+                      keyboardType: TextInputType.phone,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      onChanged: (String value) => controller.user.value?.telephone1 = int.parse(value),
+                      decoration: const InputDecoration(
+                        labelText: 'Téléphone',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(5),
                           ),
                         ),
-                      ],
-                    ),
-                    Row(
-                      children: <Widget>[
-                        TextButton(
-                          style: TextButton.styleFrom(backgroundColor: FitnessNcColors.blue600),
-                          onPressed: () {
-                            if (_formKey.currentState?.validate() == true) {
-                              controller.save().then((_) {
-                                showToast('Vos informations ont été mises à jour', backgroundColor: Colors.green);
-                              }).catchError(
-                                (_) => showToast('Erreur lors de la sauvegarde', backgroundColor: Colors.redAccent),
-                              );
-                            }
+                      ),
+                    );
+                  }),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Mode sombre'),
+                      ValueListenableBuilder<bool>(
+                        valueListenable: darkModeController.notifier,
+                        builder: (_, isDarkMode, __) => Checkbox(
+                          value: isDarkMode,
+                          onChanged: (_) {
+                            darkModeController.switchDarkMode();
                           },
-                          child: const Text('Enregistrer', style: TextStyle(color: Colors.white)),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Obx(
-                  () => FitnessDecorationTextFormField(
-                      controller: TextEditingController(text: controller.user.value?.email),
-                      inputBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-                      onChanged: (String email) => controller.user.value?.email = email,
-                      labelText: 'Email',
-                      validator: (String? value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Merci de renseigner votre adresse mail.';
-                        }
-                        return null;
-                      }),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Obx(
-                  () => FitnessDecorationTextFormField(
-                      controller: TextEditingController(text: controller.user.value?.name),
-                      inputBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-                      onChanged: (String name) => controller.user.value?.name = name,
-                      labelText: 'Nom',
-                      validator: (String? value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Merci de renseigner votre nom.';
-                        }
-                        return null;
-                      }),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Obx(
-                  () => FitnessDecorationTextFormField(
-                      controller: TextEditingController(text: controller.user.value?.prenom),
-                      inputBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-                      onChanged: (String prenom) => controller.user.value?.prenom = prenom,
-                      labelText: 'Prénom',
-                      validator: (String? value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Merci de renseigner votre prénom.';
-                        }
-                        return null;
-                      }),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Obx(() {
-                  TextEditingController control =
-                      TextEditingController(text: (controller.user.value?.telephone1) != null ? controller.user.value!.telephone1.toString() : '');
-                  return TextFormField(
-                    controller: control,
-                    maxLength: 6,
-                    keyboardType: TextInputType.phone,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    onChanged: (String value) => controller.user.value?.telephone1 = int.parse(value),
-                    decoration: const InputDecoration(
-                      labelText: 'Téléphone',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(5),
                         ),
                       ),
-                    ),
-                  );
-                }),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Mode sombre'),
-                    ValueListenableBuilder<bool>(
-                      valueListenable: darkModeController.notifier,
-                      builder: (_, isDarkMode, __) => Checkbox(
-                        value: isDarkMode,
-                        onChanged: (_) {
-                          darkModeController.switchDarkMode();
-                        },
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 8, bottom: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => const ExercicePage()),
-                        );
-                      },
-                      child: Text('Gérer mes exercices'),
-                    ),
-                  ],
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 35),
+                  ),
+                  onPressed: () {
+                    if (_formKey.currentState?.validate() == true) {
+                      controller.save().then((_) {
+                        showToast('Vos informations ont été mises à jour', backgroundColor: Colors.green);
+                      }).catchError(
+                            (_) => showToast('Erreur lors de la sauvegarde', backgroundColor: Colors.redAccent),
+                      );
+                    }
+                  },
+                  child: const Text('Enregistrer', style: TextStyle(color: Colors.white)),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 16, bottom: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    TextButton(
-                      onPressed: () => controller.signOut(),
-                      child: Text(
-                        'Me déconnecter',
-                        style: TextStyle(color: Colors.red),
-                      ),
+
+                Padding(
+                  padding: const EdgeInsets.only(top: 8, bottom: 8),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 35),
                     ),
-                  ],
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => const ExercicePage()),
+                      );
+                    },
+                    child: const Text('Gérer mes exercices', style: TextStyle(color: Colors.white)),
+                  ),
                 ),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.only(top: 8, bottom: 8),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 35),
+                    ),
+                    onPressed: () => controller.signOut(),
+                    child: const Text('Me déconnecter', style: TextStyle(color: Colors.red)),
+                  ),
+                ),
+
+              ],
+            ),
           ),
         ),
       ),
