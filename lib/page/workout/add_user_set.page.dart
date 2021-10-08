@@ -1,4 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fitnc_user/page/exercice/stat-exercice.page.dart';
+import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/user.line.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:flutter/cupertino.dart';
@@ -66,8 +68,7 @@ class UserSetUpdate extends StatelessWidget {
                         () {
                           bool allIsChecked = controller.listLines.every((element) => element.checked);
                           return IconButton(
-                            icon:
-                                Icon(allIsChecked ? Icons.library_add_check_rounded : Icons.library_add_check_outlined),
+                            icon: const Icon(Icons.done_all_rounded),
                             color: allIsChecked ? Colors.green : Colors.grey,
                             iconSize: 30,
                             onPressed: () => controller.checkAll(),
@@ -231,7 +232,31 @@ class RowExerciceDetails extends StatelessWidget {
             dimension: 100,
           ),
         Flexible(
-          child: Text(controller.userSet.value.nameExercice!),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(controller.userSet.value.nameExercice!),
+              IconButton(
+                icon: const Icon(
+                  Icons.insert_chart_outlined_rounded,
+                  color: Colors.grey,
+                ),
+                onPressed: () {
+                  controller.getExercice(controller.userSet.value.uidExercice).then(
+                    (Exercice? exercice) {
+                      if (exercice != null) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => StatExercicePage(exercice: exercice),
+                          ),
+                        );
+                      }
+                    },
+                  );
+                },
+              )
+            ],
+          ),
         )
       ],
     );

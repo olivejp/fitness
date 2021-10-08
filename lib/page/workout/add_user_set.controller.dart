@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
+import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/user.line.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +12,7 @@ import 'package:get/get.dart';
 class UserSetController extends GetxController {
   final WorkoutInstanceService workoutInstanceService = Get.find();
   final UserSetService userSetService = Get.find();
+  final ExerciceService exerciceService = Get.find();
   final Rx<UserSet> userSet = UserSet().obs;
   final RxList<UserLine> listLines = <UserLine>[].obs;
   final int debounceTime = 200;
@@ -73,7 +76,7 @@ class UserSetController extends GetxController {
 
   void checkAll() {
     userSet.update((val) {
-      val!.lines.forEach((element) => element.checked = !element.checked);
+      val!.lines.forEach((element) => element.checked = true);
     });
     userSetService.save(userSet.value);
     initList(userSet.value.lines);
@@ -84,5 +87,9 @@ class UserSetController extends GetxController {
       val?.comment = comment;
     });
     userSetService.save(userSet.value);
+  }
+
+  Future<Exercice?> getExercice(String uidExercice) {
+    return exerciceService.read(uidExercice);
   }
 }

@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
         color: FitnessNcColors.darkChipBackground,
         titleTextStyle: TextStyle(color: FitnessNcColors.amber),
       ),
+      textTheme: TextTheme(bodyText1: TextStyle())
     );
   }
 

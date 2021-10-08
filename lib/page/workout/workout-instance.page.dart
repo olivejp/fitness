@@ -43,7 +43,9 @@ class WorkoutPageController extends GetxController {
     userSetSubscription = userSetService.listenAll(workoutInstance.uid!).listen((listUserSet) {
       for (var userSet in listUserSet) {
         int index = stepperList.indexWhere((stepper) => stepper.userSetUid == userSet.uid);
-        stepperList[index].allExerciceDone = userSet.lines.isNotEmpty && userSet.lines.every((uset) => uset.checked);
+        if (index > -1) {
+          stepperList[index].allExerciceDone = userSet.lines.isNotEmpty && userSet.lines.every((uset) => uset.checked);
+        }
       }
       stepperList.refresh();
     });
@@ -123,7 +125,7 @@ class WorkoutPage extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text('Opitions'),
+                          Text('Options'),
                           Icon(
                             Icons.more_vert,
                             color: Colors.grey,

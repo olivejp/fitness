@@ -19,29 +19,24 @@ class CalendarPage extends StatelessWidget {
 
   final CalendarController controller = Get.put(CalendarController());
 
+  void goToExerciceChoice(BuildContext context){
+    controller.initialDate = controller.selectedDate;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ExerciceChoiceDialog(
+          isCreation: true,
+          date: controller.selectedDate,
+          workoutInstance: null,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     controller.initialDate = DateTime.now();
+    controller.selectedDate = DateTime.now();
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-        ),
-        onPressed: () {
-          controller.initialDate = controller.selectedDate;
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => ExerciceChoiceDialog(
-                isCreation: true,
-                date: controller.selectedDate,
-                workoutInstance: null,
-              ),
-            ),
-          );
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: Column(
         children: <Widget>[
           Material(
@@ -58,15 +53,30 @@ class CalendarPage extends StatelessWidget {
               () => StreamList<WorkoutInstance>(
                 stream: controller.listenWorkoutInstanceByDate(controller.selectedDate),
                 builder: (BuildContext context, WorkoutInstance domain) => WorkoutInstanceCard(instance: domain),
+                padding: EdgeInsets.only(top: 10),
                 separatorBuilder: (_, index) => const Divider(
                   height: 20,
-                  thickness: 20,
+                  // thickness: 20,
                 ),
                 emptyWidget: Column(
-                  children: const [
+                  children: [
                     Expanded(
                       child: Center(
-                        child: Text('Aucun élément'),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              onPressed: () => goToExerciceChoice(context),
+                              icon: const Icon(Icons.post_add),
+                              color: Theme.of(context).primaryColor,
+                              iconSize: 45,
+                            ),
+                            TextButton(
+                              onPressed: () => goToExerciceChoice(context),
+                              child: const Text('Ajouter une nouvelle séance'),
+                            ),
+                          ],
+                        ),
                       ),
                     )
                   ],
@@ -211,7 +221,7 @@ class WorkoutInstanceCard extends StatelessWidget {
     }
 
     return Material(
-      elevation: 1,
+      elevation: 3,
       child: InkWell(
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute(
@@ -247,9 +257,12 @@ class WorkoutInstanceCard extends StatelessWidget {
                               initialData: false,
                               builder: (_, snapshot) {
                                 if (snapshot.hasData && snapshot.data!) {
-                                  return Icon(
-                                    Icons.flag_outlined,
-                                    color: Colors.amberAccent,
+                                  return const Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 8),
+                                    child: Icon(
+                                      Icons.verified_rounded,
+                                      color: Colors.green,
+                                    ),
                                   );
                                 } else {
                                   return Container();

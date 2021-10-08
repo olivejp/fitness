@@ -2,6 +2,7 @@ import 'package:fitnc_user/service/fitness-user.service.dart';
 import 'package:fitnc_user/service/published_programme.service.dart';
 import 'package:fitnc_user/service/trainers.service.dart';
 import 'package:fitness_domain/controller/abstract.controller.dart';
+import 'package:fitness_domain/domain/programme.domain.dart';
 import 'package:fitness_domain/domain/published_programme.domain.dart';
 import 'package:fitness_domain/domain/trainers.domain.dart';
 import 'package:get/get.dart';
@@ -54,5 +55,10 @@ class SearchPageController extends LocalSearchControllerMixin<PublishedProgramme
 
   Future<void> addToFavorite(Trainers trainer) {
     return fitnessUserService.addToFavorite(trainer);
+  }
+
+  Future<bool> isFollowed() async {
+    final List<PublishedProgramme> listProgrammes = await fitnessUserService.getMyPrograms();
+    return listProgrammes.any((element) => element.uid == selectedProgramme.value!.uid);
   }
 }

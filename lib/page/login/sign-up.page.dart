@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnc_user/page/login/sign-up.controller.dart';
 import 'package:fitnc_user/widget/bottom.widget.dart';
-import 'package:fitnc_user/widget/layout-display.widget.dart';
 import 'package:fitness_domain/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,8 +25,7 @@ class _SignUpPageState extends State<SignUpPage> {
   _SignUpPageState();
 
   final SignUpController controller = Get.put(SignUpController());
-  final HidePasswordController hidePasswordController =
-      Get.put(HidePasswordController());
+  final HidePasswordController hidePasswordController = Get.put(HidePasswordController());
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -68,10 +66,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     gradient: LinearGradient(
                         begin: Alignment.bottomLeft,
                         end: Alignment.topRight,
-                        colors: <Color>[
-                      Colors.amber.withAlpha(100),
-                      Colors.amber.shade700
-                    ])),
+                        colors: <Color>[Colors.amber.withAlpha(100), Colors.amber.shade700])),
               ),
             ),
             Transform(
@@ -84,10 +79,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     gradient: LinearGradient(
                         begin: Alignment.bottomLeft,
                         end: Alignment.topRight,
-                        colors: <Color>[
-                      Colors.amber.withAlpha(100),
-                      Colors.amber.shade700
-                    ])),
+                        colors: <Color>[Colors.amber.withAlpha(100), Colors.amber.shade700])),
               ),
             ),
             Stack(children: <Widget>[
@@ -109,9 +101,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   'Créez votre compte',
                                   style: GoogleFonts.robotoTextTheme()
                                       .headline6!
-                                      .copyWith(
-                                          fontSize: 28,
-                                          fontWeight: FontWeight.bold),
+                                      .copyWith(fontSize: 28, fontWeight: FontWeight.bold),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 30),
@@ -119,26 +109,21 @@ class _SignUpPageState extends State<SignUpPage> {
                                     children: <Widget>[
                                       Expanded(
                                         child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(right: 5),
+                                          padding: const EdgeInsets.only(right: 5),
                                           child: TextFormField(
-                                              style: GoogleFonts.roboto(
-                                                  fontSize: 15),
+                                              style: GoogleFonts.roboto(fontSize: 15),
                                               decoration: InputDecoration(
                                                 fillColor: Colors.white,
                                                 filled: true,
-                                                labelStyle: GoogleFonts.roboto(
-                                                    fontSize: 15),
+                                                labelStyle: GoogleFonts.roboto(fontSize: 15),
                                                 focusedBorder: defaultBorder,
                                                 border: defaultBorder,
                                                 enabledBorder: defaultBorder,
                                                 labelText: 'Nom',
                                               ),
-                                              onChanged: (String value) =>
-                                                  controller.name = value,
+                                              onChanged: (String value) => controller.name = value,
                                               validator: (String? value) {
-                                                if (value == null ||
-                                                    value.isEmpty) {
+                                                if (value == null || value.isEmpty) {
                                                   return 'Merci de renseigner votre nom.';
                                                 }
                                               }),
@@ -146,11 +131,9 @@ class _SignUpPageState extends State<SignUpPage> {
                                       ),
                                       Expanded(
                                         child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 5),
+                                          padding: const EdgeInsets.only(left: 5),
                                           child: TextFormField(
-                                              style: GoogleFonts.roboto(
-                                                  fontSize: 15),
+                                              style: GoogleFonts.roboto(fontSize: 15),
                                               decoration: InputDecoration(
                                                 fillColor: Colors.white,
                                                 filled: true,
@@ -159,11 +142,9 @@ class _SignUpPageState extends State<SignUpPage> {
                                                 border: defaultBorder,
                                                 enabledBorder: defaultBorder,
                                               ),
-                                              onChanged: (String value) =>
-                                                  controller.prenom = value,
+                                              onChanged: (String value) => controller.prenom = value,
                                               validator: (String? value) {
-                                                if (value == null ||
-                                                    value.isEmpty) {
+                                                if (value == null || value.isEmpty) {
                                                   return 'Merci de renseigner votre prénom.';
                                                 }
                                               }),
@@ -185,8 +166,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                       border: defaultBorder,
                                       enabledBorder: defaultBorder,
                                     ),
-                                    onChanged: (String value) =>
-                                        controller.email = value,
+                                    onChanged: (String value) => controller.email = value,
                                     validator: (String? value) {
                                       if (value == null || value.isEmpty) {
                                         return 'Merci de renseigner votre adresse email.';
@@ -204,13 +184,11 @@ class _SignUpPageState extends State<SignUpPage> {
                                   padding: const EdgeInsets.only(top: 20),
                                   child: TextFormField(
                                     style: GoogleFonts.roboto(fontSize: 15),
-                                    onChanged: (String value) =>
-                                        controller.telephone = value,
+                                    onChanged: (String value) => controller.telephone = value,
                                     decoration: InputDecoration(
                                       fillColor: Colors.white,
                                       filled: true,
-                                      suffixIcon:
-                                          const Icon(Icons.phone_android),
+                                      suffixIcon: const Icon(Icons.phone_android),
                                       labelText: 'Téléphone',
                                       focusedBorder: defaultBorder,
                                       border: defaultBorder,
@@ -223,10 +201,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                   child: Obx(
                                     () => TextFormField(
                                         style: GoogleFonts.roboto(fontSize: 15),
-                                        onChanged: (String value) =>
-                                            controller.password = value,
-                                        obscureText: hidePasswordController
-                                            .hidePassword1.value,
+                                        onChanged: (String value) => controller.password = value,
+                                        obscureText: hidePasswordController.hidePassword1.value,
                                         decoration: InputDecoration(
                                             fillColor: Colors.white,
                                             filled: true,
@@ -235,18 +211,13 @@ class _SignUpPageState extends State<SignUpPage> {
                                             border: defaultBorder,
                                             enabledBorder: defaultBorder,
                                             suffixIcon: IconButton(
-                                              tooltip: hidePasswordController
-                                                      .hidePassword1.value
+                                              tooltip: hidePasswordController.hidePassword1.value
                                                   ? 'Afficher le mot de passe'
                                                   : 'Masquer le mot de passe',
-                                              onPressed: hidePasswordController
-                                                  .switchPassword1,
-                                              icon: hidePasswordController
-                                                      .hidePassword1.value
-                                                  ? const Icon(
-                                                      Icons.visibility_outlined)
-                                                  : const Icon(Icons
-                                                      .visibility_off_outlined),
+                                              onPressed: hidePasswordController.switchPassword1,
+                                              icon: hidePasswordController.hidePassword1.value
+                                                  ? const Icon(Icons.visibility_outlined)
+                                                  : const Icon(Icons.visibility_off_outlined),
                                             )),
                                         validator: (String? value) {
                                           if (value == null || value.isEmpty) {
@@ -260,38 +231,28 @@ class _SignUpPageState extends State<SignUpPage> {
                                   child: Obx(
                                     () => TextFormField(
                                         style: GoogleFonts.roboto(fontSize: 15),
-                                        onChanged: (String value) =>
-                                            controller.passwordCheck = value,
-                                        obscureText: hidePasswordController
-                                            .hidePassword2.value,
+                                        onChanged: (String value) => controller.passwordCheck = value,
+                                        obscureText: hidePasswordController.hidePassword2.value,
                                         decoration: InputDecoration(
                                             fillColor: Colors.white,
                                             filled: true,
                                             focusedBorder: defaultBorder,
                                             border: defaultBorder,
                                             enabledBorder: defaultBorder,
-                                            labelText:
-                                                'Retaper votre mot de passe',
+                                            labelText: 'Retaper votre mot de passe',
                                             suffixIcon: IconButton(
-                                                tooltip: hidePasswordController
-                                                        .hidePassword2.value
+                                                tooltip: hidePasswordController.hidePassword2.value
                                                     ? 'Afficher le mot de passe'
                                                     : 'Masquer le mot de passe',
-                                                onPressed:
-                                                    hidePasswordController
-                                                        .switchPassword2,
-                                                icon: hidePasswordController
-                                                        .hidePassword2.value
-                                                    ? const Icon(Icons
-                                                        .visibility_outlined)
-                                                    : const Icon(Icons
-                                                        .visibility_off_outlined))),
+                                                onPressed: hidePasswordController.switchPassword2,
+                                                icon: hidePasswordController.hidePassword2.value
+                                                    ? const Icon(Icons.visibility_outlined)
+                                                    : const Icon(Icons.visibility_off_outlined))),
                                         validator: (String? value) {
                                           if (value == null || value.isEmpty) {
                                             return 'Le mot de passe ne peut pas être vide.';
                                           }
-                                          if (controller.password !=
-                                              controller.passwordCheck) {
+                                          if (controller.password != controller.passwordCheck) {
                                             return "Le mot de passe n'est pas identique.";
                                           }
                                         }),
@@ -300,14 +261,10 @@ class _SignUpPageState extends State<SignUpPage> {
                                 Padding(
                                     padding: const EdgeInsets.only(top: 20),
                                     child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                          minimumSize:
-                                              const Size(double.infinity, 55)),
+                                      style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 55)),
                                       onPressed: () => onPressedEnter(),
                                       child: Text('Créer un compte',
-                                          style: GoogleFonts.roboto(
-                                              color: Color(Colors.white.value),
-                                              fontSize: 15)),
+                                          style: GoogleFonts.roboto(color: Color(Colors.white.value), fontSize: 15)),
                                     )),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 30),
@@ -325,12 +282,10 @@ class _SignUpPageState extends State<SignUpPage> {
                                 ),
                                 Obx(
                                   () {
-                                    if (controller.errors.value.isNotEmpty ==
-                                        true) {
+                                    if (controller.errors.value.isNotEmpty == true) {
                                       return Text(
                                         controller.errors.value,
-                                        style:
-                                            const TextStyle(color: Colors.red),
+                                        style: const TextStyle(color: Colors.red),
                                       );
                                     } else {
                                       return Container();

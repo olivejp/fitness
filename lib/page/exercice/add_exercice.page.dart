@@ -1,15 +1,26 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fitnc_user/page/exercice/stat-exercice.page.dart';
+import 'package:fitnc_user/page/workout/workout-instance.page.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
+import 'package:fitnc_user/service/user-set.service.dart';
+import 'package:fitnc_user/service/workout-instance.service.dart';
+import 'package:fitnc_user/widget/time-series-chart.widget.dart';
 import 'package:fitness_domain/controller/abstract.controller.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/storage-file.dart';
+import 'package:fitness_domain/domain/user.line.domain.dart';
+import 'package:fitness_domain/domain/user.set.domain.dart';
+import 'package:fitness_domain/domain/workout-instance.domain.dart';
 import 'package:fitness_domain/service/param.service.dart';
 import 'package:fitness_domain/widget/storage_image.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_animations/loading_animations.dart';
 
 class AddExercicePageController extends LocalSearchControllerMixin<Exercice, ExerciceService> {
   final ExerciceService exerciceService = Get.find();
+
   final Rx<Exercice> exercice = Exercice().obs;
 
   void init(Exercice? exercice) {
@@ -43,7 +54,6 @@ class AddExercicePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     controller.init(exercice);
-
     return SafeArea(
       child: Scaffold(
         bottomNavigationBar: AddExerciceBottomAppBar(formKey: formKey, controller: controller),
@@ -74,7 +84,6 @@ class AddExercicePage extends StatelessWidget {
                                 child: Obx(
                                   () => TextFormField(
                                     controller: TextEditingController(text: controller.exercice.value.name),
-                                    autofocus: true,
                                     onChanged: (String name) => controller.exercice.value.name = name,
                                     validator: (String? value) {
                                       if (value == null || value.isEmpty) {
@@ -124,6 +133,7 @@ class AddExercicePage extends StatelessWidget {
                         items: snapshot.data,
                         itemHeight: 50,
                         decoration: InputDecoration(
+                          labelText: "Type d\'exercice",
                           border: OutlineInputBorder(),
                           hintText: "Type d\'exercice",
                           enabledBorder: OutlineInputBorder(
@@ -167,6 +177,20 @@ class AddExercicePage extends StatelessWidget {
                       ),
                     ),
                   ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton.icon(
+                        icon: const Icon(Icons.bar_chart),
+                        label: const Text('Voir les stats'),
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => StatExercicePage(exercice: controller.exercice.value),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -200,8 +224,8 @@ class AddExerciceBottomAppBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TextButton.icon(
-                icon: Icon(Icons.save),
-                label: Text('Enregistrer'),
+                icon: const Icon(Icons.save),
+                label: const Text('Enregistrer'),
                 onPressed: () {
                   if (formKey.currentState?.validate() == true) {
                     controller.save().then((_) => Navigator.of(context).pop());
@@ -209,7 +233,7 @@ class AddExerciceBottomAppBar extends StatelessWidget {
                 },
               ),
               TextButton(
-                child: Text('Retour'),
+                child: const Text('Retour'),
                 onPressed: () => Navigator.of(context).pop(),
               )
             ],

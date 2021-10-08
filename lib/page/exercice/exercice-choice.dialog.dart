@@ -62,6 +62,7 @@ class ExerciceChoiceDialogController extends LocalSearchControllerMixin<Exercice
         nameExercice: exercice.name,
         imageUrlExercice: exercice.imageUrl,
         typeExercice: exercice.typeExercice,
+        date: workoutInstance.date
       );
       userSetService.save(userSet);
     }

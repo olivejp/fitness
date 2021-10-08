@@ -42,8 +42,14 @@ class AuthWidget extends StatelessWidget {
     if (!kIsWeb) {
       Isolate.spawn((List<String> listUrlToCache) {
         for (String url in listUrlToCache) {
-          CachedNetworkImageProvider cached = CachedNetworkImageProvider(url);
-          cached.resolve(ImageConfiguration.empty);
+          if (url.isNotEmpty) {
+            try {
+              CachedNetworkImageProvider cached = CachedNetworkImageProvider(url);
+              cached.resolve(ImageConfiguration.empty);
+            } catch (e) {
+              print("CACHING IMAGE FAILS !!!");
+            }
+          }
         }
       }, listUrlToCache);
     }
@@ -109,7 +115,7 @@ class CrashlyticsWidget extends StatelessWidget {
     return FutureBuilder<void>(
       future: FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true),
       builder: (_, snapshot) {
-        if (snapshot.connectionState == ConnectionState.active) {
+        if (snapshot.connectionState == ConnectionState.done) {
           logUser(user);
           return HomePage();
         }

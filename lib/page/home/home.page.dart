@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnc_user/page/calendar/calendar.page.dart';
-import 'package:fitnc_user/page/my_programs/my_program.page.dart';
 import 'package:fitnc_user/page/profil/profil.page.dart';
 import 'package:fitnc_user/page/search/search.page.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
@@ -16,11 +15,10 @@ class HomePage extends StatelessWidget {
   final WorkoutInstanceService workoutInstanceService = Get.find();
   final HomeController controller = Get.put(HomeController());
 
-  final int searchIndex = 0;
-  final int calendarIndex = 1;
-  final int myProgramsIndex = 2;
-  final int chartsIndex = 3;
-  final int profilIndex = 4;
+  final int calendarIndex = 0;
+  final int searchIndex = 1;
+  final int chartsIndex = 2;
+  final int profilIndex = 3;
 
   @override
   Widget build(BuildContext context) {
@@ -28,18 +26,15 @@ class HomePage extends StatelessWidget {
       child: Scaffold(
         bottomNavigationBar: HomeBottomAppBar(
             controller: controller,
-            searchIndex: searchIndex,
             calendarIndex: calendarIndex,
-            myProgramsIndex: myProgramsIndex,
+            searchIndex: searchIndex,
             chartsIndex: chartsIndex,
             profilIndex: profilIndex),
         body: Obx(() {
-          if (controller.currentPageIndex.value == searchIndex) {
-            return SearchPage();
-          } else if (controller.currentPageIndex.value == calendarIndex) {
+          if (controller.currentPageIndex.value == calendarIndex) {
             return CalendarPage();
-          } else if (controller.currentPageIndex.value == myProgramsIndex) {
-            return MyProgramsPage();
+          } else if (controller.currentPageIndex.value == searchIndex) {
+            return SearchPage();
           } else if (controller.currentPageIndex.value == chartsIndex) {
             // TODO Faire la page des charts.
             throw Exception('Aucune page pour index ${controller.currentPageIndex.value}');
@@ -59,7 +54,6 @@ class HomeBottomAppBar extends StatelessWidget {
     required this.controller,
     required this.searchIndex,
     required this.calendarIndex,
-    required this.myProgramsIndex,
     required this.chartsIndex,
     required this.profilIndex,
   }) : super(key: key);
@@ -67,7 +61,6 @@ class HomeBottomAppBar extends StatelessWidget {
   final HomeController controller;
   final int searchIndex;
   final int calendarIndex;
-  final int myProgramsIndex;
   final int chartsIndex;
   final int profilIndex;
 
@@ -84,19 +77,6 @@ class HomeBottomAppBar extends StatelessWidget {
           currentIndex: controller.currentPageIndex.value,
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              label: 'Rechercher',
-              activeIcon: Icon(
-                Icons.search,
-                color: Theme.of(context).primaryColor,
-              ),
-              icon: IconButton(
-                  onPressed: () => controller.currentPageIndex.value = searchIndex,
-                  icon: const Icon(
-                    Icons.search,
-                    color: Colors.grey,
-                  )),
-            ),
-            BottomNavigationBarItem(
               label: 'Calendrier',
               activeIcon: Icon(
                 Icons.calendar_today,
@@ -110,15 +90,15 @@ class HomeBottomAppBar extends StatelessWidget {
                   )),
             ),
             BottomNavigationBarItem(
-              label: 'Programmes',
+              label: 'Rechercher',
               activeIcon: Icon(
-                Icons.account_tree_outlined,
+                Icons.explore_rounded,
                 color: Theme.of(context).primaryColor,
               ),
               icon: IconButton(
-                  onPressed: () => controller.currentPageIndex.value = myProgramsIndex,
-                  icon: Icon(
-                    Icons.account_tree_outlined,
+                  onPressed: () => controller.currentPageIndex.value = searchIndex,
+                  icon: const Icon(
+                    Icons.explore_rounded,
                     color: Colors.grey,
                   )),
             ),
