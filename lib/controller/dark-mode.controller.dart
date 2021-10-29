@@ -7,8 +7,8 @@ class DarkModeController extends GetxController {
   final GetStorage box = GetStorage();
 
   DarkModeController() {
-    notifier.value = box.read(LocalStorageWidget.isDarkModeKey);
-    box.listenKey(LocalStorageWidget.isDarkModeKey, (value) {
+    notifier.value = box.read(DarkModeWidget.isDarkModeKey);
+    box.listenKey(DarkModeWidget.isDarkModeKey, (value) {
       if (value != null && value is bool) {
         notifier.value = value;
       }
@@ -16,7 +16,7 @@ class DarkModeController extends GetxController {
   }
 
   void switchDarkMode() {
-    box.write(LocalStorageWidget.isDarkModeKey, !notifier.value).then((value) => print('Saved on file !'));
+    box.write(DarkModeWidget.isDarkModeKey, !notifier.value).then((value) => print('Saved on file !'));
   }
 
   final ValueNotifier<bool> notifier = ValueNotifier(false);

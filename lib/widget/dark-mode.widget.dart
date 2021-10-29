@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
-class LocalStorageWidget extends StatelessWidget {
-  const LocalStorageWidget({Key? key, required this.builder}) : super(key: key);
+class DarkModeWidget extends StatelessWidget {
+  const DarkModeWidget({Key? key, required this.builder}) : super(key: key);
   static const String isDarkModeKey = 'isDarkMode';
   final Widget Function() builder;
 
