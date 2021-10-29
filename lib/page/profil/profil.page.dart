@@ -5,6 +5,7 @@ import 'package:fitnc_user/service/fitness-user.service.dart';
 import 'package:fitness_domain/domain/fitness-user.domain.dart';
 import 'package:fitness_domain/domain/storage-file.dart';
 import 'package:fitness_domain/service/auth.service.dart';
+import 'package:fitness_domain/widget/firestore_param_dropdown.widget.dart';
 import 'package:fitness_domain/widget/generic_container.widget.dart';
 import 'package:fitness_domain/widget/storage_image.widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -110,9 +111,12 @@ class ProfilPage extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 10),
                   child: Obx(
                     () => FitnessDecorationTextFormField(
-                        controller: TextEditingController(text: controller.user.value?.name),
-                        inputBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-                        onChanged: (String name) => controller.user.value?.name = name,
+                        controller: TextEditingController(
+                            text: controller.user.value?.name),
+                        inputBorder: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(5))),
+                        onChanged: (String name) =>
+                            controller.user.value?.name = name,
                         labelText: 'Nom',
                         validator: (String? value) {
                           if (value == null || value.isEmpty) {
@@ -126,9 +130,12 @@ class ProfilPage extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 10),
                   child: Obx(
                     () => FitnessDecorationTextFormField(
-                        controller: TextEditingController(text: controller.user.value?.prenom),
-                        inputBorder: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-                        onChanged: (String prenom) => controller.user.value?.prenom = prenom,
+                        controller: TextEditingController(
+                            text: controller.user.value?.prenom),
+                        inputBorder: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(5))),
+                        onChanged: (String prenom) =>
+                            controller.user.value?.prenom = prenom,
                         labelText: 'Prénom',
                         validator: (String? value) {
                           if (value == null || value.isEmpty) {
@@ -137,6 +144,24 @@ class ProfilPage extends StatelessWidget {
                           return null;
                         }),
                   ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Obx(() {
+                    return ParamDropdownButton(
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
+                          labelText: 'Sexe',
+                          constraints: BoxConstraints(
+                              maxHeight: FitnessConstants.textFormFieldHeight),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 10)),
+                      paramName: 'sexe',
+                      initialValue: controller.user.value?.sexe,
+                      onChanged: (String? onChangedValue) =>
+                          controller.user.value!.sexe = onChangedValue,
+                    );
+                  }),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 10),
@@ -150,7 +175,8 @@ class ProfilPage extends StatelessWidget {
                       maxLength: 6,
                       keyboardType: TextInputType.phone,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      onChanged: (String value) => controller.user.value?.telephone1 = int.parse(value),
+                      onChanged: (String value) =>
+                          controller.user.value?.telephone1 = int.parse(value),
                       decoration: const InputDecoration(
                         labelText: 'Téléphone',
                         border: OutlineInputBorder(
@@ -187,15 +213,17 @@ class ProfilPage extends StatelessWidget {
                   onPressed: () {
                     if (_formKey.currentState?.validate() == true) {
                       controller.save().then((_) {
-                        showToast('Vos informations ont été mises à jour', backgroundColor: Colors.green);
+                        showToast('Vos informations ont été mises à jour',
+                            backgroundColor: Colors.green);
                       }).catchError(
-                            (_) => showToast('Erreur lors de la sauvegarde', backgroundColor: Colors.redAccent),
+                        (_) => showToast('Erreur lors de la sauvegarde',
+                            backgroundColor: Colors.redAccent),
                       );
                     }
                   },
-                  child: const Text('Enregistrer', style: TextStyle(color: Colors.white)),
+                  child: const Text('Enregistrer',
+                      style: TextStyle(color: Colors.white)),
                 ),
-
                 Padding(
                   padding: const EdgeInsets.only(top: 8, bottom: 8),
                   child: ElevatedButton(
@@ -204,10 +232,12 @@ class ProfilPage extends StatelessWidget {
                     ),
                     onPressed: () {
                       Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => const ExercicePage()),
+                        MaterialPageRoute(
+                            builder: (context) => const ExercicePage()),
                       );
                     },
-                    child: const Text('Gérer mes exercices', style: TextStyle(color: Colors.white)),
+                    child: const Text('Gérer mes exercices',
+                        style: TextStyle(color: Colors.white)),
                   ),
                 ),
                 Padding(
@@ -217,10 +247,10 @@ class ProfilPage extends StatelessWidget {
                       minimumSize: const Size(double.infinity, 35),
                     ),
                     onPressed: () => controller.signOut(),
-                    child: const Text('Me déconnecter', style: TextStyle(color: Colors.red)),
+                    child: const Text('Me déconnecter',
+                        style: TextStyle(color: Colors.red)),
                   ),
                 ),
-
               ],
             ),
           ),
