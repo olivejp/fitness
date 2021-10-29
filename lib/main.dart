@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OKToast(
-      child: LocalStorageWidget(
+      child: DarkModeWidget(
         builder: () {
           Get.put(ConnectivityService());
           Get.put(DisplayTypeController());
