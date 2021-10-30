@@ -7,7 +7,7 @@ class LayoutDisplayNotifier extends StatelessWidget {
     Key? key,
     required this.child,
     this.desktopSize = 1280,
-    this.tabletSize = 800,
+    this.tabletSize = 768,
   }) : super(key: key);
   final int desktopSize;
   final int tabletSize;

@@ -221,8 +221,8 @@ class ProfilPage extends StatelessWidget {
                       );
                     }
                   },
-                  child: const Text('Enregistrer',
-                      style: TextStyle(color: Colors.white)),
+                  child: Text('save'.tr,
+                      style: const TextStyle(color: Colors.white)),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 8, bottom: 8),
