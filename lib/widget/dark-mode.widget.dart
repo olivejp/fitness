@@ -25,3 +25,33 @@ class DarkModeWidget extends StatelessWidget {
     );
   }
 }
+
+class GetStorageWidget extends StatelessWidget {
+  const GetStorageWidget({
+    Key? key,
+    required this.child,
+    this.errorWidget,
+    this.waitingWidget,
+  }) : super(key: key);
+
+  final Widget child;
+  final Widget? errorWidget;
+  final Widget? waitingWidget;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: GetStorage.init(),
+      builder: (_, snapshot) {
+        if (snapshot.hasError || (snapshot.hasData && snapshot.data! == false)) {
+          return errorWidget ?? Container();
+        }
+        if (!snapshot.hasData) {
+          return waitingWidget ?? Container();
+        } else {
+          return child;
+        }
+      },
+    );
+  }
+}

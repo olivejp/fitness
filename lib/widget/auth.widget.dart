@@ -30,9 +30,9 @@ class AuthWidget extends StatelessWidget {
       listUrlToCache.add(userConnected!.imageUrl!);
     }
 
-    List<Exercice> listExercice = await exerciseService.getAll();
+    List<Exercice> listExercise = await exerciseService.getAll();
 
-    for (var exercise in listExercice) {
+    for (var exercise in listExercise) {
       if (exercise.imageUrl != null) {
         listUrlToCache.add(exercise.imageUrl!);
       }

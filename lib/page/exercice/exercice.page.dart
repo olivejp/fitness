@@ -6,9 +6,9 @@ import 'package:fitness_domain/widget/generic_container.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ExercicePage extends StatelessWidget {
-  const ExercicePage({Key? key}) : super(key: key);
-  final double bottomAppBarHeigth = 60;
+class ExercisePage extends StatelessWidget {
+  const ExercisePage({Key? key}) : super(key: key);
+  final double bottomAppBarHeight = 60;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,8 @@ class ExercicePage extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             StreamList<Exercice>(
-              padding: EdgeInsets.only(bottom: bottomAppBarHeigth, top: 8, left: 8, right: 8),
+              padding: EdgeInsets.only(
+                  bottom: bottomAppBarHeight, top: 8, left: 8, right: 8),
               stream: exerciceService.listenAll(),
               builder: (_, domain) => ExerciceCard(
                 exercice: domain,
@@ -36,7 +37,8 @@ class ExercicePage extends StatelessWidget {
               bottom: 0,
               left: 0,
               right: 0,
-              child: ExerciceBottomAppBar(bottomAppBarHeigth: bottomAppBarHeigth),
+              child:
+                  ExerciseBottomAppBar(bottomAppBarHeigth: bottomAppBarHeight),
             ),
           ],
         ),
@@ -45,8 +47,8 @@ class ExercicePage extends StatelessWidget {
   }
 }
 
-class ExerciceBottomAppBar extends StatelessWidget {
-  const ExerciceBottomAppBar({
+class ExerciseBottomAppBar extends StatelessWidget {
+  const ExerciseBottomAppBar({
     Key? key,
     required this.bottomAppBarHeigth,
   }) : super(key: key);
@@ -66,8 +68,8 @@ class ExerciceBottomAppBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TextButton.icon(
-                label: Text('Créer un exercice'),
-                icon: Icon(Icons.add_circle_outline_rounded),
+                label: Text('createExercise'.tr),
+                icon: const Icon(Icons.add_circle_outline_rounded),
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => AddExercicePage(
@@ -78,7 +80,7 @@ class ExerciceBottomAppBar extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: Text('Retour'),
+                child: Text('back'.tr),
               ),
             ],
           ),
@@ -118,23 +120,26 @@ class ExerciceCard extends StatelessWidget {
               Row(
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(left: imagePadding, right: imagePadding),
-                    child: ExerciceImage(exerciceImageUrl: exercice.imageUrl, dimension: imageDimension),
+                    padding: EdgeInsets.only(
+                        left: imagePadding, right: imagePadding),
+                    child: ExerciseImage(
+                        exerciseImageUrl: exercice.imageUrl,
+                        dimension: imageDimension),
                   ),
                   Text(exercice.name),
                 ],
               ),
               PopupMenuButton<dynamic>(
                 iconSize: iconSize,
-                tooltip: 'Voir plus',
+                tooltip: 'showMore'.tr,
                 icon: const Icon(Icons.more_vert, color: Colors.grey),
                 itemBuilder: (_) => <PopupMenuEntry<dynamic>>[
                   PopupMenuItem<dynamic>(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const <Widget>[
-                        Text('Stats'),
-                        Icon(
+                      children: <Widget>[
+                        Text('stats'.tr),
+                        const Icon(
                           Icons.bar_chart_outlined,
                           color: Colors.grey,
                         ),
@@ -146,9 +151,9 @@ class ExerciceCard extends StatelessWidget {
                   PopupMenuItem<dynamic>(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const <Widget>[
-                        Text('Supprimer'),
-                        Icon(
+                      children: <Widget>[
+                        Text('delete'.tr),
+                        const Icon(
                           Icons.delete,
                           color: Colors.grey,
                         ),
@@ -166,14 +171,16 @@ class ExerciceCard extends StatelessWidget {
   }
 }
 
-class ExerciceImage extends StatelessWidget {
-  const ExerciceImage({Key? key, required this.exerciceImageUrl, this.dimension = 100}) : super(key: key);
-  final String? exerciceImageUrl;
+class ExerciseImage extends StatelessWidget {
+  const ExerciseImage(
+      {Key? key, required this.exerciseImageUrl, this.dimension = 100})
+      : super(key: key);
+  final String? exerciseImageUrl;
   final double dimension;
 
   @override
   Widget build(BuildContext context) {
-    if (exerciceImageUrl != null) {
+    if (exerciseImageUrl != null) {
       return SizedBox.square(
         child: Card(
           clipBehavior: Clip.antiAlias,
@@ -181,7 +188,7 @@ class ExerciceImage extends StatelessWidget {
             borderRadius: BorderRadius.circular(5),
           ),
           child: Ink.image(
-            image: CachedNetworkImageProvider(exerciceImageUrl!),
+            image: CachedNetworkImageProvider(exerciseImageUrl!),
             fit: BoxFit.cover,
           ),
         ),

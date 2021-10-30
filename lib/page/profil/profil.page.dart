@@ -233,7 +233,7 @@ class ProfilPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                            builder: (context) => const ExercicePage()),
+                            builder: (context) => const ExercisePage()),
                       );
                     },
                     child: const Text('Gérer mes exercices',

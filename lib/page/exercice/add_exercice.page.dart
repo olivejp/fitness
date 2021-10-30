@@ -18,7 +18,8 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animations/loading_animations.dart';
 
-class AddExercicePageController extends LocalSearchControllerMixin<Exercice, ExerciceService> {
+class AddExercicePageController
+    extends LocalSearchControllerMixin<Exercice, ExerciceService> {
   final ExerciceService exerciceService = Get.find();
 
   final Rx<Exercice> exercice = Exercice().obs;
@@ -46,7 +47,8 @@ class AddExercicePageController extends LocalSearchControllerMixin<Exercice, Exe
 
 class AddExercicePage extends StatelessWidget {
   AddExercicePage({Key? key, this.exercice}) : super(key: key);
-  final AddExercicePageController controller = Get.put(AddExercicePageController());
+  final AddExercicePageController controller =
+      Get.put(AddExercicePageController());
   final ParamService paramService = ParamService.getInstance();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final Exercice? exercice;
@@ -56,7 +58,8 @@ class AddExercicePage extends StatelessWidget {
     controller.init(exercice);
     return SafeArea(
       child: Scaffold(
-        bottomNavigationBar: AddExerciceBottomAppBar(formKey: formKey, controller: controller),
+        bottomNavigationBar:
+            AddExerciceBottomAppBar(formKey: formKey, controller: controller),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Form(
@@ -73,9 +76,11 @@ class AddExercicePage extends StatelessWidget {
                             Obx(
                               () => StorageImageWidget(
                                 imageUrl: controller.exercice.value.imageUrl,
-                                storageFile: controller.exercice.value.storageFile,
+                                storageFile:
+                                    controller.exercice.value.storageFile,
                                 onSaved: controller.setStoragePair,
-                                onDeleted: () => controller.setStoragePair(null),
+                                onDeleted: () =>
+                                    controller.setStoragePair(null),
                               ),
                             ),
                             Expanded(
@@ -83,17 +88,20 @@ class AddExercicePage extends StatelessWidget {
                                 padding: const EdgeInsets.only(left: 20),
                                 child: Obx(
                                   () => TextFormField(
-                                    controller: TextEditingController(text: controller.exercice.value.name),
-                                    onChanged: (String name) => controller.exercice.value.name = name,
+                                    controller: TextEditingController(
+                                        text: controller.exercice.value.name),
+                                    onChanged: (String name) =>
+                                        controller.exercice.value.name = name,
                                     validator: (String? value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Merci de renseigner le nom du exercice.';
+                                        return 'pleaseFillExerciseName'.tr;
                                       }
                                       return null;
                                     },
                                     decoration: InputDecoration(
-                                      labelText: 'Nom',
-                                      hintStyle: GoogleFonts.roboto(fontSize: 15),
+                                      labelText: 'name'.tr,
+                                      hintStyle:
+                                          GoogleFonts.roboto(fontSize: 15),
                                       focusedBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
                                           width: 0.5,
@@ -124,20 +132,24 @@ class AddExercicePage extends StatelessWidget {
                   ),
                   FutureBuilder<List<DropdownMenuItem<String?>>>(
                     initialData: const [],
-                    future: paramService.getFutureParamAsDropdown('type_exercice', onlyName: true),
+                    future: paramService.getFutureParamAsDropdown(
+                        'type_exercice',
+                        onlyName: true),
                     builder: (_, snapshot) {
                       return DropdownButtonFormField<String?>(
                         key: key,
-                        onChanged: (String? onChangedValue) => controller.exercice.value.typeExercice = onChangedValue,
+                        onChanged: (String? onChangedValue) => controller
+                            .exercice.value.typeExercice = onChangedValue,
                         value: controller.exercice.value.typeExercice,
                         items: snapshot.data,
                         itemHeight: 50,
                         decoration: InputDecoration(
-                          labelText: "Type d\'exercice",
+                          labelText: 'exerciseType'.tr,
                           border: OutlineInputBorder(),
-                          hintText: "Type d\'exercice",
+                          hintText: 'exerciseType'.tr,
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Theme.of(context).primaryColor),
+                            borderSide: BorderSide(
+                                color: Theme.of(context).primaryColor),
                           ),
                         ),
                       );
@@ -147,14 +159,16 @@ class AddExercicePage extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 20),
                     child: Obx(
                       () => TextFormField(
-                        controller: TextEditingController(text: controller.exercice.value.description),
+                        controller: TextEditingController(
+                            text: controller.exercice.value.description),
                         maxLength: 2000,
                         minLines: 5,
                         maxLines: 20,
-                        onChanged: (String description) => controller.exercice.value.description = description,
+                        onChanged: (String description) =>
+                            controller.exercice.value.description = description,
                         decoration: InputDecoration(
-                          labelText: 'Description',
-                          helperText: 'Optionnel',
+                          labelText: 'description'.tr,
+                          helperText: 'optional'.tr,
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 0.5,
@@ -182,10 +196,11 @@ class AddExercicePage extends StatelessWidget {
                     children: [
                       TextButton.icon(
                         icon: const Icon(Icons.bar_chart),
-                        label: const Text('Voir les stats'),
+                        label: Text('displayStat'.tr),
                         onPressed: () => Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => StatExercicePage(exercice: controller.exercice.value),
+                            builder: (context) => StatExercicePage(
+                                exercice: controller.exercice.value),
                           ),
                         ),
                       ),
@@ -225,7 +240,7 @@ class AddExerciceBottomAppBar extends StatelessWidget {
             children: [
               TextButton.icon(
                 icon: const Icon(Icons.save),
-                label: const Text('Enregistrer'),
+                label: Text('save'.tr),
                 onPressed: () {
                   if (formKey.currentState?.validate() == true) {
                     controller.save().then((_) => Navigator.of(context).pop());
@@ -233,7 +248,7 @@ class AddExerciceBottomAppBar extends StatelessWidget {
                 },
               ),
               TextButton(
-                child: const Text('Retour'),
+                child: Text('back'.tr),
                 onPressed: () => Navigator.of(context).pop(),
               )
             ],
