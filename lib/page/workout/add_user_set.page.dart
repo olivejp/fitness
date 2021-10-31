@@ -3,7 +3,6 @@ import 'package:fitnc_user/page/exercice/stat-exercice.page.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/user.line.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -88,7 +87,6 @@ class UserSetUpdate extends StatelessWidget {
                   itemBuilder: (BuildContext context, int index) {
                     final GlobalKey keyReps = GlobalKey();
                     final GlobalKey keyWeight = GlobalKey();
-                    final GlobalKey keyTime = GlobalKey();
                     final UserLine userLine = controller.listLines.elementAt(index);
                     return Padding(
                       padding: EdgeInsets.only(right: padding, left: padding, top: 5),
@@ -112,7 +110,7 @@ class UserSetUpdate extends StatelessWidget {
                                     FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                                   ],
                                   decoration: InputDecoration(
-                                      constraints: BoxConstraints(maxHeight: 36),
+                                      constraints: const BoxConstraints(maxHeight: 36),
                                       border:
                                           const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
                                       focusedBorder: OutlineInputBorder(
@@ -140,7 +138,7 @@ class UserSetUpdate extends StatelessWidget {
                                     FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                                   ],
                                   decoration: InputDecoration(
-                                      constraints: BoxConstraints(maxHeight: 36),
+                                      constraints: const BoxConstraints(maxHeight: 36),
                                       border:
                                           const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
                                       focusedBorder: OutlineInputBorder(
@@ -178,8 +176,8 @@ class UserSetUpdate extends StatelessWidget {
                       builder: (context) => AddCommentAlertDialog(controller: controller),
                     );
                   },
-                  label: Text('Commentaire'),
-                  icon: Icon(Icons.note_outlined),
+                  label: const Text('Commentaire'),
+                  icon: const Icon(Icons.note_outlined),
                 )
               ],
             )
@@ -276,10 +274,10 @@ class AddCommentAlertDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     String comment = controller.userSet.value.comment ?? '';
     return AlertDialog(
-      title: Text('Ajouter un commentaire'),
+      title: const Text('Ajouter un commentaire'),
       content: TextFormField(
-        decoration: InputDecoration(
-          border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
           hintText: 'Commentaire...',
         ),
         controller: TextEditingController(text: comment),
@@ -293,11 +291,11 @@ class AddCommentAlertDialog extends StatelessWidget {
             controller.addComment(comment);
             Navigator.of(context).pop();
           },
-          child: Text('Sauver'),
+          child: const Text('Sauver'),
         ),
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text('Annuler'),
+          child: const Text('Annuler'),
         ),
       ],
     );
@@ -336,14 +334,14 @@ class RowAddRemoveSet extends StatelessWidget {
                   return IconButton(
                     onPressed: () {},
                     iconSize: 40,
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.remove_circle_outline,
                       color: Colors.grey,
                     ),
                   );
                 }
               }),
-              Text('Set'),
+              const Text('Set'),
               IconButton(
                 onPressed: () => controller.addLine(),
                 iconSize: 40,

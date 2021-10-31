@@ -2,7 +2,6 @@ import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnc_user/page/search/search.controller.dart';
 import 'package:fitness_domain/domain/trainers.domain.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,11 +17,11 @@ class ProgramDetailPage extends StatelessWidget {
         future: controller.isFollowed(),
         initialData: false,
         builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data!) {
+          if (snapshot.hasData && !snapshot.data!) {
             return FloatingActionButton.extended(
               elevation: 1,
-              onPressed: () {},
-              label: Text(
+              onPressed: () => controller.register(controller.selectedProgramme.value!),
+              label: const Text(
                 'Suivre',
                 style: TextStyle(color: Colors.white),
               ),
@@ -51,9 +50,11 @@ class ProgramDetailPage extends StatelessWidget {
                       children: [
                         Obx(
                           () => Hero(
-                            tag: "${controller.selectedProgramme.value!.uid!}-image",
+                            tag:
+                                "${controller.selectedProgramme.value!.uid!}-image",
                             child: Image(
-                              image: CachedNetworkImageProvider(controller.selectedProgramme.value!.imageUrl!),
+                              image: CachedNetworkImageProvider(controller
+                                  .selectedProgramme.value!.imageUrl!),
                               fit: BoxFit.fill,
                               width: double.infinity,
                             ),
@@ -82,15 +83,22 @@ class ProgramDetailPage extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.all(15.0),
                         child: Builder(builder: (context) {
-                          if (controller.selectedProgramme.value!.numberWeeks != null) {
-                            final int indexUnderscore = controller.selectedProgramme.value!.numberWeeks != null
-                                ? controller.selectedProgramme.value!.numberWeeks!.indexOf('_')
+                          if (controller.selectedProgramme.value!.numberWeeks !=
+                              null) {
+                            final int indexUnderscore = controller
+                                        .selectedProgramme.value!.numberWeeks !=
+                                    null
+                                ? controller
+                                    .selectedProgramme.value!.numberWeeks!
+                                    .indexOf('_')
                                 : 0;
 
-                            final int numberWeekInt = int.parse(
-                                controller.selectedProgramme.value!.numberWeeks!.substring(0, indexUnderscore));
+                            final int numberWeekInt = int.parse(controller
+                                .selectedProgramme.value!.numberWeeks!
+                                .substring(0, indexUnderscore));
                             return Hero(
-                              tag: "${controller.selectedProgramme.value!.uid}-badge",
+                              tag:
+                                  "${controller.selectedProgramme.value!.uid}-badge",
                               child: Badge(
                                 elevation: 0,
                                 toAnimate: false,
@@ -99,7 +107,8 @@ class ProgramDetailPage extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(8),
                                 badgeContent: Text(
                                   '$numberWeekInt semaines',
-                                  style: GoogleFonts.comfortaa(color: Colors.white),
+                                  style: GoogleFonts.comfortaa(
+                                      color: Colors.white),
                                 ),
                               ),
                             );
@@ -115,7 +124,8 @@ class ProgramDetailPage extends StatelessWidget {
                     child: Obx(
                       () => CreatorWidget(
                         trainers: controller.trainer.value,
-                        addToFavorite: (trainer) => controller.addToFavorite(trainer),
+                        addToFavorite: (trainer) =>
+                            controller.addToFavorite(trainer),
                       ),
                     ),
                   ),
@@ -152,7 +162,8 @@ class ProgramDetailPage extends StatelessWidget {
 }
 
 class CreatorWidget extends StatelessWidget {
-  const CreatorWidget({Key? key, required this.trainers, this.addToFavorite}) : super(key: key);
+  const CreatorWidget({Key? key, required this.trainers, this.addToFavorite})
+      : super(key: key);
   final Trainers trainers;
   final void Function(Trainers trainers)? addToFavorite;
 
@@ -171,7 +182,8 @@ class CreatorWidget extends StatelessWidget {
                     Hero(
                       tag: trainers.uid!,
                       child: CircleAvatar(
-                        foregroundImage: CachedNetworkImageProvider(trainers.imageUrl!),
+                        foregroundImage:
+                            CachedNetworkImageProvider(trainers.imageUrl!),
                       ),
                     ),
                   if (trainers.imageUrl == null)
@@ -189,7 +201,8 @@ class CreatorWidget extends StatelessWidget {
                         ),
                         Text(
                           "${trainers.name} ${trainers.prenom}",
-                          style: GoogleFonts.comfortaa(fontSize: 15, fontWeight: FontWeight.bold),
+                          style: GoogleFonts.comfortaa(
+                              fontSize: 15, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),

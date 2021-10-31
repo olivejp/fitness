@@ -22,6 +22,7 @@ dependencies:
   firebase_storage: ^10.0.3
   firebase_core: ^1.6.0
   firebase_crashlytics: ^2.2.1
+  cloud_functions: ^3.0.5
   cloud_firestore: ^2.5.1
   date_picker_timeline: ^1.2.3
   loading_animations: ^2.2.0

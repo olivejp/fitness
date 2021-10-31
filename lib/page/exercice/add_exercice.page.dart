@@ -1,25 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitnc_user/page/exercice/stat-exercice.page.dart';
-import 'package:fitnc_user/page/workout/workout-instance.page.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
-import 'package:fitnc_user/service/user-set.service.dart';
-import 'package:fitnc_user/service/workout-instance.service.dart';
-import 'package:fitnc_user/widget/time-series-chart.widget.dart';
-import 'package:fitness_domain/controller/abstract.controller.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/storage-file.dart';
-import 'package:fitness_domain/domain/user.line.domain.dart';
-import 'package:fitness_domain/domain/user.set.domain.dart';
-import 'package:fitness_domain/domain/workout-instance.domain.dart';
 import 'package:fitness_domain/service/param.service.dart';
 import 'package:fitness_domain/widget/storage_image.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:loading_animations/loading_animations.dart';
 
-class AddExercicePageController
-    extends LocalSearchControllerMixin<Exercice, ExerciceService> {
+class AddExercicePageController extends GetxController {
   final ExerciceService exerciceService = Get.find();
 
   final Rx<Exercice> exercice = Exercice().obs;
@@ -145,7 +134,7 @@ class AddExercicePage extends StatelessWidget {
                         itemHeight: 50,
                         decoration: InputDecoration(
                           labelText: 'exerciseType'.tr,
-                          border: OutlineInputBorder(),
+                          border: const OutlineInputBorder(),
                           hintText: 'exerciseType'.tr,
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
@@ -191,21 +180,22 @@ class AddExercicePage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TextButton.icon(
-                        icon: const Icon(Icons.bar_chart),
-                        label: Text('displayStat'.tr),
-                        onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => StatExercicePage(
-                                exercice: controller.exercice.value),
+                  if (controller.exercice.value.uid != null)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton.icon(
+                          icon: const Icon(Icons.bar_chart),
+                          label: Text('displayStat'.tr),
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => StatExercicePage(
+                                  exercice: controller.exercice.value),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
                 ],
               ),
             ),

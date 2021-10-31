@@ -6,16 +6,44 @@ import 'constants.dart';
 class Theming {
   static ThemeData getLightTheme() {
     return ThemeData(
-        primarySwatch: Colors.amber,
-        bottomAppBarTheme: const BottomAppBarTheme(
-          color: FitnessNcColors.white50,
+      primarySwatch: Colors.amber,
+      bottomAppBarTheme: const BottomAppBarTheme(
+        color: FitnessNcColors.white50,
+      ),
+      appBarTheme: const AppBarTheme(
+        centerTitle: true,
+        color: FitnessNcColors.darkChipBackground,
+        titleTextStyle: TextStyle(color: FitnessNcColors.amber),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ButtonStyle(
+          textStyle: MaterialStateProperty.all(
+            GoogleFonts.nunito(fontSize: 20),
+          ),
         ),
-        appBarTheme: const AppBarTheme(
-          centerTitle: true,
-          color: FitnessNcColors.darkChipBackground,
-          titleTextStyle: TextStyle(color: FitnessNcColors.amber),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: ButtonStyle(
+          textStyle: MaterialStateProperty.all(
+            GoogleFonts.nunito(fontSize: 15),
+          ),
         ),
-        textTheme: TextTheme(bodyText1: GoogleFonts.comfortaa())
+      ),
+      textTheme: TextTheme(
+        bodyText1: GoogleFonts.nunito(),
+        bodyText2: GoogleFonts.nunito(),
+        headline3: GoogleFonts.anton(
+          fontWeight: FontWeight.normal,
+          fontSize: 30,
+        ),
+
+        /// headline 6 est réservé pour le titre de l'application, notamment sur la page de login
+        headline6: GoogleFonts.anton(
+          fontWeight: FontWeight.w900,
+          fontSize: 55,
+          color: Colors.amber,
+        ),
+      ),
     );
   }
 
@@ -30,7 +58,22 @@ class Theming {
       ),
       shadowColor: Colors.black54,
       iconTheme: const IconThemeData(color: Colors.white),
-      textTheme: Typography.material2014(platform: TargetPlatform.android).white,
+      textTheme: Typography.material2014(platform: TargetPlatform.android)
+          .white
+          .copyWith(
+            bodyText1: GoogleFonts.nunito(),
+            bodyText2: GoogleFonts.nunito(),
+            headline3: GoogleFonts.anton(
+              fontWeight: FontWeight.w900,
+              fontSize: 55,
+              color: Colors.amber,
+            ),
+            headline6: GoogleFonts.anton(
+              fontWeight: FontWeight.w900,
+              fontSize: 55,
+              color: Colors.amber,
+            ),
+          ),
     );
   }
 }

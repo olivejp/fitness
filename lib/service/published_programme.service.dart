@@ -33,8 +33,8 @@ class PublishedProgrammeService extends AbstractFitnessStorageService<PublishedP
   }
 
   @override
-  String getStorageRef(User user, PublishedProgramme programme) {
-    return '$publishedProgrammeCollectionName/${programme.uid}';
+  String getStorageRef(User user, PublishedProgramme domain) {
+    return '$publishedProgrammeCollectionName/${domain.uid}';
   }
 
   Future<List<Trainers>> getTrainersWithPublishedProgram() async {

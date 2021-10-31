@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class LoginPageController extends GetxController {
-  final Rx<User?> _userConnected = null.obs;
   final RxString _loginMsgError = ''.obs;
   final RxString _email = ''.obs;
   final RxString _password = ''.obs;
   final RxBool _hidePassword = true.obs;
+  final RxBool isLoading = false.obs;
   final AuthService authService = Get.find();
 
   String? resetPasswordCode;
@@ -16,19 +16,29 @@ class LoginPageController extends GetxController {
 
   bool get hidePassword => _hidePassword.value;
 
-  void authenticate(GlobalKey<FormState> formKey) {
+  Future<UserCredential> authenticate(GlobalKey<FormState> formKey) async {
     _loginMsgError.value = '';
+
     if (formKey.currentState?.validate() == true) {
+      isLoading.value = true;
       String emailTrimmed = email.trim();
-      authService.signInWithEmailPassword(emailTrimmed, password).then((UserCredential value) {
-        userConnected = authService.getCurrentUser();
+
+      try {
+        UserCredential userCredential =
+            await authService.signInWithEmailPassword(emailTrimmed, password);
         _password.value = '';
-      }).catchError((Object? error) {
+        isLoading.value = false;
+        return userCredential;
+      } catch (error) {
+        isLoading.value = false;
         if (error is FirebaseAuthException) {
           _loginMsgError.value = error.message!;
         }
-      });
+        return Future.error(error);
+      }
     }
+
+    return Future.error('Form is invalid.');
   }
 
   set hidePassword(bool hide) {
@@ -47,12 +57,6 @@ class LoginPageController extends GetxController {
     _password.value = password;
   }
 
-  User? get userConnected => _userConnected.value;
-
-  set userConnected(User? user) {
-    _userConnected.value = user;
-  }
-
   String get loginMsgError => _loginMsgError.value;
 
   set loginMsgError(String error) {
@@ -65,7 +69,8 @@ class LoginPageController extends GetxController {
 
   Future<void> confirmPasswordReset() async {
     if (resetPasswordCode != null && newPassword != null) {
-      return await FirebaseAuth.instance.confirmPasswordReset(code: resetPasswordCode!, newPassword: newPassword!);
+      return await FirebaseAuth.instance.confirmPasswordReset(
+          code: resetPasswordCode!, newPassword: newPassword!);
     }
     return;
   }

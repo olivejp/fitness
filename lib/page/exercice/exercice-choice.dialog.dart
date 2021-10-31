@@ -3,7 +3,7 @@ import 'package:fitnc_user/page/workout/workout-instance.page.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
-import 'package:fitness_domain/controller/abstract.controller.dart';
+import 'package:fitness_domain/mixin/search.mixin.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
@@ -14,8 +14,8 @@ import 'package:loading_animations/loading_animations.dart';
 
 import 'add_exercice.page.dart';
 
-class ExerciceChoiceDialogController
-    extends LocalSearchControllerMixin<Exercice, ExerciceService> {
+class ExerciceChoiceDialogController extends GetxController with SearchMixin<Exercice> {
+  final ExerciceService service = Get.find();
   final UserSetService userSetService = Get.find();
   final WorkoutInstanceService workoutInstanceService = Get.find();
   final RxList<Exercice> listChoosen = <Exercice>[].obs;
@@ -113,7 +113,7 @@ class ExerciceChoiceDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     controller.initListSelected();
-    controller.refreshSearchController();
+    controller.initSearchList(getStreamList: controller.service.listenAll);
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -138,19 +138,18 @@ class ExerciceChoiceDialog extends StatelessWidget {
         foregroundColor: Colors.transparent,
         backgroundColor: Colors.transparent,
         bottom: PreferredSize(
-          preferredSize: Size(double.infinity, 50),
+          preferredSize: const Size(double.infinity, 50),
           child: Padding(
             padding: const EdgeInsets.only(left: 12, right: 12),
             child: TextFormField(
-              controller: TextEditingController(text: controller.query.value),
-              onChanged: (String value) => controller.query.value = value,
+              onChanged: controller.search,
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.all(5),
+                contentPadding: const EdgeInsets.all(5),
                 border: const OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(25))),
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: IconButton(
-                  onPressed: () => controller.query(''),
+                  onPressed: controller.clearSearch,
                   icon: const Icon(Icons.clear),
                 ),
                 hintText: 'searching'.tr,
@@ -171,7 +170,7 @@ class ExerciceChoiceDialog extends StatelessWidget {
               children: [
                 TextButton.icon(
                   label: Text('createExercise'.tr),
-                  icon: Icon(Icons.add_circle_outline_rounded),
+                  icon: const Icon(Icons.add_circle_outline_rounded),
                   onPressed: () {
                     if (popOnChoice) {
                       Navigator.of(context).pop();

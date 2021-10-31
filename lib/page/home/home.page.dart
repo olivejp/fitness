@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnc_user/page/calendar/calendar.page.dart';
-import 'package:fitnc_user/page/profil/profil.page.dart';
+import 'package:fitnc_user/page/profile/profile.page.dart';
 import 'package:fitnc_user/page/search/search.page.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +39,7 @@ class HomePage extends StatelessWidget {
             throw Exception(
                 'Aucune page pour index ${controller.currentPageIndex.value}');
           } else if (controller.currentPageIndex.value == profileIndex) {
-            return ProfilPage();
+            return ProfilePage();
           }
           throw Exception(
               'Aucune page pour index ${controller.currentPageIndex.value}');

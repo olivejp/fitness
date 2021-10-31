@@ -1,10 +1,12 @@
 
 import 'package:flutter/material.dart';
 
-class FitnessConstants {
+class FitnessMobileConstants {
   static const double textFormFieldHeight = 60;
   static const double bottomAppBar = 55;
   static const String appTitle = 'Fitness Nc';
+  static const String firebaseRegion = 'australia-southeast1';
+  static const String profileCommandLineArgument = 'PROFILE';
 }
 
 class FitnessNcColors {

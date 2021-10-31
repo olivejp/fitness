@@ -4,10 +4,7 @@ import 'package:fitnc_user/widget/date-picker.widget.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
 import 'package:fitness_domain/widget/generic_container.widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -51,16 +48,19 @@ class CalendarPage extends StatelessWidget {
             child: StreamBuilder<List<WorkoutInstance>>(
                 stream: controller.workoutInstanceService.listenAll(),
                 builder: (_, snapshot) {
-                  List<WorkoutInstance> list = snapshot.hasData ? snapshot.data! : [];
+                  List<WorkoutInstance> list =
+                      snapshot.hasData ? snapshot.data! : [];
                   return Timeline(list: list);
                 }),
           ),
           Expanded(
             child: Obx(
               () => StreamList<WorkoutInstance>(
-                stream: controller.listenWorkoutInstanceByDate(controller.selectedDate),
-                builder: (BuildContext context, WorkoutInstance domain) => WorkoutInstanceCard(instance: domain),
-                padding: EdgeInsets.only(top: 10),
+                stream: controller
+                    .listenWorkoutInstanceByDate(controller.selectedDate),
+                builder: (BuildContext context, WorkoutInstance domain) =>
+                    WorkoutInstanceCard(instance: domain),
+                padding: const EdgeInsets.only(top: 10),
                 separatorBuilder: (_, index) => const Divider(
                   height: 20,
                   // thickness: 20,
@@ -205,7 +205,8 @@ class CalendarDayCard extends StatelessWidget {
                     .map((e) => Icon(
                           Icons.circle,
                           size: 5,
-                          color: selected ? Theme.of(context).primaryColor : null,
+                          color:
+                              selected ? Theme.of(context).primaryColor : null,
                         ))
                     .toList(),
               ),
@@ -268,7 +269,8 @@ class WorkoutInstanceCard extends StatelessWidget {
                               builder: (_, snapshot) {
                                 if (snapshot.hasData && snapshot.data!) {
                                   return const Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 8),
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8),
                                     child: Icon(
                                       Icons.verified_rounded,
                                       color: Colors.green,
@@ -298,22 +300,25 @@ class WorkoutInstanceCard extends StatelessWidget {
                                       width: 1200,
                                       child: DateChangePicker(
                                         initialDate: instance.date,
-                                        onDateChanged: (dateTime) => dateSelected = dateTime,
+                                        onDateChanged: (dateTime) =>
+                                            dateSelected = dateTime,
                                       ),
                                     ),
                                     actions: [
                                       TextButton.icon(
                                         onPressed: () {
-                                          controller.updateDate(instance, dateSelected);
+                                          controller.updateDate(
+                                              instance, dateSelected);
                                           Navigator.of(context).pop();
                                         },
-                                        icon: Icon(Icons.check),
-                                        label: Text('Valider'),
+                                        icon: const Icon(Icons.check),
+                                        label: const Text('Valider'),
                                       ),
                                       TextButton.icon(
-                                        onPressed: () => Navigator.of(context).pop(),
-                                        icon: Icon(Icons.clear),
-                                        label: Text('Annuler'),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
+                                        icon: const Icon(Icons.clear),
+                                        label: const Text('Annuler'),
                                       )
                                     ],
                                   );
@@ -325,7 +330,8 @@ class WorkoutInstanceCard extends StatelessWidget {
                               break;
                           }
                         },
-                        itemBuilder: (BuildContext buildContext) => <PopupMenuItem<int>>[
+                        itemBuilder: (BuildContext buildContext) =>
+                            <PopupMenuItem<int>>[
                           PopupMenuItem<int>(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -373,14 +379,16 @@ class WorkoutInstanceCard extends StatelessWidget {
                           Flexible(
                             child: Column(
                               children: [
-                                if (set.nameExercice != null) Text(set.nameExercice!),
+                                if (set.nameExercice != null)
+                                  Text(set.nameExercice!),
                               ],
                             ),
                           ),
                           Flexible(
                             child: IconButton(
                               onPressed: () => controller.deleteUserSet(set),
-                              icon: Icon(Icons.delete, color: Colors.grey, size: 20),
+                              icon: const Icon(Icons.delete,
+                                  color: Colors.grey, size: 20),
                             ),
                           ),
                         ],
@@ -397,7 +405,8 @@ class WorkoutInstanceCard extends StatelessWidget {
                           onPressed: () {
                             showDialog(
                               context: context,
-                              builder: (context) => ExerciceChoiceDialog(workoutInstance: instance),
+                              builder: (context) => ExerciceChoiceDialog(
+                                  workoutInstance: instance),
                             );
                           },
                           icon: const Icon(

@@ -28,13 +28,12 @@ class ExerciceService extends AbstractFitnessStorageService<Exercice> {
   }
 
   @override
-  String getStorageRef(User user, Exercice exercice) {
-    return 'trainers/${user.uid}/exercices/${exercice.uid}/mainImage';
+  String getStorageRef(User user, Exercice domain) {
+    return 'trainers/${user.uid}/exercices/${domain.uid}/mainImage';
   }
 
   String getExerciceStoragePath(Exercice exercice) {
-    final User? user = authService.getCurrentUser();
-    if (user == null) throw Exception('Aucun utilisateur connecté');
+    User user = AuthService.getUserConnectedOrThrow();
     return 'users/${user.uid}/exercices/${exercice.uid}/mainImage';
   }
 }

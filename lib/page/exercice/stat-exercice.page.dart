@@ -7,9 +7,8 @@ import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/user.line.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/painting/text_style.dart' as textStyle;
+import 'package:flutter/src/painting/text_style.dart' as text_style;
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -213,7 +212,7 @@ class BarButtons extends StatelessWidget {
               onPressed: () => controller.typeChart.value = TypeChart.volume,
               child: Text(
                 'Volume',
-                style: textStyle.TextStyle(
+                style: text_style.TextStyle(
                     color: typeChartSelected == TypeChart.volume ? Colors.white : Theme.of(context).primaryColor),
               ),
               style: ButtonStyle(
@@ -228,7 +227,7 @@ class BarButtons extends StatelessWidget {
               onPressed: () => controller.typeChart.value = TypeChart.reps,
               child: Text(
                 'Max reps.',
-                style: textStyle.TextStyle(
+                style: text_style.TextStyle(
                     color: typeChartSelected == TypeChart.reps ? Colors.white : Theme.of(context).primaryColor),
               ),
               style: ButtonStyle(
@@ -243,7 +242,7 @@ class BarButtons extends StatelessWidget {
               onPressed: () => controller.typeChart.value = TypeChart.weight,
               child: Text(
                 'Max weight',
-                style: textStyle.TextStyle(
+                style: text_style.TextStyle(
                     color: typeChartSelected == TypeChart.weight ? Colors.white : Theme.of(context).primaryColor),
               ),
               style: ButtonStyle(
@@ -274,7 +273,7 @@ class ListSeance extends StatelessWidget {
         Expanded(
           child: SingleChildScrollView(
             child: ListView.separated(
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: listUserSet.length,
               separatorBuilder: (_, __) => const Divider(
@@ -320,7 +319,7 @@ class Chart extends StatelessWidget {
           }
 
           if (list.isEmpty) {
-            return Text('Aucun élément à afficher');
+            return const Text('Aucun élément à afficher');
           } else {
             return Obx(
               () => SimpleTimeSeriesChart(
@@ -360,7 +359,7 @@ class UserSetCard extends StatelessWidget {
               children: [
                 Text(
                   DateFormat('dd/MM/yy - kk:mm').format(userSet.date!),
-                  style: textStyle.TextStyle(fontWeight: FontWeight.bold),
+                  style: const text_style.TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
@@ -371,7 +370,7 @@ class UserSetCard extends StatelessWidget {
                         children: [
                           const Text(
                             'volume',
-                            style: textStyle.TextStyle(fontSize: 12),
+                            style: text_style.TextStyle(fontSize: 12),
                           ),
                           Text('${controller.getVolume(userSet)}'),
                         ],
@@ -380,16 +379,16 @@ class UserSetCard extends StatelessWidget {
                         children: [
                           const Text(
                             'max reps.',
-                            style: textStyle.TextStyle(fontSize: 12),
+                            style: text_style.TextStyle(fontSize: 12),
                           ),
                           Text('${controller.getMaxReps(userSet)}'),
                         ],
                       ),
                       Column(
                         children: [
-                          Text(
+                          const Text(
                             'max weight',
-                            style: textStyle.TextStyle(fontSize: 12),
+                            style: text_style.TextStyle(fontSize: 12),
                           ),
                           Text('${controller.getMaxWeight(userSet)}'),
                         ],

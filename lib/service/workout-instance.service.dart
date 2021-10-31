@@ -23,8 +23,7 @@ class WorkoutInstanceService extends AbstractFitnessStorageService<WorkoutInstan
   }
 
   String getWorkoutStoragePath(WorkoutInstance workout) {
-    final User? user = authService.getCurrentUser();
-    if (user == null) throw Exception('Aucun utilisateur connecté');
+    User user = AuthService.getUserConnectedOrThrow();
     return 'users/${user.uid}/workouts/${workout.uid}/mainImage';
   }
 

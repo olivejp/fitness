@@ -7,14 +7,11 @@ import 'package:fitnc_user/page/home/home.page.dart';
 import 'package:fitnc_user/page/login/login.page.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/service/fitness-user.service.dart';
-import 'package:fitnc_user/service/published_programme.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/fitness-user.domain.dart';
 import 'package:fitness_domain/service/auth.service.dart';
-import 'package:fitness_domain/service/firebase-storage.service.dart';
-import 'package:fitness_domain/service/firebase.service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -23,7 +20,8 @@ class AuthWidget extends StatelessWidget {
   AuthWidget({Key? key}) : super(key: key);
   final AuthService authService = Get.find();
 
-  void cacheImages(FitnessUserService fitnessUserService, ExerciceService exerciseService) async {
+  void cacheImages(FitnessUserService fitnessUserService,
+      ExerciceService exerciseService) async {
     List<String> listUrlToCache = [];
     FitnessUser? userConnected = await fitnessUserService.getConnectedUser();
     if (userConnected?.imageUrl != null) {
@@ -44,7 +42,8 @@ class AuthWidget extends StatelessWidget {
         for (String url in listUrlToCache) {
           if (url.isNotEmpty) {
             try {
-              CachedNetworkImageProvider cached = CachedNetworkImageProvider(url);
+              CachedNetworkImageProvider cached =
+                  CachedNetworkImageProvider(url);
               cached.resolve(ImageConfiguration.empty);
             } catch (e) {
               print("CACHING IMAGE FAILS !!!");
@@ -56,20 +55,20 @@ class AuthWidget extends StatelessWidget {
   }
 
   void instanciateServices() {
-    Get.put(FirebaseService());
-    Get.put(FirebaseStorageService());
-    Get.put(PublishedProgrammeService());
-
-    FitnessUserService fitnessUserService = Get.put(FitnessUserService());
-    ExerciceService exerciseService = Get.put(ExerciceService());
-    WorkoutInstanceService workoutInstanceService = Get.put(WorkoutInstanceService());
-    UserSetService userSetService = Get.put(UserSetService());
+    FitnessUserService fitnessUserService = Get.find();
+    ExerciceService exerciseService = Get.find();
+    WorkoutInstanceService workoutInstanceService = Get.find();
+    UserSetService userSetService = Get.find();
 
     // Retrieve all information from the user to store them into the local Firebase.
     cacheImages(fitnessUserService, exerciseService);
 
-    workoutInstanceService.getAll().then((value) => print('Workouts retrieved'));
-    userSetService.getAllInAnyRoot().then((value) => print('UserSets retrieved'));
+    workoutInstanceService
+        .getAll()
+        .then((value) => print('Workouts retrieved'));
+    userSetService
+        .getAllInAnyRoot()
+        .then((value) => print('UserSets retrieved'));
   }
 
   @override
@@ -85,7 +84,10 @@ class AuthWidget extends StatelessWidget {
             if (kIsWeb) {
               return HomePage();
             } else {
-              return CrashlyticsWidget(user: user);
+              return CrashlyticsWidget(
+                user: user,
+                child: HomePage(),
+              );
             }
           } else {
             return LoginPage();
@@ -102,8 +104,10 @@ class AuthWidget extends StatelessWidget {
 }
 
 class CrashlyticsWidget extends StatelessWidget {
-  const CrashlyticsWidget({Key? key, required this.user}) : super(key: key);
+  const CrashlyticsWidget({Key? key, required this.user, required this.child})
+      : super(key: key);
   final User user;
+  final Widget child;
 
   void logUser(User user) {
     FirebaseCrashlytics.instance.setUserIdentifier(user.uid);
@@ -113,7 +117,8 @@ class CrashlyticsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<void>(
-      future: FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true),
+      future:
+          FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true),
       builder: (_, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           logUser(user);

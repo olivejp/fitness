@@ -6,7 +6,6 @@ import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/user.line.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class UserSetController extends GetxController {
@@ -76,7 +75,9 @@ class UserSetController extends GetxController {
 
   void checkAll() {
     userSet.update((val) {
-      val!.lines.forEach((element) => element.checked = true);
+      for (var element in val!.lines) {
+        element.checked = true;
+      }
     });
     userSetService.save(userSet.value);
     initList(userSet.value.lines);

@@ -1,10 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitnc_user/service/published_programme.service.dart';
-import 'package:fitness_domain/domain/published_programme.domain.dart';
 import 'package:fitness_domain/domain/trainers.domain.dart';
 import 'package:fitness_domain/service/abstract.service.dart';
-import 'package:get/get.dart';
 
 class TrainersService extends AbstractFitnessStorageService<Trainers> {
   final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;

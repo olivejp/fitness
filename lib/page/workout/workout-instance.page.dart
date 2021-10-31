@@ -7,7 +7,6 @@ import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,7 +14,10 @@ import 'package:intl/intl.dart';
 import 'package:loading_animations/loading_animations.dart';
 
 class Stepper {
-  Stepper({this.checked = false, required this.userSetUid, this.allExerciceDone = false});
+  Stepper(
+      {this.checked = false,
+      required this.userSetUid,
+      this.allExerciceDone = false});
 
   bool checked;
   String? userSetUid;
@@ -40,11 +42,14 @@ class WorkoutPageController extends GetxController {
     }
 
     // On écoute tous les userSet de ce workoutInstance.
-    userSetSubscription = userSetService.listenAll(workoutInstance.uid!).listen((listUserSet) {
+    userSetSubscription =
+        userSetService.listenAll(workoutInstance.uid!).listen((listUserSet) {
       for (var userSet in listUserSet) {
-        int index = stepperList.indexWhere((stepper) => stepper.userSetUid == userSet.uid);
+        int index = stepperList
+            .indexWhere((stepper) => stepper.userSetUid == userSet.uid);
         if (index > -1) {
-          stepperList[index].allExerciceDone = userSet.lines.isNotEmpty && userSet.lines.every((uset) => uset.checked);
+          stepperList[index].allExerciceDone = userSet.lines.isNotEmpty &&
+              userSet.lines.every((uset) => uset.checked);
         }
       }
       stepperList.refresh();
@@ -58,12 +63,17 @@ class WorkoutPageController extends GetxController {
   }
 
   Future<List<UserSet>> getAllUserSet() {
-    return userSetService.orderByGet(workoutInstance.value!.uid!, 'createDate', false).then((listUserSet) {
+    return userSetService
+        .orderByGet(workoutInstance.value!.uid!, 'createDate', false)
+        .then((listUserSet) {
       stepperList.clear();
-      listUserSet.forEach((element) => stepperList.add(Stepper(
-          userSetUid: element.uid,
-          checked: false,
-          allExerciceDone: element.lines.isNotEmpty && element.lines.every((line) => line.checked))));
+      for (var element in listUserSet) {
+        stepperList.add(Stepper(
+            userSetUid: element.uid,
+            checked: false,
+            allExerciceDone: element.lines.isNotEmpty &&
+                element.lines.every((line) => line.checked)));
+      }
       if (goToLastPage) {
         changeStepper(stepperList.length - 1);
         initialPage.value = listUserSet.length - 1;
@@ -84,7 +94,8 @@ class WorkoutPageController extends GetxController {
 }
 
 class WorkoutPage extends StatelessWidget {
-  WorkoutPage({Key? key, required this.instance, this.goToLastPage = false}) : super(key: key) {
+  WorkoutPage({Key? key, required this.instance, this.goToLastPage = false})
+      : super(key: key) {
     controller.init(instance, goToLastPage: goToLastPage);
   }
 
@@ -124,7 +135,7 @@ class WorkoutPage extends StatelessWidget {
                     PopupMenuItem<dynamic>(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
+                        children: const <Widget>[
                           Text('Options'),
                           Icon(
                             Icons.more_vert,
@@ -159,7 +170,9 @@ class WorkoutPage extends StatelessWidget {
                         (Stepper e) {
                           return Icon(
                             e.checked ? Icons.circle : Icons.circle_outlined,
-                            color: e.allExerciceDone ? Colors.green : Theme.of(context).primaryColor,
+                            color: e.allExerciceDone
+                                ? Colors.green
+                                : Theme.of(context).primaryColor,
                           );
                         },
                       ).toList(),
@@ -175,7 +188,8 @@ class WorkoutPage extends StatelessWidget {
                           children: [
                             Expanded(
                               child: Center(
-                                child: Text('Error : ${snapshot.error.toString()}'),
+                                child: Text(
+                                    'Error : ${snapshot.error.toString()}'),
                               ),
                             ),
                           ],
@@ -186,11 +200,15 @@ class WorkoutPage extends StatelessWidget {
                           List<UserSet> listUserSet = snapshot.data!;
                           return Obx(() {
                             final PageController pageController =
-                                PageController(initialPage: controller.initialPage.value);
+                                PageController(
+                                    initialPage: controller.initialPage.value);
                             return PageView(
                               controller: pageController,
-                              children: listUserSet.map((e) => OpenUserSetInstance(userSet: e)).toList(),
-                              onPageChanged: (pageNumber) => controller.changeStepper(pageNumber),
+                              children: listUserSet
+                                  .map((e) => OpenUserSetInstance(userSet: e))
+                                  .toList(),
+                              onPageChanged: (pageNumber) =>
+                                  controller.changeStepper(pageNumber),
                             );
                           });
                         }
@@ -200,8 +218,8 @@ class WorkoutPage extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               TextButton.icon(
-                                label: Text('Ajouter un exercice'),
-                                icon: Icon(Icons.add_circle_outline),
+                                label: const Text('Ajouter un exercice'),
+                                icon: const Icon(Icons.add_circle_outline),
                                 onPressed: () => Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (context) => ExerciceChoiceDialog(
