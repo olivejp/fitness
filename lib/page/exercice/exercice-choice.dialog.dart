@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnc_user/page/workout/workout-instance.page.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
@@ -9,35 +8,58 @@ import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animations/loading_animations.dart';
 
 import 'add_exercice.page.dart';
 
-class ExerciceChoiceDialogController extends GetxController
+class ExerciseChoiceDialogController extends GetxController
     with SearchMixin<Exercice> {
   final ExerciceService service = Get.find();
   final UserSetService userSetService = Get.find();
   final WorkoutInstanceService workoutInstanceService = Get.find();
-  final RxList<Exercice> listChoosen = <Exercice>[].obs;
+  final RxList<Exercice> listChosen = <Exercice>[].obs;
   final WorkoutPageController workoutPageController =
       Get.put(WorkoutPageController());
 
   Future<WorkoutInstance> createNewWorkoutInstance(DateTime dateTime) async {
     DateTime now = DateTime.now();
     WorkoutInstance instance = WorkoutInstance();
-    instance.date = DateTime(dateTime.year, dateTime.month, dateTime.day,
-        now.hour, now.minute, now.second);
+    instance.date = DateTime(
+      dateTime.year,
+      dateTime.month,
+      dateTime.day,
+      now.hour,
+      now.minute,
+      now.second,
+    );
     workoutInstanceService.create(instance);
     return instance;
   }
 
-  Stream<List<Exercice>> listenAllExercice() {
+  Stream<List<Exercice>> listenAllExercise() {
     return service.listenAll();
   }
 
+  void toggle(Exercice exercise) {
+    if (listChosen
+        .map((element) => element.uid)
+        .toList()
+        .contains(exercise.uid)) {
+      listChosen.removeWhere((element) => element.uid == exercise.uid);
+    } else {
+      listChosen.add(exercise);
+    }
+  }
+
+  void initListSelected() {
+    listChosen.clear();
+  }
+
   void validate(
-      BuildContext context, bool popOnChoice, WorkoutInstance workoutInstance) {
+    BuildContext context,
+    bool popOnChoice,
+    WorkoutInstance workoutInstance,
+  ) {
     _addUserSet(workoutInstance).then(
       (userSet) {
         if (popOnChoice) {
@@ -60,36 +82,21 @@ class ExerciceChoiceDialogController extends GetxController
   }
 
   Future<void> _addUserSet(WorkoutInstance workoutInstance) async {
-    for (Exercice exercice in listChoosen) {
+    for (Exercice exercise in listChosen) {
       final UserSet userSet = UserSet(
-          uidExercice: exercice.uid!,
+          uidExercice: exercise.uid!,
           uidWorkout: workoutInstance.uid!,
-          nameExercice: exercice.name,
-          imageUrlExercice: exercice.imageUrl,
-          typeExercice: exercice.typeExercice,
+          nameExercice: exercise.name,
+          imageUrlExercice: exercise.imageUrl,
+          typeExercice: exercise.typeExercice,
           date: workoutInstance.date);
       userSetService.save(userSet);
     }
   }
-
-  void toggle(Exercice exercice) {
-    if (listChoosen
-        .map((element) => element.uid)
-        .toList()
-        .contains(exercice.uid)) {
-      listChoosen.removeWhere((element) => element.uid == exercice.uid);
-    } else {
-      listChoosen.add(exercice);
-    }
-  }
-
-  void initListSelected() {
-    listChoosen.clear();
-  }
 }
 
-class ExerciceChoiceDialog extends StatelessWidget {
-  ExerciceChoiceDialog({
+class ExerciseChoiceDialog extends StatelessWidget {
+  ExerciseChoiceDialog({
     Key? key,
     this.workoutInstance,
     this.popOnChoice = false,
@@ -102,8 +109,8 @@ class ExerciceChoiceDialog extends StatelessWidget {
         assert((isCreation && date != null) || ((!isCreation && date == null)),
             "If isCreation, date should not be null."),
         super(key: key);
-  final ExerciceChoiceDialogController controller =
-      Get.put(ExerciceChoiceDialogController());
+  final ExerciseChoiceDialogController controller =
+      Get.put(ExerciseChoiceDialogController());
   final WorkoutPageController workoutPageController =
       Get.put(WorkoutPageController());
   final WorkoutInstance? workoutInstance;
@@ -215,18 +222,18 @@ class ExerciceChoiceDialog extends StatelessWidget {
                     return Text(snapshot.error.toString());
                   }
                   if (snapshot.hasData) {
-                    final List<Exercice> listExercice = snapshot.data!;
+                    final List<Exercice> listExercise = snapshot.data!;
                     return ListView.separated(
                       shrinkWrap: true,
-                      itemCount: listExercice.length,
+                      itemCount: listExercise.length,
                       itemBuilder: (context, index) {
-                        final Exercice exercice = listExercice.elementAt(index);
+                        final Exercice exercice = listExercise.elementAt(index);
                         return InkWell(
                           onTap: () => controller.toggle(exercice),
                           child: Obx(
-                            () => ExerciceChoiceCard(
-                              exercice: exercice,
-                              selected: controller.listChoosen
+                            () => ExerciseChoiceCard(
+                              exercise: exercice,
+                              selected: controller.listChosen
                                   .map((element) => element.uid)
                                   .toList()
                                   .contains(exercice.uid),
@@ -254,13 +261,13 @@ class ExerciceChoiceDialog extends StatelessWidget {
   }
 }
 
-class ExerciceChoiceCard extends StatelessWidget {
-  const ExerciceChoiceCard({
+class ExerciseChoiceCard extends StatelessWidget {
+  const ExerciseChoiceCard({
     Key? key,
-    required this.exercice,
+    required this.exercise,
     required this.selected,
   }) : super(key: key);
-  final Exercice exercice;
+  final Exercice exercise;
   final bool selected;
 
   @override
@@ -272,25 +279,8 @@ class ExerciceChoiceCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            if (exercice.imageUrl != null)
-              Container(
-                clipBehavior: Clip.antiAlias,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25),
-                    color: Theme.of(context).primaryColor),
-                child: Image.network(
-                  exercice.imageUrl!,
-                  loadingBuilder: (_, child, loadingProgress) {
-                    return (loadingProgress != null)
-                        ? CircleAvatar(
-                            backgroundColor: Theme.of(context).primaryColor)
-                        : child;
-                  },
-                  errorBuilder: (context, error, stackTrace) => CircleAvatar(
-                    backgroundColor: Theme.of(context).primaryColor,
-                  ),
-                ),
-              )
+            if (exercise.imageUrl != null)
+              NetworkImageExerciseChoice(exercise: exercise)
             else
               CircleAvatar(
                 backgroundColor: Theme.of(context).primaryColor,
@@ -299,7 +289,7 @@ class ExerciceChoiceCard extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.only(left: 12, right: 12),
                 child: Text(
-                  exercice.name,
+                  exercise.name,
                   textAlign: TextAlign.start,
                 ),
               ),
@@ -309,6 +299,36 @@ class ExerciceChoiceCard extends StatelessWidget {
               color: selected ? Colors.green : Colors.grey,
             )
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class NetworkImageExerciseChoice extends StatelessWidget {
+  const NetworkImageExerciseChoice({
+    Key? key,
+    required this.exercise,
+  }) : super(key: key);
+
+  final Exercice exercise;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(25),
+          color: Theme.of(context).primaryColor),
+      child: Image.network(
+        exercise.imageUrl!,
+        loadingBuilder: (_, child, loadingProgress) {
+          return (loadingProgress != null)
+              ? CircleAvatar(backgroundColor: Theme.of(context).primaryColor)
+              : child;
+        },
+        errorBuilder: (context, error, stackTrace) => CircleAvatar(
+          backgroundColor: Theme.of(context).primaryColor,
         ),
       ),
     );

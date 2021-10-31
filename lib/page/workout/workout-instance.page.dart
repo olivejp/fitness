@@ -228,7 +228,7 @@ class WorkoutPage extends StatelessWidget {
                                 icon: const Icon(Icons.add_circle_outline),
                                 onPressed: () => Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (context) => ExerciceChoiceDialog(
+                                    builder: (context) => ExerciseChoiceDialog(
                                       workoutInstance: instance,
                                       popOnChoice: true,
                                     ),

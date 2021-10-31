@@ -20,7 +20,7 @@ class CalendarPage extends StatelessWidget {
     controller.initialDate = controller.selectedDate;
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => ExerciceChoiceDialog(
+        builder: (context) => ExerciseChoiceDialog(
           isCreation: true,
           date: controller.selectedDate,
           workoutInstance: null,
@@ -405,7 +405,7 @@ class WorkoutInstanceCard extends StatelessWidget {
                           onPressed: () {
                             showDialog(
                               context: context,
-                              builder: (context) => ExerciceChoiceDialog(
+                              builder: (context) => ExerciseChoiceDialog(
                                   workoutInstance: instance),
                             );
                           },
