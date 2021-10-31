@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:fitnc_user/fitness_translations.dart';
 import 'package:fitnc_user/page/login/login.page.dart';
 import 'package:fitnc_user/page/login/sign-up.page.dart';
@@ -28,44 +29,47 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  initServices() {
-    Get.lazyPut(() => ConfigService());
-    Get.lazyPut(() => ConnectivityService());
-    Get.lazyPut(() => DisplayTypeService());
-    Get.lazyPut(() => DarkModeController());
-    Get.lazyPut(() => DarkModeController());
-    Get.lazyPut(() => AuthService());
-    Get.lazyPut(() => FitnessUserService());
-    Get.lazyPut(() => PublishedProgrammeService());
-    Get.lazyPut(() => TrainersService());
-  }
-
   @override
   Widget build(BuildContext context) {
-    return OKToast(
-      child: DarkModeWidget(
-        builder: () {
-          initServices();
-          final DarkModeController darkModeController = Get.find();
-          return ValueListenableBuilder<bool>(
-            valueListenable: darkModeController.notifier,
-            builder: (_, isDarkMode, __) {
-              return GetMaterialApp(
-                initialRoute: FitnessConstants.routeHome,
-                title: FitnessMobileConstants.appTitle,
-                debugShowCheckedModeBanner: false,
-                themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-                darkTheme: Theming.getDarkTheme(),
-                theme: Theming.getLightTheme(),
-                locale: Get.deviceLocale,
-                fallbackLocale: const Locale('en', 'US'),
-                getPages: getPages(),
-                translations: FitnessTranslations(),
-              );
-            },
+    Get.lazyPut(() => DarkModeController());
+    return FutureBuilder(
+      future: Firebase.initializeApp(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          Get.lazyPut(() => ConfigService());
+          Get.lazyPut(() => ConnectivityService());
+          Get.lazyPut(() => DisplayTypeService());
+          Get.lazyPut(() => AuthService());
+          Get.lazyPut(() => FitnessUserService());
+          Get.lazyPut(() => PublishedProgrammeService());
+          Get.lazyPut(() => TrainersService());
+          return OKToast(
+            child: DarkModeWidget(
+              builder: () {
+                final DarkModeController darkModeController = Get.find();
+                return ValueListenableBuilder<bool>(
+                  valueListenable: darkModeController.notifier,
+                  builder: (_, isDarkMode, __) {
+                    return GetMaterialApp(
+                      initialRoute: FitnessConstants.routeHome,
+                      title: FitnessMobileConstants.appTitle,
+                      debugShowCheckedModeBanner: false,
+                      themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+                      darkTheme: Theming.getDarkTheme(),
+                      theme: Theming.getLightTheme(),
+                      locale: Get.deviceLocale,
+                      fallbackLocale: const Locale('en', 'US'),
+                      getPages: getPages(),
+                      translations: FitnessTranslations(),
+                    );
+                  },
+                );
+              },
+            ),
           );
-        },
-      ),
+        }
+        return Container();
+      },
     );
   }
 

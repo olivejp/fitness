@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'constants.dart';
 
 class Theming {
+
   static ThemeData getLightTheme() {
     return ThemeData(
       primarySwatch: Colors.amber,
@@ -15,34 +16,17 @@ class Theming {
         color: FitnessNcColors.darkChipBackground,
         titleTextStyle: TextStyle(color: FitnessNcColors.amber),
       ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ButtonStyle(
-          minimumSize: MaterialStateProperty.all(const Size(double.infinity, 55)),
-          textStyle: MaterialStateProperty.all(
-            GoogleFonts.nunito(fontSize: 20),
-          ),
-        ),
-      ),
-      textButtonTheme: TextButtonThemeData(
-        style: ButtonStyle(
-          textStyle: MaterialStateProperty.all(
-            GoogleFonts.nunito(fontSize: 15),
-          ),
-        ),
-      ),
-      textTheme: TextTheme(
-        bodyText1: GoogleFonts.nunito(),
-        bodyText2: GoogleFonts.nunito(),
-        headline3: GoogleFonts.anton(
-          fontWeight: FontWeight.normal,
-          fontSize: 30,
-        ),
+      elevatedButtonTheme: getElevatedButtonTheme(),
+      textButtonTheme: getTextButtonThemeData(),
+      textTheme: getTextTheme(),
+    );
+  }
 
-        /// headline 6 est réservé pour le titre de l'application, notamment sur la page de login
-        headline6: GoogleFonts.anton(
-          fontWeight: FontWeight.w900,
-          fontSize: 55,
-          color: Colors.amber,
+  static TextButtonThemeData getTextButtonThemeData() {
+    return TextButtonThemeData(
+      style: ButtonStyle(
+        textStyle: MaterialStateProperty.all(
+          GoogleFonts.nunito(fontSize: 15),
         ),
       ),
     );
@@ -75,6 +59,35 @@ class Theming {
               color: Colors.amber,
             ),
           ),
+    );
+  }
+
+  static ElevatedButtonThemeData getElevatedButtonTheme() {
+    return ElevatedButtonThemeData(
+      style: ButtonStyle(
+        minimumSize: MaterialStateProperty.all(const Size(double.infinity, 55)),
+        textStyle: MaterialStateProperty.all(
+          GoogleFonts.nunito(fontSize: 20),
+        ),
+      ),
+    );
+  }
+
+  static TextTheme getTextTheme() {
+    return TextTheme(
+      bodyText1: GoogleFonts.nunito(),
+      bodyText2: GoogleFonts.nunito(),
+      headline3: GoogleFonts.anton(
+        fontWeight: FontWeight.normal,
+        fontSize: 30,
+      ),
+
+      /// headline 6 est réservé pour le titre de l'application, notamment sur la page de login
+      headline6: GoogleFonts.anton(
+        fontWeight: FontWeight.w900,
+        fontSize: 55,
+        color: Colors.amber,
+      ),
     );
   }
 }

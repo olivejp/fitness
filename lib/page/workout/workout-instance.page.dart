@@ -113,10 +113,14 @@ class WorkoutPage extends StatelessWidget {
           child: Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.transparent,
+              toolbarHeight: 70,
               elevation: 0,
-              title: Text(
-                DateFormat('dd/MM/yy - kk:mm').format(instance.date!),
-                style: GoogleFonts.comfortaa(fontSize: 18),
+              title: Padding(
+                padding: const EdgeInsets.only(top: 0),
+                child: Text(
+                  DateFormat('dd/MM/yy - kk:mm').format(instance.date!),
+                  style: Theme.of(context).textTheme.headline3?.copyWith(color: Theme.of(context).primaryColor),
+                ),
               ),
               leading: IconButton(
                 onPressed: () {
@@ -125,11 +129,12 @@ class WorkoutPage extends StatelessWidget {
                 icon: const Icon(
                   Icons.arrow_back,
                   color: Colors.amber,
+                  size: 36,
                 ),
               ),
               actions: [
                 PopupMenuButton<dynamic>(
-                  iconSize: 24,
+                  iconSize: 36,
                   tooltip: 'Voir plus',
                   icon: const Icon(Icons.more_vert, color: Colors.grey),
                   itemBuilder: (_) => <PopupMenuItem<dynamic>>[

@@ -55,248 +55,250 @@ class _SignUpPageState extends State<SignUpPage> {
         body: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 500),
-                    child: Padding(
-                      padding: const EdgeInsets.all(30.0),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 60),
-                              child: Text(
-                                FitnessConstants.appTitle,
-                                style: Theme.of(context).textTheme.headline6,
+            Flexible(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 500),
+                      child: Padding(
+                        padding: const EdgeInsets.all(30.0),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 60),
+                                child: Text(
+                                  FitnessConstants.appTitle,
+                                  style: Theme.of(context).textTheme.headline6,
+                                ),
                               ),
-                            ),
 
-                            Text(
-                              'signUp'.tr,
-                              style: Theme.of(context).textTheme.headline3,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 20),
-                              child: TextFormField(
-                                style: GoogleFonts.roboto(fontSize: 15),
-                                decoration: InputDecoration(
-                                  fillColor: Colors.white,
-                                  filled: true,
-                                  suffixIcon: const Icon(Icons.email),
-                                  labelText: 'mail'.tr,
-                                  focusedBorder: defaultBorder,
-                                  border: defaultBorder,
-                                  enabledBorder: defaultBorder,
-                                ),
-                                onChanged: (String value) =>
-                                    controller.email = value,
-                                validator: (String? value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'pleaseFillEmail'.tr;
-                                  }
-                                  if (!RegExp(
-                                          r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
-                                      .hasMatch(value)) {
-                                    return 'emailNotCorrect'.tr;
-                                  }
-                                  return null;
-                                },
+                              Text(
+                                'signUp'.tr,
+                                style: Theme.of(context).textTheme.headline3,
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 20),
-                              child: TextFormField(
-                                  style:
-                                  GoogleFonts.roboto(fontSize: 15),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: TextFormField(
+                                  style: GoogleFonts.roboto(fontSize: 15),
                                   decoration: InputDecoration(
                                     fillColor: Colors.white,
                                     filled: true,
-                                    labelStyle: GoogleFonts.roboto(
-                                        fontSize: 15),
-                                    focusedBorder: defaultBorder,
-                                    border: defaultBorder,
-                                    enabledBorder: defaultBorder,
-                                    labelText: 'name'.tr,
-                                  ),
-                                  onChanged: (String value) =>
-                                  controller.name = value,
-                                  validator: (String? value) {
-                                    if (value == null ||
-                                        value.isEmpty) {
-                                      return 'pleaseFillYourName'.tr;
-                                    }
-                                  }),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 20),
-                              child: TextFormField(
-                                  style:
-                                  GoogleFonts.roboto(fontSize: 15),
-                                  decoration: InputDecoration(
-                                    fillColor: Colors.white,
-                                    filled: true,
-                                    labelText: 'surname'.tr,
+                                    suffixIcon: const Icon(Icons.email),
+                                    labelText: 'mail'.tr,
                                     focusedBorder: defaultBorder,
                                     border: defaultBorder,
                                     enabledBorder: defaultBorder,
                                   ),
                                   onChanged: (String value) =>
-                                  controller.prenom = value,
+                                      controller.email = value,
                                   validator: (String? value) {
-                                    if (value == null ||
-                                        value.isEmpty) {
-                                      return 'pleaseFillYourFirstName'
-                                          .tr;
+                                    if (value == null || value.isEmpty) {
+                                      return 'pleaseFillEmail'.tr;
                                     }
-                                  }),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 20),
-                              child: TextFormField(
-                                style: GoogleFonts.roboto(fontSize: 15),
-                                onChanged: (String value) =>
-                                    controller.telephone = value,
-                                decoration: InputDecoration(
-                                  fillColor: Colors.white,
-                                  filled: true,
-                                  suffixIcon: const Icon(Icons.phone_android),
-                                  labelText: 'phone'.tr,
-                                  focusedBorder: defaultBorder,
-                                  border: defaultBorder,
-                                  enabledBorder: defaultBorder,
+                                    if (!RegExp(
+                                            r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                                        .hasMatch(value)) {
+                                      return 'emailNotCorrect'.tr;
+                                    }
+                                    return null;
+                                  },
                                 ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 60),
-                              child: Obx(
-                                () => TextFormField(
-                                    style: GoogleFonts.roboto(fontSize: 15),
-                                    onChanged: (String value) =>
-                                        controller.password = value,
-                                    obscureText: hidePasswordController
-                                        .hidePassword1.value,
+                              Padding(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: TextFormField(
+                                    style:
+                                    GoogleFonts.roboto(fontSize: 15),
                                     decoration: InputDecoration(
-                                        fillColor: Colors.white,
-                                        filled: true,
-                                        labelText: 'password'.tr,
-                                        focusedBorder: defaultBorder,
-                                        border: defaultBorder,
-                                        enabledBorder: defaultBorder,
-                                        suffixIcon: IconButton(
-                                          tooltip: hidePasswordController
-                                                  .hidePassword1.value
-                                              ? 'showPassword'.tr
-                                              : 'hidePassword'.tr,
-                                          onPressed: hidePasswordController
-                                              .switchPassword1,
-                                          icon: hidePasswordController
-                                                  .hidePassword1.value
-                                              ? const Icon(
-                                                  Icons.visibility_outlined)
-                                              : const Icon(Icons
-                                                  .visibility_off_outlined),
-                                        )),
+                                      fillColor: Colors.white,
+                                      filled: true,
+                                      labelStyle: GoogleFonts.roboto(
+                                          fontSize: 15),
+                                      focusedBorder: defaultBorder,
+                                      border: defaultBorder,
+                                      enabledBorder: defaultBorder,
+                                      labelText: 'name'.tr,
+                                    ),
+                                    onChanged: (String value) =>
+                                    controller.name = value,
                                     validator: (String? value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'noEmptyPassword'.tr;
+                                      if (value == null ||
+                                          value.isEmpty) {
+                                        return 'pleaseFillYourName'.tr;
                                       }
                                     }),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 20),
-                              child: Obx(
-                                () => TextFormField(
-                                    style: GoogleFonts.roboto(fontSize: 15),
-                                    onChanged: (String value) =>
-                                        controller.passwordCheck = value,
-                                    obscureText: hidePasswordController
-                                        .hidePassword2.value,
+                              Padding(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: TextFormField(
+                                    style:
+                                    GoogleFonts.roboto(fontSize: 15),
                                     decoration: InputDecoration(
-                                        fillColor: Colors.white,
-                                        filled: true,
-                                        focusedBorder: defaultBorder,
-                                        border: defaultBorder,
-                                        enabledBorder: defaultBorder,
-                                        labelText: 'retypePassword'.tr,
-                                        suffixIcon: IconButton(
+                                      fillColor: Colors.white,
+                                      filled: true,
+                                      labelText: 'surname'.tr,
+                                      focusedBorder: defaultBorder,
+                                      border: defaultBorder,
+                                      enabledBorder: defaultBorder,
+                                    ),
+                                    onChanged: (String value) =>
+                                    controller.prenom = value,
+                                    validator: (String? value) {
+                                      if (value == null ||
+                                          value.isEmpty) {
+                                        return 'pleaseFillYourFirstName'
+                                            .tr;
+                                      }
+                                    }),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: TextFormField(
+                                  style: GoogleFonts.roboto(fontSize: 15),
+                                  onChanged: (String value) =>
+                                      controller.telephone = value,
+                                  decoration: InputDecoration(
+                                    fillColor: Colors.white,
+                                    filled: true,
+                                    suffixIcon: const Icon(Icons.phone_android),
+                                    labelText: 'phone'.tr,
+                                    focusedBorder: defaultBorder,
+                                    border: defaultBorder,
+                                    enabledBorder: defaultBorder,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 60),
+                                child: Obx(
+                                  () => TextFormField(
+                                      style: GoogleFonts.roboto(fontSize: 15),
+                                      onChanged: (String value) =>
+                                          controller.password = value,
+                                      obscureText: hidePasswordController
+                                          .hidePassword1.value,
+                                      decoration: InputDecoration(
+                                          fillColor: Colors.white,
+                                          filled: true,
+                                          labelText: 'password'.tr,
+                                          focusedBorder: defaultBorder,
+                                          border: defaultBorder,
+                                          enabledBorder: defaultBorder,
+                                          suffixIcon: IconButton(
                                             tooltip: hidePasswordController
-                                                    .hidePassword2.value
+                                                    .hidePassword1.value
                                                 ? 'showPassword'.tr
                                                 : 'hidePassword'.tr,
                                             onPressed: hidePasswordController
-                                                .switchPassword2,
+                                                .switchPassword1,
                                             icon: hidePasswordController
-                                                    .hidePassword2.value
+                                                    .hidePassword1.value
                                                 ? const Icon(
                                                     Icons.visibility_outlined)
                                                 : const Icon(Icons
-                                                    .visibility_off_outlined))),
-                                    validator: (String? value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'noEmptyPassword'.tr;
-                                      }
-                                      if (controller.password !=
-                                          controller.passwordCheck) {
-                                        return 'noIdenticalPassword'.tr;
-                                      }
-                                    }),
+                                                    .visibility_off_outlined),
+                                          )),
+                                      validator: (String? value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'noEmptyPassword'.tr;
+                                        }
+                                      }),
+                                ),
                               ),
-                            ),
-                            Padding(
+                              Padding(
                                 padding: const EdgeInsets.only(top: 20),
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      minimumSize:
-                                          const Size(double.infinity, 55)),
-                                  onPressed: onPressedEnter,
-                                  child: Text('signUp'.tr,
-                                      style: GoogleFonts.roboto(
-                                          color: Color(Colors.white.value),
-                                          fontSize: 15)),
-                                )),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 30),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Text('haveAnAccount'.tr),
-                                  TextButton(
-                                      onPressed: () => Get.offNamed(FitnessConstants.routeLogin),
-                                      child: Text(
-                                        'signIn'.tr,
-                                      )),
-                                ],
+                                child: Obx(
+                                  () => TextFormField(
+                                      style: GoogleFonts.roboto(fontSize: 15),
+                                      onChanged: (String value) =>
+                                          controller.passwordCheck = value,
+                                      obscureText: hidePasswordController
+                                          .hidePassword2.value,
+                                      decoration: InputDecoration(
+                                          fillColor: Colors.white,
+                                          filled: true,
+                                          focusedBorder: defaultBorder,
+                                          border: defaultBorder,
+                                          enabledBorder: defaultBorder,
+                                          labelText: 'retypePassword'.tr,
+                                          suffixIcon: IconButton(
+                                              tooltip: hidePasswordController
+                                                      .hidePassword2.value
+                                                  ? 'showPassword'.tr
+                                                  : 'hidePassword'.tr,
+                                              onPressed: hidePasswordController
+                                                  .switchPassword2,
+                                              icon: hidePasswordController
+                                                      .hidePassword2.value
+                                                  ? const Icon(
+                                                      Icons.visibility_outlined)
+                                                  : const Icon(Icons
+                                                      .visibility_off_outlined))),
+                                      validator: (String? value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'noEmptyPassword'.tr;
+                                        }
+                                        if (controller.password !=
+                                            controller.passwordCheck) {
+                                          return 'noIdenticalPassword'.tr;
+                                        }
+                                      }),
+                                ),
                               ),
-                            ),
-                            Obx(
-                              () {
-                                if (controller.errors.value.isNotEmpty ==
-                                    true) {
-                                  return Text(
-                                    controller.errors.value,
-                                    style: const TextStyle(color: Colors.red),
-                                  );
-                                } else {
-                                  return Container();
-                                }
-                              },
-                            ),
-                          ],
+                              Padding(
+                                  padding: const EdgeInsets.only(top: 20),
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        minimumSize:
+                                            const Size(double.infinity, 55)),
+                                    onPressed: onPressedEnter,
+                                    child: Text('signUp'.tr,
+                                        style: GoogleFonts.roboto(
+                                            color: Color(Colors.white.value),
+                                            fontSize: 15)),
+                                  )),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 30),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text('haveAnAccount'.tr),
+                                    TextButton(
+                                        onPressed: () => Get.offNamed(FitnessConstants.routeLogin),
+                                        child: Text(
+                                          'signIn'.tr,
+                                        )),
+                                  ],
+                                ),
+                              ),
+                              Obx(
+                                () {
+                                  if (controller.errors.value.isNotEmpty ==
+                                      true) {
+                                    return Text(
+                                      controller.errors.value,
+                                      style: const TextStyle(color: Colors.red),
+                                    );
+                                  } else {
+                                    return Container();
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  )
-                ],
+                    )
+                  ],
+                ),
               ),
             ),
           ],

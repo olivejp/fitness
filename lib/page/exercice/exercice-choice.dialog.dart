@@ -14,7 +14,8 @@ import 'package:loading_animations/loading_animations.dart';
 
 import 'add_exercice.page.dart';
 
-class ExerciceChoiceDialogController extends GetxController with SearchMixin<Exercice> {
+class ExerciceChoiceDialogController extends GetxController
+    with SearchMixin<Exercice> {
   final ExerciceService service = Get.find();
   final UserSetService userSetService = Get.find();
   final WorkoutInstanceService workoutInstanceService = Get.find();
@@ -109,6 +110,7 @@ class ExerciceChoiceDialog extends StatelessWidget {
   final bool popOnChoice;
   final bool isCreation;
   final DateTime? date;
+  final TextEditingController searchTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +135,9 @@ class ExerciceChoiceDialog extends StatelessWidget {
         elevation: 0,
         title: Text(
           'exerciseChoice'.tr,
-          style: GoogleFonts.alfaSlabOne(fontSize: 18),
+          style: Theme.of(context).textTheme.headline3?.copyWith(
+                color: Theme.of(context).primaryColor,
+              ),
         ),
         foregroundColor: Colors.transparent,
         backgroundColor: Colors.transparent,
@@ -142,6 +146,7 @@ class ExerciceChoiceDialog extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.only(left: 12, right: 12),
             child: TextFormField(
+              controller: searchTextController,
               onChanged: controller.search,
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.all(5),
@@ -149,7 +154,10 @@ class ExerciceChoiceDialog extends StatelessWidget {
                     borderRadius: BorderRadius.all(Radius.circular(25))),
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: IconButton(
-                  onPressed: controller.clearSearch,
+                  onPressed: () {
+                    controller.clearSearch();
+                    searchTextController.clear();
+                  },
                   icon: const Icon(Icons.clear),
                 ),
                 hintText: 'searching'.tr,
@@ -265,10 +273,25 @@ class ExerciceChoiceCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             if (exercice.imageUrl != null)
-              CircleAvatar(
-                foregroundImage: CachedNetworkImageProvider(exercice.imageUrl!),
-              ),
-            if (exercice.imageUrl == null)
+              Container(
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25),
+                    color: Theme.of(context).primaryColor),
+                child: Image.network(
+                  exercice.imageUrl!,
+                  loadingBuilder: (_, child, loadingProgress) {
+                    return (loadingProgress != null)
+                        ? CircleAvatar(
+                            backgroundColor: Theme.of(context).primaryColor)
+                        : child;
+                  },
+                  errorBuilder: (context, error, stackTrace) => CircleAvatar(
+                    backgroundColor: Theme.of(context).primaryColor,
+                  ),
+                ),
+              )
+            else
               CircleAvatar(
                 backgroundColor: Theme.of(context).primaryColor,
               ),

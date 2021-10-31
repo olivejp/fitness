@@ -6,17 +6,20 @@ import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:loading_animations/loading_animations.dart';
 
 import 'add_user_set.controller.dart';
 
 class OpenUserSetInstance extends StatelessWidget {
-  const OpenUserSetInstance({Key? key, required this.userSet}) : super(key: key);
+  const OpenUserSetInstance({Key? key, required this.userSet})
+      : super(key: key);
 
   final UserSet userSet;
 
   @override
   Widget build(BuildContext context) {
-    final UserSetController controller = Get.put(UserSetController(), tag: userSet.uid);
+    final UserSetController controller =
+        Get.put(UserSetController(), tag: userSet.uid);
     controller.init(userSet);
     return UserSetUpdate(userSet: userSet);
   }
@@ -65,7 +68,8 @@ class UserSetUpdate extends StatelessWidget {
                     child: Center(
                       child: Obx(
                         () {
-                          bool allIsChecked = controller.listLines.every((element) => element.checked);
+                          bool allIsChecked = controller.listLines
+                              .every((element) => element.checked);
                           return IconButton(
                             icon: const Icon(Icons.done_all_rounded),
                             color: allIsChecked ? Colors.green : Colors.grey,
@@ -87,9 +91,11 @@ class UserSetUpdate extends StatelessWidget {
                   itemBuilder: (BuildContext context, int index) {
                     final GlobalKey keyReps = GlobalKey();
                     final GlobalKey keyWeight = GlobalKey();
-                    final UserLine userLine = controller.listLines.elementAt(index);
+                    final UserLine userLine =
+                        controller.listLines.elementAt(index);
                     return Padding(
-                      padding: EdgeInsets.only(right: padding, left: padding, top: 5),
+                      padding: EdgeInsets.only(
+                          right: padding, left: padding, top: 5),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
@@ -100,26 +106,35 @@ class UserSetUpdate extends StatelessWidget {
                             flex: 2,
                             child: Center(
                               child: Padding(
-                                padding: const EdgeInsets.only(left: 5, right: 5),
+                                padding:
+                                    const EdgeInsets.only(left: 5, right: 5),
                                 child: TextFormField(
                                   key: keyReps,
                                   initialValue: userLine.reps,
                                   textAlign: TextAlign.center,
                                   keyboardType: TextInputType.number,
                                   inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                                    FilteringTextInputFormatter.allow(
+                                        RegExp(r'[0-9]')),
                                   ],
                                   decoration: InputDecoration(
-                                      constraints: const BoxConstraints(maxHeight: 36),
-                                      border:
-                                          const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
+                                      constraints:
+                                          const BoxConstraints(maxHeight: 36),
+                                      border: const OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(5))),
                                       focusedBorder: OutlineInputBorder(
-                                        borderRadius: const BorderRadius.all(Radius.circular(5)),
-                                        borderSide: BorderSide(width: 1, color: Theme.of(context).primaryColor),
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(5)),
+                                        borderSide: BorderSide(
+                                            width: 1,
+                                            color:
+                                                Theme.of(context).primaryColor),
                                       ),
                                       hintStyle: const TextStyle(fontSize: 14),
                                       hintText: '0'),
-                                  onChanged: (value) => controller.changeReps(index, value),
+                                  onChanged: (value) =>
+                                      controller.changeReps(index, value),
                                 ),
                               ),
                             ),
@@ -128,25 +143,34 @@ class UserSetUpdate extends StatelessWidget {
                             flex: 2,
                             child: Center(
                               child: Padding(
-                                padding: const EdgeInsets.only(left: 5, right: 5),
+                                padding:
+                                    const EdgeInsets.only(left: 5, right: 5),
                                 child: TextFormField(
                                   key: keyWeight,
                                   initialValue: userLine.weight,
                                   textAlign: TextAlign.center,
                                   keyboardType: TextInputType.number,
                                   inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                                    FilteringTextInputFormatter.allow(
+                                        RegExp(r'[0-9]')),
                                   ],
                                   decoration: InputDecoration(
-                                      constraints: const BoxConstraints(maxHeight: 36),
-                                      border:
-                                          const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
+                                      constraints:
+                                          const BoxConstraints(maxHeight: 36),
+                                      border: const OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(5))),
                                       focusedBorder: OutlineInputBorder(
-                                          borderRadius: const BorderRadius.all(Radius.circular(5)),
-                                          borderSide: BorderSide(width: 1, color: Theme.of(context).primaryColor)),
+                                          borderRadius: const BorderRadius.all(
+                                              Radius.circular(5)),
+                                          borderSide: BorderSide(
+                                              width: 1,
+                                              color: Theme.of(context)
+                                                  .primaryColor)),
                                       hintStyle: const TextStyle(fontSize: 14),
                                       hintText: '0'),
-                                  onChanged: (value) => controller.changeWeight(index, value),
+                                  onChanged: (value) =>
+                                      controller.changeWeight(index, value),
                                 ),
                               ),
                             ),
@@ -173,7 +197,8 @@ class UserSetUpdate extends StatelessWidget {
                   onPressed: () {
                     showDialog(
                       context: context,
-                      builder: (context) => AddCommentAlertDialog(controller: controller),
+                      builder: (context) =>
+                          AddCommentAlertDialog(controller: controller),
                     );
                   },
                   label: const Text('Commentaire'),
@@ -209,9 +234,11 @@ class RowExerciceDetails extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(5),
               ),
-              child: Image(
-                image: CachedNetworkImageProvider(controller.userSet.value.imageUrlExercice!),
+              child: CachedNetworkImage(
+                imageUrl: controller.userSet.value.imageUrlExercice!,
                 fit: BoxFit.cover,
+                placeholder: (context, url) => LoadingBouncingGrid.circle(),
+                errorWidget: (context, url, error) => Container(color: Theme.of(context).primaryColor,),
               ),
             ),
             dimension: 100,
@@ -240,12 +267,15 @@ class RowExerciceDetails extends StatelessWidget {
                   color: Colors.grey,
                 ),
                 onPressed: () {
-                  controller.getExercice(controller.userSet.value.uidExercice).then(
+                  controller
+                      .getExercice(controller.userSet.value.uidExercice)
+                      .then(
                     (Exercice? exercice) {
                       if (exercice != null) {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => StatExercicePage(exercice: exercice),
+                            builder: (context) =>
+                                StatExercicePage(exercice: exercice),
                           ),
                         );
                       }
@@ -277,7 +307,8 @@ class AddCommentAlertDialog extends StatelessWidget {
       title: const Text('Ajouter un commentaire'),
       content: TextFormField(
         decoration: const InputDecoration(
-          border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(5))),
           hintText: 'Commentaire...',
         ),
         controller: TextEditingController(text: comment),
@@ -328,7 +359,8 @@ class RowAddRemoveSet extends StatelessWidget {
                   return IconButton(
                     onPressed: () => controller.removeLastLine(),
                     iconSize: 40,
-                    icon: Icon(Icons.remove_circle_outline, color: Theme.of(context).primaryColor),
+                    icon: Icon(Icons.remove_circle_outline,
+                        color: Theme.of(context).primaryColor),
                   );
                 } else {
                   return IconButton(
@@ -345,7 +377,8 @@ class RowAddRemoveSet extends StatelessWidget {
               IconButton(
                 onPressed: () => controller.addLine(),
                 iconSize: 40,
-                icon: Icon(Icons.add_circle_outline, color: Theme.of(context).primaryColor),
+                icon: Icon(Icons.add_circle_outline,
+                    color: Theme.of(context).primaryColor),
               ),
             ],
           ),
@@ -378,7 +411,9 @@ class UserLineCheckWidget extends StatelessWidget {
       key: keyChecked,
       onPressed: () => onPress(index, !userLine.checked),
       icon: Icon(
-        (userLine.checked) ? Icons.check_box_rounded : Icons.check_box_outline_blank_rounded,
+        (userLine.checked)
+            ? Icons.check_box_rounded
+            : Icons.check_box_outline_blank_rounded,
         size: 30,
       ),
       color: (userLine.checked) ? Colors.green : Colors.grey,

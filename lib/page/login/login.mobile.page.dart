@@ -16,93 +16,95 @@ class LoginMobilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Flexible(
-                  child: SizedBox(
-                    width: 500,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(left: 30),
-                          child: Text(
-                            FitnessMobileConstants.appTitle,
-                            style: Theme.of(context).textTheme.headline6,
+    return SafeArea(
+      child: Stack(
+        children: [
+          Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Flexible(
+                    child: SizedBox(
+                      width: 500,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(left: 30),
+                            child: Text(
+                              FitnessMobileConstants.appTitle,
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 30, right: 30, bottom: 30),
-                          child: Column(
-                            children: <Widget>[
-                              LoginForm(
-                                formKey: formKey,
-                                paddingTop: 25,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 30),
-                                child: ElevatedButton(
-                                  onPressed: () => controller
-                                      .authenticate(formKey)
-                                      .then((value) {
-                                    if (callback != null) {
-                                      callback!(value);
-                                    }
-                                  }),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Obx(
-                                              () {
-                                            if (controller.isLoading.value) {
-                                              return LoadingBouncingGrid.circle(
-                                                size: 20,
-                                                backgroundColor: Colors.white,
-                                              );
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 30, right: 30, bottom: 30),
+                            child: Column(
+                              children: <Widget>[
+                                LoginForm(
+                                  formKey: formKey,
+                                  paddingTop: 25,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 30),
+                                  child: ElevatedButton(
+                                    onPressed: () => controller
+                                        .authenticate(formKey)
+                                        .then((value) {
+                                      if (callback != null) {
+                                        callback!(value);
+                                      }
+                                    }),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Obx(
+                                                () {
+                                              if (controller.isLoading.value) {
+                                                return LoadingBouncingGrid.circle(
+                                                  size: 20,
+                                                  backgroundColor: Colors.white,
+                                                );
+                                              }
+                                              return Container();
                                             }
-                                            return Container();
-                                          }
-                                      ),
-                                      Text(
-                                        'continue'.tr,
-                                        style: const TextStyle(
-                                            color: Colors.white),
-                                      ),
-                                      Container()
-                                    ],
+                                        ),
+                                        Text(
+                                          'continue'.tr,
+                                          style: const TextStyle(
+                                              color: Colors.white),
+                                        ),
+                                        Container()
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 15),
-                                child: TextButton(
-                                  onPressed: () => Get.offNamed(
-                                      FitnessConstants.routeSignUp),
-                                  child: Text('signUp'.tr),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 15),
+                                  child: TextButton(
+                                    onPressed: () => Get.offNamed(
+                                        FitnessConstants.routeSignUp),
+                                    child: Text('signUp'.tr),
+                                  ),
                                 ),
-                              ),
-                              Obx(() => Text(controller.loginMsgError))
-                            ],
+                                Obx(() => Text(controller.loginMsgError))
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        )
-      ],
+          )
+        ],
+      ),
     );
   }
 }

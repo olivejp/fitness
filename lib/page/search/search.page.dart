@@ -241,8 +241,7 @@ class PublishedProgrammeCard extends StatelessWidget {
                                                   ?.isNotEmpty ==
                                               true)
                                           ? Hero(
-                                              tag: publishedProgramme
-                                                  .creatorUid!,
+                                              tag: '${publishedProgramme.creatorUid!}-${publishedProgramme.uid}',
                                               child: CircleAvatar(
                                                 maxRadius: 15,
                                                 minRadius: 5,

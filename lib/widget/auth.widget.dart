@@ -61,7 +61,7 @@ class AuthWidget extends StatelessWidget {
     UserSetService userSetService = Get.find();
 
     // Retrieve all information from the user to store them into the local Firebase.
-    cacheImages(fitnessUserService, exerciseService);
+    // cacheImages(fitnessUserService, exerciseService);
 
     workoutInstanceService
         .getAll()
@@ -81,14 +81,7 @@ class AuthWidget extends StatelessWidget {
           final User? user = snapshot.data;
           if (user != null) {
             instanciateServices();
-            if (kIsWeb) {
-              return HomePage();
-            } else {
-              return CrashlyticsWidget(
-                user: user,
-                child: HomePage(),
-              );
-            }
+            return HomePage();
           } else {
             return LoginPage();
           }
