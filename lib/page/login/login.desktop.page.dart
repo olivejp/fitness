@@ -57,10 +57,6 @@ class LoginDesktopPage extends StatelessWidget {
                               Padding(
                                 padding: const EdgeInsets.only(top: 30),
                                 child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    minimumSize:
-                                        const Size(double.infinity, 55),
-                                  ),
                                   onPressed: () => controller
                                       .authenticate(formKey)
                                       .then((value) {
@@ -123,7 +119,7 @@ class LoginDesktopPage extends StatelessWidget {
             ],
           ),
         ),
-        BottomCu(),
+        const BottomCu(),
       ],
     );
   }

@@ -107,6 +107,7 @@ class WorkoutPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(
       () {
+        // ATTENTION Il faut laisser cette ligne car sinon l'obx ne sera jamais déclenché.
         bool onRefresh = controller.onRefresh.value;
         return SafeArea(
           child: Scaffold(

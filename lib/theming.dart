@@ -17,6 +17,7 @@ class Theming {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
+          minimumSize: MaterialStateProperty.all(const Size(double.infinity, 55)),
           textStyle: MaterialStateProperty.all(
             GoogleFonts.nunito(fontSize: 20),
           ),

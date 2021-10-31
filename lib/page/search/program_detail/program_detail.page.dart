@@ -20,7 +20,8 @@ class ProgramDetailPage extends StatelessWidget {
           if (snapshot.hasData && !snapshot.data!) {
             return FloatingActionButton.extended(
               elevation: 1,
-              onPressed: () => controller.register(controller.selectedProgramme.value!),
+              onPressed: () =>
+                  controller.register(controller.selectedProgramme.value!),
               label: const Text(
                 'Suivre',
                 style: TextStyle(color: Colors.white),
@@ -32,117 +33,129 @@ class ProgramDetailPage extends StatelessWidget {
         },
       ),
       body: SafeArea(
-        child: Stack(children: [
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 100),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Card(
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: Stack(
-                      children: [
-                        Obx(
-                          () => Hero(
-                            tag:
-                                "${controller.selectedProgramme.value!.uid!}-image",
-                            child: Image(
-                              image: CachedNetworkImageProvider(controller
-                                  .selectedProgramme.value!.imageUrl!),
-                              fit: BoxFit.fill,
-                              width: double.infinity,
+        child: Stack(
+            children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 500, maxHeight: double.infinity),
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 100),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Card(
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: Stack(
+                            children: [
+                              Obx(
+                                () => Hero(
+                                  tag:
+                                      "${controller.selectedProgramme.value!.uid!}-image",
+                                  child: Image(
+                                    image: CachedNetworkImageProvider(controller
+                                        .selectedProgramme.value!.imageUrl!),
+                                    fit: BoxFit.fill,
+                                    width: double.infinity,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              child: Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: Text(
+                                  controller.selectedProgramme.value!.name,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.comfortaa(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Builder(builder: (context) {
+                                if (controller
+                                        .selectedProgramme.value!.numberWeeks !=
+                                    null) {
+                                  final int indexUnderscore = controller
+                                              .selectedProgramme
+                                              .value!
+                                              .numberWeeks !=
+                                          null
+                                      ? controller
+                                          .selectedProgramme.value!.numberWeeks!
+                                          .indexOf('_')
+                                      : 0;
+
+                                  final int numberWeekInt = int.parse(controller
+                                      .selectedProgramme.value!.numberWeeks!
+                                      .substring(0, indexUnderscore));
+                                  return Hero(
+                                    tag:
+                                        "${controller.selectedProgramme.value!.uid}-badge",
+                                    child: Badge(
+                                      elevation: 0,
+                                      toAnimate: false,
+                                      shape: BadgeShape.square,
+                                      badgeColor: Theme.of(context).primaryColor,
+                                      borderRadius: BorderRadius.circular(8),
+                                      badgeContent: Text(
+                                        '$numberWeekInt semaines',
+                                        style: GoogleFonts.comfortaa(
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  return Container();
+                                }
+                              }),
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Obx(
+                            () => CreatorWidget(
+                              trainers: controller.trainer.value,
+                              addToFavorite: (trainer) =>
+                                  controller.addToFavorite(trainer),
                             ),
                           ),
                         ),
+                        if (controller.selectedProgramme.value?.description != null)
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Align(
+                              alignment: AlignmentDirectional.topStart,
+                              child: Text(
+                                controller.selectedProgramme.value!.description!,
+                                style: GoogleFonts.comfortaa(fontSize: 16),
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(
-                        child: Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Text(
-                            controller.selectedProgramme.value!.name,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.comfortaa(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Builder(builder: (context) {
-                          if (controller.selectedProgramme.value!.numberWeeks !=
-                              null) {
-                            final int indexUnderscore = controller
-                                        .selectedProgramme.value!.numberWeeks !=
-                                    null
-                                ? controller
-                                    .selectedProgramme.value!.numberWeeks!
-                                    .indexOf('_')
-                                : 0;
-
-                            final int numberWeekInt = int.parse(controller
-                                .selectedProgramme.value!.numberWeeks!
-                                .substring(0, indexUnderscore));
-                            return Hero(
-                              tag:
-                                  "${controller.selectedProgramme.value!.uid}-badge",
-                              child: Badge(
-                                elevation: 0,
-                                toAnimate: false,
-                                shape: BadgeShape.square,
-                                badgeColor: Theme.of(context).primaryColor,
-                                borderRadius: BorderRadius.circular(8),
-                                badgeContent: Text(
-                                  '$numberWeekInt semaines',
-                                  style: GoogleFonts.comfortaa(
-                                      color: Colors.white),
-                                ),
-                              ),
-                            );
-                          } else {
-                            return Container();
-                          }
-                        }),
-                      )
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Obx(
-                      () => CreatorWidget(
-                        trainers: controller.trainer.value,
-                        addToFavorite: (trainer) =>
-                            controller.addToFavorite(trainer),
-                      ),
-                    ),
-                  ),
-                  if (controller.selectedProgramme.value?.description != null)
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Align(
-                        alignment: AlignmentDirectional.topStart,
-                        child: Text(
-                          controller.selectedProgramme.value!.description!,
-                          style: GoogleFonts.comfortaa(fontSize: 16),
-                        ),
-                      ),
-                    ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
           Positioned(
             top: 10,

@@ -3,7 +3,6 @@ import 'package:fitnc_user/page/login/login.page.dart';
 import 'package:fitness_domain/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animations/loading_animations.dart';
 
 import 'login.controller.dart';
@@ -51,10 +50,6 @@ class LoginMobilePage extends StatelessWidget {
                               Padding(
                                 padding: const EdgeInsets.only(top: 30),
                                 child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    minimumSize:
-                                        const Size(double.infinity, 55),
-                                  ),
                                   onPressed: () => controller
                                       .authenticate(formKey)
                                       .then((value) {
