@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitness_domain/constants.dart';
 import 'package:fitness_domain/service/auth.service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -16,29 +17,23 @@ class LoginPageController extends GetxController {
 
   bool get hidePassword => _hidePassword.value;
 
-  Future<UserCredential> authenticate(GlobalKey<FormState> formKey) async {
+  void authenticate(GlobalKey<FormState> formKey) {
     _loginMsgError.value = '';
 
     if (formKey.currentState?.validate() == true) {
       isLoading.value = true;
       String emailTrimmed = email.trim();
-
-      try {
-        UserCredential userCredential =
-            await authService.signInWithEmailPassword(emailTrimmed, password);
+      authService.signInWithEmailPassword(emailTrimmed, password).then((value) {
         _password.value = '';
         isLoading.value = false;
-        return userCredential;
-      } catch (error) {
+        Get.offNamed(FitnessConstants.routeHome);
+      }).catchError((onError) {
         isLoading.value = false;
-        if (error is FirebaseAuthException) {
-          _loginMsgError.value = error.message!;
+        if (onError is FirebaseAuthException) {
+          _loginMsgError.value = onError.message!;
         }
-        return Future.error(error);
-      }
+      });
     }
-
-    return Future.error('Form is invalid.');
   }
 
   set hidePassword(bool hide) {

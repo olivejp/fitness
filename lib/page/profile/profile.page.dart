@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnc_user/controller/dark-mode.controller.dart';
 import 'package:fitnc_user/page/exercice/exercice.page.dart';
 import 'package:fitnc_user/service/fitness-user.service.dart';
+import 'package:fitness_domain/constants.dart';
 import 'package:fitness_domain/domain/fitness-user.domain.dart';
 import 'package:fitness_domain/domain/storage-file.dart';
 import 'package:fitness_domain/service/auth.service.dart';
@@ -64,8 +65,8 @@ class ProfilePageController extends GetxController {
     }
   }
 
-  void signOut() {
-    authService.signOut();
+  Future<void> signOut() {
+    return authService.signOut();
   }
 }
 
@@ -275,7 +276,7 @@ class ProfilePage extends StatelessWidget {
                           padding: const EdgeInsets.only(
                               top: 8, bottom: bottomPadding),
                           child: ElevatedButton(
-                            onPressed: controller.signOut,
+                            onPressed: () => controller.signOut().then((value) => Get.offNamed(FitnessConstants.routeLogin)),
                             child: Text(
                               'signOut'.tr,
                               style: const TextStyle(color: Colors.red),

@@ -13,9 +13,8 @@ import 'login.controller.dart';
 typedef CallbackUserCredential = void Function(UserCredential userCredential);
 
 class LoginPage extends StatelessWidget {
-  LoginPage({Key? key, this.callback}) : super(key: key);
+  LoginPage({Key? key}) : super(key: key);
 
-  final CallbackUserCredential? callback;
   final LoginPageController controller = Get.put(LoginPageController());
   final DisplayTypeService displayTypeController = Get.find();
 
@@ -26,10 +25,10 @@ class LoginPage extends StatelessWidget {
       body: GetX<DisplayTypeService>(
         builder: (DisplayTypeService controller) {
           print('${displayTypeController.displayType.value}');
-          return (<DisplayType>[DisplayType.mobile]
+          return (<DisplayType>[DisplayType.mobile, DisplayType.tablet]
                   .contains(displayTypeController.displayType.value))
-              ? LoginMobilePage(callback: callback,)
-              : LoginDesktopPage(callback: callback, );
+              ? LoginMobilePage()
+              : LoginDesktopPage();
         },
       ),
     );
@@ -41,9 +40,11 @@ class LoginForm extends StatelessWidget {
       {Key? key,
       required this.formKey,
       this.paddingTop = 30,
-      this.paddingInBetween = 30})
+      this.paddingInBetween = 30,
+      this.callback})
       : super(key: key);
 
+  final CallbackUserCredential? callback;
   final GlobalKey<FormState> formKey;
   final LoginPageController controller = Get.find();
   final double paddingTop;
@@ -63,6 +64,9 @@ class LoginForm extends StatelessWidget {
                 initialValue: controller.email,
                 style: GoogleFonts.roboto(fontSize: 15),
                 decoration: InputDecoration(
+                  suffixIcon: const Icon(Icons.email),
+                  fillColor: Colors.white,
+                  filled: true,
                   labelText: 'mail'.tr,
                   hintStyle: GoogleFonts.roboto(fontSize: 15),
                   focusedBorder: OutlineInputBorder(
@@ -116,6 +120,8 @@ class LoginForm extends StatelessWidget {
                     enableSuggestions: false,
                     autocorrect: false,
                     decoration: InputDecoration(
+                      fillColor: Colors.white,
+                      filled: true,
                       labelText: 'password'.tr,
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(

@@ -8,17 +8,28 @@ import 'package:loading_animations/loading_animations.dart';
 import 'login.controller.dart';
 
 class LoginMobilePage extends StatelessWidget {
-  LoginMobilePage({Key? key, this.callback}) : super(key: key);
+  LoginMobilePage({Key? key}) : super(key: key);
 
   final LoginPageController controller = Get.find();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final CallbackUserCredential? callback;
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Stack(
         children: [
+          Positioned(
+            top: 0,
+            bottom: 0,
+            right: 0,
+            left: 0,
+            child: Image.asset(
+              FitnessMobileConstants.imageLogin,
+              fit: BoxFit.cover,
+              color: Colors.white,
+              colorBlendMode: BlendMode.color,
+            ),
+          ),
           Center(
             child: SingleChildScrollView(
               child: Column(
@@ -51,28 +62,20 @@ class LoginMobilePage extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 30),
                                   child: ElevatedButton(
-                                    onPressed: () => controller
-                                        .authenticate(formKey)
-                                        .then((value) {
-                                      if (callback != null) {
-                                        callback!(value);
-                                      }
-                                    }),
+                                    onPressed: () => controller.authenticate(formKey),
                                     child: Row(
                                       mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
+                                          MainAxisAlignment.spaceAround,
                                       children: [
-                                        Obx(
-                                                () {
-                                              if (controller.isLoading.value) {
-                                                return LoadingBouncingGrid.circle(
-                                                  size: 20,
-                                                  backgroundColor: Colors.white,
-                                                );
-                                              }
-                                              return Container();
-                                            }
-                                        ),
+                                        Obx(() {
+                                          if (controller.isLoading.value) {
+                                            return LoadingBouncingGrid.circle(
+                                              size: 20,
+                                              backgroundColor: Colors.white,
+                                            );
+                                          }
+                                          return Container();
+                                        }),
                                         Text(
                                           'continue'.tr,
                                           style: const TextStyle(

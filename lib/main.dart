@@ -1,12 +1,16 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fitnc_user/fitness_translations.dart';
+import 'package:fitnc_user/page/home/home.page.dart';
 import 'package:fitnc_user/page/login/login.page.dart';
 import 'package:fitnc_user/page/login/sign-up.page.dart';
 import 'package:fitnc_user/service/config.service.dart';
 import 'package:fitnc_user/service/connectivity.service.dart';
+import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/service/fitness-user.service.dart';
 import 'package:fitnc_user/service/published_programme.service.dart';
 import 'package:fitnc_user/service/trainers.service.dart';
+import 'package:fitnc_user/service/user-set.service.dart';
+import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:fitnc_user/theming.dart';
 import 'package:fitnc_user/widget/dark-mode.widget.dart';
 import 'package:fitnc_user/widget/firebase.widget.dart';
@@ -15,6 +19,7 @@ import 'package:fitness_domain/middleware/is_connected_middleware.dart';
 import 'package:fitness_domain/middleware/layout_notifier_middleware.dart';
 import 'package:fitness_domain/service/auth.service.dart';
 import 'package:fitness_domain/service/display.service.dart';
+import 'package:fitness_domain/service/firebase-storage.service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
@@ -43,6 +48,10 @@ class MyApp extends StatelessWidget {
           Get.lazyPut(() => FitnessUserService());
           Get.lazyPut(() => PublishedProgrammeService());
           Get.lazyPut(() => TrainersService());
+          Get.lazyPut(() => FirebaseStorageService());
+          Get.lazyPut(() => ExerciceService());
+          Get.lazyPut(() => WorkoutInstanceService());
+          Get.lazyPut(() => UserSetService());
           return OKToast(
             child: DarkModeWidget(
               builder: () {
@@ -84,23 +93,19 @@ class MyApp extends StatelessWidget {
           IsConnectedMiddleware(),
           LayoutNotifierMiddleware(),
         ],
-        page: () => FirebaseWidget(),
+        page: () => HomePage(),
       ),
       GetPage<SignUpPage>(
         name: FitnessConstants.routeSignUp,
+        // transition: Transition.fadeIn,
         middlewares: <GetMiddleware>[LayoutNotifierMiddleware()],
-        page: () => SignUpPage(
-          callback: (userCredential) =>
-              Get.offNamed(FitnessConstants.routeHome),
-        ),
+        page: () => SignUpPage(),
       ),
       GetPage<LoginPage>(
         name: FitnessConstants.routeLogin,
+        // transition: Transition.fadeIn,
         middlewares: <GetMiddleware>[LayoutNotifierMiddleware()],
-        page: () => LoginPage(
-          callback: (userCredential) =>
-              Get.offNamed(FitnessConstants.routeHome),
-        ),
+        page: () => LoginPage(),
       ),
     ];
   }

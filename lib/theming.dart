@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'constants.dart';
 
 class Theming {
-
   static ThemeData getLightTheme() {
     return ThemeData(
       primarySwatch: Colors.amber,
@@ -14,7 +13,9 @@ class Theming {
       appBarTheme: const AppBarTheme(
         centerTitle: true,
         color: FitnessNcColors.darkChipBackground,
-        titleTextStyle: TextStyle(color: FitnessNcColors.amber),
+        titleTextStyle: TextStyle(
+          color: FitnessNcColors.amber,
+        ),
       ),
       elevatedButtonTheme: getElevatedButtonTheme(),
       textButtonTheme: getTextButtonThemeData(),

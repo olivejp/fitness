@@ -2,6 +2,7 @@ import 'package:fitnc_user/page/workout/workout-instance.page.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
+import 'package:fitnc_user/widget/network_image.widget.dart';
 import 'package:fitness_domain/mixin/search.mixin.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
@@ -279,12 +280,9 @@ class ExerciseChoiceCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            if (exercise.imageUrl != null)
-              NetworkImageExerciseChoice(exercise: exercise)
-            else
-              CircleAvatar(
-                backgroundColor: Theme.of(context).primaryColor,
-              ),
+            NetworkImageExerciseChoice(
+              imageUrl: exercise.imageUrl,
+            ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(left: 12, right: 12),
@@ -299,36 +297,6 @@ class ExerciseChoiceCard extends StatelessWidget {
               color: selected ? Colors.green : Colors.grey,
             )
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class NetworkImageExerciseChoice extends StatelessWidget {
-  const NetworkImageExerciseChoice({
-    Key? key,
-    required this.exercise,
-  }) : super(key: key);
-
-  final Exercice exercise;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(25),
-          color: Theme.of(context).primaryColor),
-      child: Image.network(
-        exercise.imageUrl!,
-        loadingBuilder: (_, child, loadingProgress) {
-          return (loadingProgress != null)
-              ? CircleAvatar(backgroundColor: Theme.of(context).primaryColor)
-              : child;
-        },
-        errorBuilder: (context, error, stackTrace) => CircleAvatar(
-          backgroundColor: Theme.of(context).primaryColor,
         ),
       ),
     );

@@ -55,8 +55,6 @@ class AuthWidget extends StatelessWidget {
   }
 
   void instanciateServices() {
-    FitnessUserService fitnessUserService = Get.find();
-    ExerciceService exerciseService = Get.find();
     WorkoutInstanceService workoutInstanceService = Get.find();
     UserSetService userSetService = Get.find();
 
@@ -79,10 +77,8 @@ class AuthWidget extends StatelessWidget {
       builder: (_, AsyncSnapshot<User?> snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
           final User? user = snapshot.data;
-          if (user != null) {
-            instanciateServices();
-            return HomePage();
-          } else {
+          if (user == null) {
+
             return LoginPage();
           }
         }

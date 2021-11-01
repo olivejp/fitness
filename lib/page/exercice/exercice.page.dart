@@ -1,6 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnc_user/page/exercice/add_exercice.page.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
+import 'package:fitnc_user/widget/network_image.widget.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/widget/generic_container.widget.dart';
 import 'package:flutter/material.dart';
@@ -19,11 +19,18 @@ class ExercisePage extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             StreamList<Exercice>(
+              emptyWidget: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: const [
+                  Text('Aucun exercice trouvé.'),
+                ],
+              ),
               padding: EdgeInsets.only(
                   bottom: bottomAppBarHeight, top: 8, left: 8, right: 8),
               stream: exerciceService.listenAll(),
-              builder: (_, domain) => ExerciceCard(
-                exercice: domain,
+              builder: (_, domain) => ExerciseCard(
+                exercise: domain,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => AddExercicePage(
@@ -90,14 +97,14 @@ class ExerciseBottomAppBar extends StatelessWidget {
   }
 }
 
-class ExerciceCard extends StatelessWidget {
-  const ExerciceCard({
+class ExerciseCard extends StatelessWidget {
+  const ExerciseCard({
     Key? key,
-    required this.exercice,
+    required this.exercise,
     this.onTap,
   }) : super(key: key);
 
-  final Exercice exercice;
+  final Exercice exercise;
   final GestureTapCallback? onTap;
   final double cardHeight = 80;
   final double imageDimension = 60;
@@ -122,11 +129,12 @@ class ExerciceCard extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(
                         left: imagePadding, right: imagePadding),
-                    child: ExerciseImage(
-                        exerciseImageUrl: exercice.imageUrl,
-                        dimension: imageDimension),
+                    child: NetworkImageExerciseChoice(
+                      imageUrl: exercise.imageUrl,
+                      radius: 5,
+                    ),
                   ),
-                  Text(exercice.name),
+                  Text(exercise.name),
                 ],
               ),
               PopupMenuButton<dynamic>(
@@ -159,7 +167,7 @@ class ExerciceCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    onTap: () => service.delete(exercice),
+                    onTap: () => service.delete(exercise),
                   ),
                 ],
               ),
@@ -168,43 +176,5 @@ class ExerciceCard extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class ExerciseImage extends StatelessWidget {
-  const ExerciseImage(
-      {Key? key, required this.exerciseImageUrl, this.dimension = 100})
-      : super(key: key);
-  final String? exerciseImageUrl;
-  final double dimension;
-
-  @override
-  Widget build(BuildContext context) {
-    if (exerciseImageUrl != null) {
-      return SizedBox.square(
-        child: Card(
-          clipBehavior: Clip.antiAlias,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
-          ),
-          child: Ink.image(
-            image: CachedNetworkImageProvider(exerciseImageUrl!),
-            fit: BoxFit.cover,
-          ),
-        ),
-        dimension: dimension,
-      );
-    } else {
-      return SizedBox.square(
-        child: Card(
-          clipBehavior: Clip.antiAlias,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
-          ),
-          child: Container(color: Theme.of(context).primaryColor),
-        ),
-        dimension: dimension,
-      );
-    }
   }
 }

@@ -25,14 +25,6 @@ class SignUpController extends GetxController {
     return completer.future;
   }
 
-  Future<bool> disconnect() {
-    final Completer<bool> completer = Completer<bool>();
-
-    authService.signOut().then((_) => completer.complete(true)).catchError((Object error) => completer.completeError(false));
-
-    return completer.future;
-  }
-
   void setError(String error) {
     errors.value = error;
   }
