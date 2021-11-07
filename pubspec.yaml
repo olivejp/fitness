@@ -43,7 +43,7 @@ dependencies:
   fitness_domain:
     path: ../fitnc_trainer/packages/fitness_domain
   intl: ^0.17.0
-  camera: ^0.9.4
+  camera: ^0.9.4+3
 dev_dependencies:
   flutter_test:
     sdk: flutter
