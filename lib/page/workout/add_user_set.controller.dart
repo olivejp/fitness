@@ -73,6 +73,20 @@ class UserSetController extends GetxController {
     initList(userSet.value.lines);
   }
 
+  void changeTime(int index, String value) {
+    userSet.value.lines[index].time = value;
+    afterDebounce(() {
+      userSetService.save(userSet.value);
+    });
+  }
+
+  void changeDist(int index, String value) {
+    userSet.value.lines[index].dist = value;
+    afterDebounce(() {
+      userSetService.save(userSet.value);
+    });
+  }
+
   void checkAll() {
     userSet.update((val) {
       for (var element in val!.lines) {
@@ -90,7 +104,7 @@ class UserSetController extends GetxController {
     userSetService.save(userSet.value);
   }
 
-  Future<Exercice?> getExercice(String uidExercice) {
-    return exerciceService.read(uidExercice);
+  Future<Exercice?> getExercise(String uidExercise) {
+    return exerciceService.read(uidExercise);
   }
 }

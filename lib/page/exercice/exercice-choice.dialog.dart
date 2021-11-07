@@ -193,8 +193,8 @@ class ExerciseChoiceDialog extends StatelessWidget {
                     } else {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (_) => AddExercicePage(
-                            exercice: null,
+                          builder: (_) => AddExercisePage(
+                            exercise: null,
                           ),
                         ),
                       );

@@ -238,7 +238,9 @@ class RowExerciceDetails extends StatelessWidget {
                 imageUrl: controller.userSet.value.imageUrlExercice!,
                 fit: BoxFit.cover,
                 placeholder: (context, url) => LoadingBouncingGrid.circle(),
-                errorWidget: (context, url, error) => Container(color: Theme.of(context).primaryColor,),
+                errorWidget: (context, url, error) => Container(
+                  color: Theme.of(context).primaryColor,
+                ),
               ),
             ),
             dimension: 100,
@@ -268,14 +270,14 @@ class RowExerciceDetails extends StatelessWidget {
                 ),
                 onPressed: () {
                   controller
-                      .getExercice(controller.userSet.value.uidExercice)
+                      .getExercise(controller.userSet.value.uidExercice)
                       .then(
-                    (Exercice? exercice) {
-                      if (exercice != null) {
+                    (Exercice? exercise) {
+                      if (exercise != null) {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) =>
-                                StatExercicePage(exercice: exercice),
+                                StatExercicePage(exercice: exercise),
                           ),
                         );
                       }

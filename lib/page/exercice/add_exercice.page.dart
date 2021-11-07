@@ -8,25 +8,25 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class AddExercicePageController extends GetxController {
-  final ExerciceService exerciceService = Get.find();
+class AddExercisePageController extends GetxController {
+  final ExerciceService exerciseService = Get.find();
 
-  final Rx<Exercice> exercice = Exercice().obs;
+  final Rx<Exercice> exercise = Exercice().obs;
 
-  void init(Exercice? exercice) {
-    if (exercice == null) {
-      this.exercice.value = Exercice();
+  void init(Exercice? exercise) {
+    if (exercise == null) {
+      this.exercise.value = Exercice();
     } else {
-      this.exercice.value = exercice;
+      this.exercise.value = exercise;
     }
   }
 
   Future<void> save() {
-    return exerciceService.save(exercice.value);
+    return exerciseService.save(exercise.value);
   }
 
   void setStoragePair(StorageFile? storageFile) {
-    exercice.update((val) {
+    exercise.update((val) {
       if (val != null) {
         val.storageFile = storageFile;
       }
@@ -34,21 +34,24 @@ class AddExercicePageController extends GetxController {
   }
 }
 
-class AddExercicePage extends StatelessWidget {
-  AddExercicePage({Key? key, this.exercice}) : super(key: key);
-  final AddExercicePageController controller =
-      Get.put(AddExercicePageController());
+///
+/// Widget page to add a new exercise.
+///
+class AddExercisePage extends StatelessWidget {
+  AddExercisePage({Key? key, this.exercise}) : super(key: key);
+  final AddExercisePageController controller =
+      Get.put(AddExercisePageController());
   final ParamService paramService = ParamService.getInstance();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final Exercice? exercice;
+  final Exercice? exercise;
 
   @override
   Widget build(BuildContext context) {
-    controller.init(exercice);
+    controller.init(exercise);
     return SafeArea(
       child: Scaffold(
         bottomNavigationBar:
-            AddExerciceBottomAppBar(formKey: formKey, controller: controller),
+            AddExerciseBottomAppBar(formKey: formKey, controller: controller),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Form(
@@ -64,9 +67,9 @@ class AddExercicePage extends StatelessWidget {
                           children: <Widget>[
                             Obx(
                               () => StorageImageWidget(
-                                imageUrl: controller.exercice.value.imageUrl,
+                                imageUrl: controller.exercise.value.imageUrl,
                                 storageFile:
-                                    controller.exercice.value.storageFile,
+                                    controller.exercise.value.storageFile,
                                 onSaved: controller.setStoragePair,
                                 onDeleted: () =>
                                     controller.setStoragePair(null),
@@ -78,9 +81,9 @@ class AddExercicePage extends StatelessWidget {
                                 child: Obx(
                                   () => TextFormField(
                                     controller: TextEditingController(
-                                        text: controller.exercice.value.name),
+                                        text: controller.exercise.value.name),
                                     onChanged: (String name) =>
-                                        controller.exercice.value.name = name,
+                                        controller.exercise.value.name = name,
                                     validator: (String? value) {
                                       if (value == null || value.isEmpty) {
                                         return 'pleaseFillExerciseName'.tr;
@@ -128,8 +131,8 @@ class AddExercicePage extends StatelessWidget {
                       return DropdownButtonFormField<String?>(
                         key: key,
                         onChanged: (String? onChangedValue) => controller
-                            .exercice.value.typeExercice = onChangedValue,
-                        value: controller.exercice.value.typeExercice,
+                            .exercise.value.typeExercice = onChangedValue,
+                        value: controller.exercise.value.typeExercice,
                         items: snapshot.data,
                         itemHeight: 50,
                         decoration: InputDecoration(
@@ -149,12 +152,12 @@ class AddExercicePage extends StatelessWidget {
                     child: Obx(
                       () => TextFormField(
                         controller: TextEditingController(
-                            text: controller.exercice.value.description),
+                            text: controller.exercise.value.description),
                         maxLength: 2000,
                         minLines: 5,
                         maxLines: 20,
                         onChanged: (String description) =>
-                            controller.exercice.value.description = description,
+                            controller.exercise.value.description = description,
                         decoration: InputDecoration(
                           labelText: 'description'.tr,
                           helperText: 'optional'.tr,
@@ -180,7 +183,7 @@ class AddExercicePage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (controller.exercice.value.uid != null)
+                  if (controller.exercise.value.uid != null)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -190,7 +193,7 @@ class AddExercicePage extends StatelessWidget {
                           onPressed: () => Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => StatExercicePage(
-                                  exercice: controller.exercice.value),
+                                  exercice: controller.exercise.value),
                             ),
                           ),
                         ),
@@ -206,15 +209,15 @@ class AddExercicePage extends StatelessWidget {
   }
 }
 
-class AddExerciceBottomAppBar extends StatelessWidget {
-  const AddExerciceBottomAppBar({
+class AddExerciseBottomAppBar extends StatelessWidget {
+  const AddExerciseBottomAppBar({
     Key? key,
     required this.formKey,
     required this.controller,
   }) : super(key: key);
 
   final GlobalKey<FormState> formKey;
-  final AddExercicePageController controller;
+  final AddExercisePageController controller;
 
   @override
   Widget build(BuildContext context) {

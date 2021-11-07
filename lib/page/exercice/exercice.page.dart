@@ -33,8 +33,8 @@ class ExercisePage extends StatelessWidget {
                 exercise: domain,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => AddExercicePage(
-                      exercice: domain,
+                    builder: (context) => AddExercisePage(
+                      exercise: domain,
                     ),
                   ),
                 ),
@@ -79,8 +79,8 @@ class ExerciseBottomAppBar extends StatelessWidget {
                 icon: const Icon(Icons.add_circle_outline_rounded),
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => AddExercicePage(
-                      exercice: Exercice(),
+                    builder: (context) => AddExercisePage(
+                      exercise: Exercice(),
                     ),
                   ),
                 ),

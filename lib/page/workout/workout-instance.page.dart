@@ -16,11 +16,11 @@ class Stepper {
   Stepper(
       {this.checked = false,
       required this.userSetUid,
-      this.allExerciceDone = false});
+      this.allExerciseDone = false});
 
   bool checked;
   String? userSetUid;
-  bool allExerciceDone;
+  bool allExerciseDone;
 }
 
 class WorkoutPageController extends GetxController {
@@ -47,7 +47,7 @@ class WorkoutPageController extends GetxController {
         int index = stepperList
             .indexWhere((stepper) => stepper.userSetUid == userSet.uid);
         if (index > -1) {
-          stepperList[index].allExerciceDone = userSet.lines.isNotEmpty &&
+          stepperList[index].allExerciseDone = userSet.lines.isNotEmpty &&
               userSet.lines.every((uset) => uset.checked);
         }
       }
@@ -70,7 +70,7 @@ class WorkoutPageController extends GetxController {
         stepperList.add(Stepper(
             userSetUid: element.uid,
             checked: false,
-            allExerciceDone: element.lines.isNotEmpty &&
+            allExerciseDone: element.lines.isNotEmpty &&
                 element.lines.every((line) => line.checked)));
       }
       if (goToLastPage) {
@@ -134,15 +134,15 @@ class WorkoutPage extends StatelessWidget {
               actions: [
                 PopupMenuButton<dynamic>(
                   iconSize: 36,
-                  tooltip: 'Voir plus',
+                  tooltip: 'showMore'.tr,
                   icon: const Icon(Icons.more_vert, color: Colors.grey),
                   itemBuilder: (_) => <PopupMenuItem<dynamic>>[
                     PopupMenuItem<dynamic>(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const <Widget>[
-                          Text('Options'),
-                          Icon(
+                        children: <Widget>[
+                          Text('options'.tr),
+                          const Icon(
                             Icons.more_vert,
                             color: Colors.grey,
                           ),
@@ -157,7 +157,7 @@ class WorkoutPage extends StatelessWidget {
             floatingActionButton: FloatingActionButton(
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => AddExercicePage(),
+                  builder: (context) => AddExercisePage(),
                 ),
               ),
               child: const Icon(
@@ -175,7 +175,7 @@ class WorkoutPage extends StatelessWidget {
                         (Stepper e) {
                           return Icon(
                             e.checked ? Icons.circle : Icons.circle_outlined,
-                            color: e.allExerciceDone
+                            color: e.allExerciseDone
                                 ? Colors.green
                                 : Theme.of(context).primaryColor,
                           );
@@ -223,7 +223,7 @@ class WorkoutPage extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               TextButton.icon(
-                                label: const Text('Ajouter un exercice'),
+                                label: Text('addExercise'.tr),
                                 icon: const Icon(Icons.add_circle_outline),
                                 onPressed: () => Navigator.of(context).push(
                                   MaterialPageRoute(
