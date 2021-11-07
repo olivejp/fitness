@@ -1,5 +1,6 @@
 import 'package:fitnc_user/constants.dart';
 import 'package:fitnc_user/page/login/login.page.dart';
+import 'package:fitnc_user/widget/bottom.widget.dart';
 import 'package:fitness_domain/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -105,6 +106,10 @@ class LoginMobilePage extends StatelessWidget {
                 ],
               ),
             ),
+          ),
+          const Positioned(
+            bottom: 0,
+            child: BottomCu(),
           )
         ],
       ),
