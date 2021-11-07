@@ -33,6 +33,45 @@ class UserSetUpdate extends StatelessWidget {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final ScrollController scrollController = ScrollController();
 
+  List<Widget> getColumns() {
+    switch (userSet.typeExercice) {
+      case 'REPS_WEIGHT':
+        return [
+          const Flexible(
+            flex: 2,
+            child: Center(child: Text('Reps')),
+          ),
+          const Flexible(
+            flex: 2,
+            child: Center(child: Text('Weight')),
+          )
+        ];
+      case 'REPS':
+        return [
+          const Flexible(
+            flex: 4,
+            child: Center(child: Text('Reps')),
+          )
+        ];
+      case 'TIME':
+        return [
+          const Flexible(
+            flex: 4,
+            child: Center(child: Text('Time')),
+          )
+        ];
+      case 'DIST':
+        return [
+          const Flexible(
+            flex: 4,
+            child: Center(child: Text('Dist')),
+          )
+        ];
+      default:
+        return [];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final UserSetController controller = Get.find(tag: userSet.uid);
@@ -56,14 +95,7 @@ class UserSetUpdate extends StatelessWidget {
                   const Flexible(
                     child: Center(child: Text('Sets')),
                   ),
-                  const Flexible(
-                    flex: 2,
-                    child: Center(child: Text('Reps')),
-                  ),
-                  const Flexible(
-                    flex: 2,
-                    child: Center(child: Text('Weight')),
-                  ),
+                  ...getColumns(),
                   Flexible(
                     child: Center(
                       child: Obx(
@@ -104,75 +136,24 @@ class UserSetUpdate extends StatelessWidget {
                           ),
                           Flexible(
                             flex: 2,
-                            child: Center(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 5, right: 5),
-                                child: TextFormField(
-                                  key: keyReps,
-                                  initialValue: userLine.reps,
-                                  textAlign: TextAlign.center,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp(r'[0-9]')),
-                                  ],
-                                  decoration: InputDecoration(
-                                      constraints:
-                                          const BoxConstraints(maxHeight: 36),
-                                      border: const OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(5))),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: const BorderRadius.all(
-                                            Radius.circular(5)),
-                                        borderSide: BorderSide(
-                                            width: 1,
-                                            color:
-                                                Theme.of(context).primaryColor),
-                                      ),
-                                      hintStyle: const TextStyle(fontSize: 14),
-                                      hintText: '0'),
-                                  onChanged: (value) =>
-                                      controller.changeReps(index, value),
-                                ),
-                              ),
+                            child: TextInputWidget(
+                              keyWeight: keyReps,
+                              userLine: userLine,
+                              controller: controller,
+                              initialValue: userLine.reps,
+                              index: index,
+                              callback: controller.changeReps,
                             ),
                           ),
                           Flexible(
                             flex: 2,
-                            child: Center(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 5, right: 5),
-                                child: TextFormField(
-                                  key: keyWeight,
-                                  initialValue: userLine.weight,
-                                  textAlign: TextAlign.center,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp(r'[0-9]')),
-                                  ],
-                                  decoration: InputDecoration(
-                                      constraints:
-                                          const BoxConstraints(maxHeight: 36),
-                                      border: const OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(5))),
-                                      focusedBorder: OutlineInputBorder(
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(5)),
-                                          borderSide: BorderSide(
-                                              width: 1,
-                                              color: Theme.of(context)
-                                                  .primaryColor)),
-                                      hintStyle: const TextStyle(fontSize: 14),
-                                      hintText: '0'),
-                                  onChanged: (value) =>
-                                      controller.changeWeight(index, value),
-                                ),
-                              ),
+                            child: TextInputWidget(
+                              keyWeight: keyWeight,
+                              userLine: userLine,
+                              controller: controller,
+                              initialValue: userLine.weight,
+                              index: index,
+                              callback: controller.changeWeight,
                             ),
                           ),
                           Flexible(
@@ -207,6 +188,54 @@ class UserSetUpdate extends StatelessWidget {
               ],
             )
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class TextInputWidget extends StatelessWidget {
+  const TextInputWidget({
+    Key? key,
+    required this.keyWeight,
+    required this.userLine,
+    required this.controller,
+    required this.callback,
+    required this.index,
+    required this.initialValue,
+  }) : super(key: key);
+
+  final GlobalKey<State<StatefulWidget>> keyWeight;
+  final UserLine userLine;
+  final String? initialValue;
+  final int index;
+  final UserSetController controller;
+  final void Function(int index, String value) callback;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.only(left: 5, right: 5),
+        child: TextFormField(
+          key: keyWeight,
+          initialValue: initialValue,
+          textAlign: TextAlign.center,
+          keyboardType: TextInputType.number,
+          inputFormatters: <TextInputFormatter>[
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+          ],
+          decoration: InputDecoration(
+              constraints: const BoxConstraints(maxHeight: 36),
+              border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(5))),
+              focusedBorder: OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(Radius.circular(5)),
+                  borderSide: BorderSide(
+                      width: 1, color: Theme.of(context).primaryColor)),
+              hintStyle: const TextStyle(fontSize: 14),
+              hintText: '0'),
+          onChanged: (value) => callback(index, value),
         ),
       ),
     );
