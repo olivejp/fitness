@@ -24,7 +24,6 @@ class LoginPage extends StatelessWidget {
       backgroundColor: FitnessNcColors.blue50,
       body: GetX<DisplayTypeService>(
         builder: (DisplayTypeService controller) {
-          print('${displayTypeController.displayType.value}');
           return (<DisplayType>[DisplayType.mobile, DisplayType.tablet]
                   .contains(displayTypeController.displayType.value))
               ? LoginMobilePage()

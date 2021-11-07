@@ -4,6 +4,8 @@ class FitnessTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
         'fr_FR': {
+          'addComment': 'Ajouter un commentaire',
+          'comment': 'Commentaire',
           'createExercise': 'Créer un exercice',
           'delete': 'Supprimer',
           'cancel': 'Annuler',
@@ -59,6 +61,8 @@ class FitnessTranslations extends Translations {
               'Réessayez ensuite de vous connecter.'
         },
         'en_US': {
+          'addComment': 'Add a comment',
+          'comment': 'Comment...',
           'createExercise': 'Create an exercise',
           'delete': 'Delete',
           'cancel': 'Cancel',

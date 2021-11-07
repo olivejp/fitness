@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnc_user/page/exercice/stat-exercice.page.dart';
+import 'package:fitness_domain/constants.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/user.line.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
@@ -33,46 +34,47 @@ class UserSetUpdate extends StatelessWidget {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final ScrollController scrollController = ScrollController();
 
-  List<Widget> getColumns() {
-    switch (userSet.typeExercice) {
-      case 'REPS_WEIGHT':
-        return [
-          const Flexible(
-            flex: 2,
-            child: Center(child: Text('Reps')),
-          ),
-          const Flexible(
-            flex: 2,
-            child: Center(child: Text('Weight')),
-          )
-        ];
-      case 'REPS_ONLY':
-        return [
-          const Flexible(
-            flex: 4,
-            child: Center(child: Text('Reps')),
-          )
-        ];
-      case 'TIME':
-        return [
-          const Flexible(
-            flex: 4,
-            child: Center(child: Text('Time')),
-          )
-        ];
-      case 'DIST':
-        return [
-          const Flexible(
-            flex: 4,
-            child: Center(child: Text('Dist')),
-          )
-        ];
-      default:
-        return [];
+  /// Returns headers columns depending on the Exercise type.
+  List<Widget> getColumnsHeadersByType() {
+    if (userSet.typeExercice == TypeExercice.REPS_WEIGHT.name) {
+      return [
+        const Flexible(
+          flex: 2,
+          child: Center(child: Text('Reps')),
+        ),
+        const Flexible(
+          flex: 2,
+          child: Center(child: Text('Weight')),
+        )
+      ];
+    } else if (userSet.typeExercice == TypeExercice.REPS_ONLY.name) {
+      return [
+        const Flexible(
+          flex: 4,
+          child: Center(child: Text('Reps')),
+        )
+      ];
+    } else if (userSet.typeExercice == TypeExercice.TIME.name) {
+      return [
+        const Flexible(
+          flex: 4,
+          child: Center(child: Text('Time')),
+        )
+      ];
+    } else if (userSet.typeExercice == TypeExercice.DIST.name) {
+      return [
+        const Flexible(
+          flex: 4,
+          child: Center(child: Text('Dist')),
+        )
+      ];
+    } else {
+      throw Exception('Type exercise unknown');
     }
   }
 
-  List<Widget> getColumnsByType(
+  /// Returns fields columns depending on the Exercise type.
+  List<Widget> getColumnsFieldsByType(
     String? typeExercise,
     UserLine userLine,
     int index,
@@ -82,64 +84,65 @@ class UserSetUpdate extends StatelessWidget {
     GlobalKey keyTime,
     GlobalKey keyDist,
   ) {
-    switch (typeExercise) {
-      case 'REPS_ONLY':
-        return [
-          Flexible(
-            flex: 4,
-            child: TextInputWidget(
-              keyWeight: keyReps,
-              initialValue: userLine.reps,
-              index: index,
-              callback: controller.changeReps,
-            ),
+    if (typeExercise == TypeExercice.REPS_ONLY.name) {
+      return [
+        Flexible(
+          flex: 4,
+          child: TextInputWidget(
+            keyWeight: keyReps,
+            initialValue: userLine.reps,
+            index: index,
+            callback: controller.changeReps,
           ),
-        ];
-      case 'DIST':
-        return [
-          Flexible(
-            flex: 4,
-            child: TextInputWidget(
-              keyWeight: keyDist,
-              initialValue: userLine.dist,
-              index: index,
-              callback: controller.changeDist,
-            ),
+        ),
+      ];
+    } else if (typeExercise == TypeExercice.DIST.name) {
+      return [
+        Flexible(
+          flex: 4,
+          child: TextInputWidget(
+            keyWeight: keyDist,
+            initialValue: userLine.dist,
+            index: index,
+            callback: controller.changeDist,
           ),
-        ];
-      case 'TIME':
-        return [
-          Flexible(
-            flex: 4,
-            child: TextInputWidget(
-              keyWeight: keyTime,
-              initialValue: userLine.time,
-              index: index,
-              callback: controller.changeTime,
-            ),
+        ),
+      ];
+    } else if (typeExercise == TypeExercice.TIME.name) {
+      return [
+        Flexible(
+          flex: 4,
+          child: TextInputWidget(
+            keyWeight: keyTime,
+            initialValue: userLine.time,
+            index: index,
+            callback: controller.changeTime,
           ),
-        ];
-      default:
-        return [
-          Flexible(
-            flex: 2,
-            child: TextInputWidget(
-              keyWeight: keyReps,
-              initialValue: userLine.reps,
-              index: index,
-              callback: controller.changeReps,
-            ),
+        ),
+      ];
+    } else if (typeExercise == TypeExercice.REPS_WEIGHT.name) {
+      return [
+        Flexible(
+          flex: 2,
+          child: TextInputWidget(
+            keyWeight: keyReps,
+            initialValue: userLine.reps,
+            index: index,
+            callback: controller.changeReps,
           ),
-          Flexible(
-            flex: 2,
-            child: TextInputWidget(
-              keyWeight: keyWeight,
-              initialValue: userLine.weight,
-              index: index,
-              callback: controller.changeWeight,
-            ),
-          )
-        ];
+        ),
+        Flexible(
+          flex: 2,
+          child: TextInputWidget(
+            keyWeight: keyWeight,
+            initialValue: userLine.weight,
+            index: index,
+            callback: controller.changeWeight,
+          ),
+        )
+      ];
+    } else {
+      throw Exception('Type exercise unknown');
     }
   }
 
@@ -156,7 +159,7 @@ class UserSetUpdate extends StatelessWidget {
           children: <Widget>[
             Padding(
               padding: EdgeInsets.only(right: padding, left: padding),
-              child: RowExerciceDetails(controller: controller),
+              child: RowExerciseDetails(controller: controller),
             ),
             Padding(
               padding: EdgeInsets.only(right: padding, left: padding),
@@ -166,7 +169,7 @@ class UserSetUpdate extends StatelessWidget {
                   const Flexible(
                     child: Center(child: Text('Sets')),
                   ),
-                  ...getColumns(),
+                  ...getColumnsHeadersByType(),
                   Flexible(
                     child: Center(
                       child: Obx(
@@ -207,7 +210,7 @@ class UserSetUpdate extends StatelessWidget {
                           Flexible(
                             child: Center(child: Text('$index')),
                           ),
-                          ...getColumnsByType(
+                          ...getColumnsFieldsByType(
                             userSet.typeExercice,
                             userLine,
                             index,
@@ -243,7 +246,7 @@ class UserSetUpdate extends StatelessWidget {
                           AddCommentAlertDialog(controller: controller),
                     );
                   },
-                  label: const Text('Commentaire'),
+                  label: Text('comment'.tr),
                   icon: const Icon(Icons.note_outlined),
                 )
               ],
@@ -299,8 +302,8 @@ class TextInputWidget extends StatelessWidget {
   }
 }
 
-class RowExerciceDetails extends StatelessWidget {
-  const RowExerciceDetails({
+class RowExerciseDetails extends StatelessWidget {
+  const RowExerciseDetails({
     Key? key,
     required this.controller,
   }) : super(key: key);
@@ -392,12 +395,15 @@ class AddCommentAlertDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     String comment = controller.userSet.value.comment ?? '';
     return AlertDialog(
-      title: Text('Ajouter un commentaire', style: Theme.of(context).textTheme.headline3,),
+      title: Text(
+        'addComment'.tr,
+        style: Theme.of(context).textTheme.headline3,
+      ),
       content: TextFormField(
-        decoration: const InputDecoration(
-          border: OutlineInputBorder(
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(5))),
-          hintText: 'Commentaire...',
+          hintText: 'comment'.tr + '...',
         ),
         controller: TextEditingController(text: comment),
         key: commentKey,
@@ -410,11 +416,11 @@ class AddCommentAlertDialog extends StatelessWidget {
             controller.addComment(comment);
             Navigator.of(context).pop();
           },
-          child: const Text('Sauver'),
+          child: Text('save'.tr),
         ),
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Annuler'),
+          child: Text('cancel'.tr),
         ),
       ],
     );
