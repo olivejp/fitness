@@ -46,7 +46,7 @@ class UserSetUpdate extends StatelessWidget {
             child: Center(child: Text('Weight')),
           )
         ];
-      case 'REPS':
+      case 'REPS_ONLY':
         return [
           const Flexible(
             flex: 4,
@@ -69,6 +69,77 @@ class UserSetUpdate extends StatelessWidget {
         ];
       default:
         return [];
+    }
+  }
+
+  List<Widget> getColumnsByType(
+    String? typeExercise,
+    UserLine userLine,
+    int index,
+    UserSetController controller,
+    GlobalKey keyReps,
+    GlobalKey keyWeight,
+    GlobalKey keyTime,
+    GlobalKey keyDist,
+  ) {
+    switch (typeExercise) {
+      case 'REPS_ONLY':
+        return [
+          Flexible(
+            flex: 4,
+            child: TextInputWidget(
+              keyWeight: keyReps,
+              initialValue: userLine.reps,
+              index: index,
+              callback: controller.changeReps,
+            ),
+          ),
+        ];
+      case 'DIST':
+        return [
+          Flexible(
+            flex: 4,
+            child: TextInputWidget(
+              keyWeight: keyDist,
+              initialValue: userLine.dist,
+              index: index,
+              callback: controller.changeDist,
+            ),
+          ),
+        ];
+      case 'TIME':
+        return [
+          Flexible(
+            flex: 4,
+            child: TextInputWidget(
+              keyWeight: keyTime,
+              initialValue: userLine.time,
+              index: index,
+              callback: controller.changeTime,
+            ),
+          ),
+        ];
+      default:
+        return [
+          Flexible(
+            flex: 2,
+            child: TextInputWidget(
+              keyWeight: keyReps,
+              initialValue: userLine.reps,
+              index: index,
+              callback: controller.changeReps,
+            ),
+          ),
+          Flexible(
+            flex: 2,
+            child: TextInputWidget(
+              keyWeight: keyWeight,
+              initialValue: userLine.weight,
+              index: index,
+              callback: controller.changeWeight,
+            ),
+          )
+        ];
     }
   }
 
@@ -123,6 +194,8 @@ class UserSetUpdate extends StatelessWidget {
                   itemBuilder: (BuildContext context, int index) {
                     final GlobalKey keyReps = GlobalKey();
                     final GlobalKey keyWeight = GlobalKey();
+                    final GlobalKey keyTime = GlobalKey();
+                    final GlobalKey keyDist = GlobalKey();
                     final UserLine userLine =
                         controller.listLines.elementAt(index);
                     return Padding(
@@ -134,27 +207,15 @@ class UserSetUpdate extends StatelessWidget {
                           Flexible(
                             child: Center(child: Text('$index')),
                           ),
-                          Flexible(
-                            flex: 2,
-                            child: TextInputWidget(
-                              keyWeight: keyReps,
-                              userLine: userLine,
-                              controller: controller,
-                              initialValue: userLine.reps,
-                              index: index,
-                              callback: controller.changeReps,
-                            ),
-                          ),
-                          Flexible(
-                            flex: 2,
-                            child: TextInputWidget(
-                              keyWeight: keyWeight,
-                              userLine: userLine,
-                              controller: controller,
-                              initialValue: userLine.weight,
-                              index: index,
-                              callback: controller.changeWeight,
-                            ),
+                          ...getColumnsByType(
+                            userSet.typeExercice,
+                            userLine,
+                            index,
+                            controller,
+                            keyReps,
+                            keyWeight,
+                            keyTime,
+                            keyDist,
                           ),
                           Flexible(
                             child: Center(
@@ -198,18 +259,14 @@ class TextInputWidget extends StatelessWidget {
   const TextInputWidget({
     Key? key,
     required this.keyWeight,
-    required this.userLine,
-    required this.controller,
     required this.callback,
     required this.index,
     required this.initialValue,
   }) : super(key: key);
 
   final GlobalKey<State<StatefulWidget>> keyWeight;
-  final UserLine userLine;
   final String? initialValue;
   final int index;
-  final UserSetController controller;
   final void Function(int index, String value) callback;
 
   @override
@@ -335,7 +392,7 @@ class AddCommentAlertDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     String comment = controller.userSet.value.comment ?? '';
     return AlertDialog(
-      title: const Text('Ajouter un commentaire'),
+      title: Text('Ajouter un commentaire', style: Theme.of(context).textTheme.headline3,),
       content: TextFormField(
         decoration: const InputDecoration(
           border: OutlineInputBorder(
