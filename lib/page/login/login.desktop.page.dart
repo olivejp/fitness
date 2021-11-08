@@ -3,10 +3,10 @@ import 'package:fitnc_user/widget/bottom.widget.dart';
 import 'package:fitness_domain/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:loading_animations/loading_animations.dart';
 
 import '../../constants.dart';
 import 'login.controller.dart';
+import 'login.mobile.page.dart';
 
 class LoginDesktopPage extends StatelessWidget {
   LoginDesktopPage({Key? key}) : super(key: key);
@@ -23,11 +23,12 @@ class LoginDesktopPage extends StatelessWidget {
           bottom: 0,
           right: 0,
           left: 0,
-          child: Image.asset(
-            FitnessMobileConstants.imageLogin,
-            fit: BoxFit.cover,
-            color: Colors.white,
-            colorBlendMode: BlendMode.color,
+          child: Hero(
+            tag: 'IMAGE_ASSET',
+            child: Image.asset(
+              FitnessMobileConstants.imageLogin,
+              fit: BoxFit.cover,
+            ),
           ),
         ),
         Row(
@@ -56,9 +57,13 @@ class LoginDesktopPage extends StatelessWidget {
                                   bottom: 30,
                                   left: 20,
                                 ),
-                                child: Text(
-                                  FitnessConstants.appTitle,
-                                  style: Theme.of(context).textTheme.headline6,
+                                child: Hero(
+                                  tag: 'HERO_APP_TITLE',
+                                  child: Text(
+                                    FitnessConstants.appTitle,
+                                    style:
+                                        Theme.of(context).textTheme.headline6,
+                                  ),
                                 ),
                               ),
                               Card(
@@ -79,33 +84,11 @@ class LoginDesktopPage extends StatelessWidget {
                                       LoginForm(formKey: formKey),
                                       Padding(
                                         padding: const EdgeInsets.only(top: 30),
-                                        child: ElevatedButton(
+                                        child: ElevatedLoadingButton(
                                           onPressed: () =>
                                               controller.authenticate(formKey),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            children: [
-                                              Obx(() {
-                                                if (controller
-                                                    .isLoading.value) {
-                                                  return LoadingBouncingGrid
-                                                      .circle(
-                                                    size: 20,
-                                                    backgroundColor:
-                                                        Colors.white,
-                                                  );
-                                                }
-                                                return Container();
-                                              }),
-                                              Text(
-                                                'continue'.tr,
-                                                style: const TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                              Container()
-                                            ],
-                                          ),
+                                          title: 'continue'.tr,
+                                          isLoading: controller.isLoading,
                                         ),
                                       ),
                                       Obx(() => Text(controller.loginMsgError)),
@@ -142,7 +125,12 @@ class LoginDesktopPage extends StatelessWidget {
             ))
           ],
         ),
-        const BottomCu(),
+        const Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: BottomCu(),
+        ),
       ],
     );
   }

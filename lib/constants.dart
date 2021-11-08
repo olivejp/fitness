@@ -7,7 +7,7 @@ class FitnessMobileConstants {
   static const String appTitle = 'Fitness Nc';
   static const String firebaseRegion = 'australia-southeast1';
   static const String profileCommandLineArgument = 'PROFILE';
-  static const String imageLogin = 'images/fitness_login_page/0Q7A7115.jpg';
+  static const String imageLogin = 'images/fitness_login_page/AmaniGymReversed.jpg';
 }
 
 class FitnessNcColors {

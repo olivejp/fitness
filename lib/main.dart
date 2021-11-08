@@ -96,14 +96,14 @@ class MyApp extends StatelessWidget {
         page: () => HomePage(),
       ),
       GetPage<SignUpPage>(
+        transition: Transition.rightToLeft,
         name: FitnessConstants.routeSignUp,
-        // transition: Transition.fadeIn,
         middlewares: <GetMiddleware>[LayoutNotifierMiddleware()],
-        page: () => SignUpPage(),
+        page: () => SignUpPage(callback: (userCredential) => Get.offNamed(FitnessConstants.routeHome),),
       ),
       GetPage<LoginPage>(
+        transition: Transition.rightToLeft,
         name: FitnessConstants.routeLogin,
-        // transition: Transition.fadeIn,
         middlewares: <GetMiddleware>[LayoutNotifierMiddleware()],
         page: () => LoginPage(),
       ),

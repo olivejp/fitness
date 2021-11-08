@@ -24,11 +24,12 @@ class LoginMobilePage extends StatelessWidget {
             bottom: 0,
             right: 0,
             left: 0,
-            child: Image.asset(
-              FitnessMobileConstants.imageLogin,
-              fit: BoxFit.cover,
-              color: Colors.white,
-              colorBlendMode: BlendMode.color,
+            child: Hero(
+              tag: 'IMAGE_ASSET',
+              child: Image.asset(
+                FitnessMobileConstants.imageLogin,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           Center(
@@ -46,9 +47,12 @@ class LoginMobilePage extends StatelessWidget {
                         children: <Widget>[
                           Padding(
                             padding: const EdgeInsets.only(left: 30),
-                            child: Text(
-                              FitnessMobileConstants.appTitle,
-                              style: Theme.of(context).textTheme.headline6,
+                            child: Hero(
+                              tag: 'HERO_APP_TITLE',
+                              child: Text(
+                                FitnessMobileConstants.appTitle,
+                                style: Theme.of(context).textTheme.headline6,
+                              ),
                             ),
                           ),
                           Padding(
@@ -62,29 +66,11 @@ class LoginMobilePage extends StatelessWidget {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 30),
-                                  child: ElevatedButton(
-                                    onPressed: () => controller.authenticate(formKey),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        Obx(() {
-                                          if (controller.isLoading.value) {
-                                            return LoadingBouncingGrid.circle(
-                                              size: 20,
-                                              backgroundColor: Colors.white,
-                                            );
-                                          }
-                                          return Container();
-                                        }),
-                                        Text(
-                                          'continue'.tr,
-                                          style: const TextStyle(
-                                              color: Colors.white),
-                                        ),
-                                        Container()
-                                      ],
-                                    ),
+                                  child: ElevatedLoadingButton(
+                                    onPressed: () =>
+                                        controller.authenticate(formKey),
+                                    isLoading: controller.isLoading,
+                                    title: 'continue'.tr,
                                   ),
                                 ),
                                 Padding(
@@ -113,6 +99,52 @@ class LoginMobilePage extends StatelessWidget {
             right: 0,
             child: BottomCu(),
           )
+        ],
+      ),
+    );
+  }
+}
+
+class ElevatedLoadingButton extends StatelessWidget {
+  const ElevatedLoadingButton({
+    Key? key,
+    this.onPressed,
+    required this.title,
+    required this.isLoading,
+    this.loadingWidget,
+  }) : super(key: key);
+  final VoidCallback? onPressed;
+  final String title;
+  final RxBool isLoading;
+  final Widget? loadingWidget;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Obx(() {
+            if (isLoading.value) {
+              if (loadingWidget != null) {
+                return loadingWidget!;
+              } else {
+                return LoadingBouncingGrid.circle(
+                  size: 20,
+                  backgroundColor: Colors.white,
+                );
+              }
+            }
+            return Container();
+          }),
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          Container()
         ],
       ),
     );

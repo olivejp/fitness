@@ -4,11 +4,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnc_user/service/fitness-user.service.dart';
 import 'package:fitness_domain/domain/fitness-user.domain.dart';
 import 'package:fitness_domain/service/auth.service.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+
+import 'login.page.dart';
 
 class SignUpController extends GetxController {
   final FitnessUserService fitnessUserService = Get.find();
   final AuthService authService = Get.find();
+  final RxBool isLoading = false.obs;
 
   String name = '';
   String prenom = '';
@@ -44,11 +48,34 @@ class SignUpController extends GetxController {
     user.prenom = prenom;
     user.telephone1 = telephone;
     user.name = name;
-    await fitnessUserService.getCollectionReference().doc(user.uid).set(user.toJson());
+    await fitnessUserService
+        .getCollectionReference()
+        .doc(user.uid)
+        .set(user.toJson());
 
     // On se log pour la première fois avec le compte et on renvoie le credential.
     await authService.signInWithEmailPassword(email, password);
 
     return credential;
+  }
+
+  void validateSignUp(GlobalKey<FormState> formKey, CallbackUserCredential? callback) {
+    cleanError();
+    if (formKey.currentState?.validate() == true) {
+      isLoading.value = true;
+      signUp().then((UserCredential value) {
+        isLoading.value = false;
+        if (callback != null) {
+          callback(value);
+        }
+      }).catchError((Object? error) {
+        isLoading.value = false;
+        if (error is FirebaseAuthException) {
+          setError(error.message!);
+        } else {
+          setError(error.toString());
+        }
+      });
+    }
   }
 }
