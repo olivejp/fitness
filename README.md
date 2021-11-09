@@ -35,6 +35,7 @@ generateLauncherIcon.sh
 
 ## Build AAB
 To build the .aab, run the buildAppBundle.sh at the root of the project.
+The output is located in ./build/app/outputs/bundle/release/app-release.aab
 
 ## Deploy 
 Go to 

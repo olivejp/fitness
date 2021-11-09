@@ -37,10 +37,18 @@ class SignUpPage extends StatelessWidget {
               left: 0,
               child: Hero(
                 tag: 'IMAGE_ASSET',
-                child: Image.asset(
-                  FitnessMobileConstants.imageLogin,
-                  fit: BoxFit.cover,
-                ),
+                child: Obx(() {
+                  DisplayType type = displayTypeService.displayType.value;
+                  String size = (type == DisplayType.mobile)
+                      ? 'S'
+                      : (type == DisplayType.tablet)
+                      ? 'M'
+                      : 'L';
+                  return Image.asset(
+                    '${FitnessMobileConstants.imageLogin}-$size${FitnessMobileConstants.imageLoginExtension}',
+                    fit: BoxFit.cover,
+                  );
+                }),
               ),
             ),
             Obx(() {

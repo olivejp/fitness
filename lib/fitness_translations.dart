@@ -4,6 +4,12 @@ class FitnessTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
         'fr_FR': {
+          'updateDate': 'Modifier la date',
+          'validate': 'Valider',
+          'today': "Aujourd'hui",
+          'trainer': 'Coach',
+          'weeks': 'semaines',
+          'follow': 'Suivre',
           'addComment': 'Ajouter un commentaire',
           'comment': 'Commentaire',
           'createExercise': 'Créer un exercice',
@@ -13,6 +19,7 @@ class FitnessTranslations extends Translations {
           'search': 'Rechercher',
           'exerciseChoice': "Choix des exercices",
           'addExercise': 'Ajouter un exercice',
+          'addWorkout': 'Ajouter une nouvelle séance',
           'save': 'Enregistrer',
           'back': 'Retour',
           'displayStat': 'Voir les stats',
@@ -61,6 +68,12 @@ class FitnessTranslations extends Translations {
               'Réessayez ensuite de vous connecter.'
         },
         'en_US': {
+          'updateDate': 'Update date',
+          'validate': 'Validate',
+          'today': "Today",
+          'trainer': 'Coach',
+          'weeks': 'weeks',
+          'follow': 'Follow',
           'addComment': 'Add a comment',
           'comment': 'Comment...',
           'createExercise': 'Create an exercise',
@@ -70,6 +83,7 @@ class FitnessTranslations extends Translations {
           'search': 'Rechercher',
           'exerciseChoice': 'Exercise choice',
           'addExercise': 'Add an exercise',
+          'addWorkout': 'Add a new workout',
           'save': 'Save',
           'back': 'Back',
           'displayStat': 'Display stats',

@@ -23,9 +23,9 @@ class ProgramDetailPage extends StatelessWidget {
               elevation: 1,
               onPressed: () =>
                   controller.register(controller.selectedProgramme.value!),
-              label: const Text(
-                'Suivre',
-                style: TextStyle(color: Colors.white),
+              label: Text(
+                'follow'.tr,
+                style: const TextStyle(color: Colors.white),
               ),
             );
           } else {
@@ -34,14 +34,14 @@ class ProgramDetailPage extends StatelessWidget {
         },
       ),
       body: SafeArea(
-        child: Stack(
-            children: [
+        child: Stack(children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Flexible(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 500, maxHeight: double.infinity),
+                  constraints: const BoxConstraints(
+                      maxWidth: 500, maxHeight: double.infinity),
                   child: SingleChildScrollView(
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 100),
@@ -62,8 +62,9 @@ class ProgramDetailPage extends StatelessWidget {
                                     tag:
                                         "${controller.selectedProgramme.value!.uid!}-image",
                                     child: Image(
-                                      image: CachedNetworkImageProvider(controller
-                                          .selectedProgramme.value!.imageUrl!),
+                                      image: CachedNetworkImageProvider(
+                                          controller.selectedProgramme.value!
+                                              .imageUrl!),
                                       fit: BoxFit.fill,
                                       width: double.infinity,
                                     ),
@@ -92,22 +93,23 @@ class ProgramDetailPage extends StatelessWidget {
                               Padding(
                                 padding: const EdgeInsets.all(15.0),
                                 child: Builder(builder: (context) {
-                                  if (controller
-                                          .selectedProgramme.value!.numberWeeks !=
+                                  if (controller.selectedProgramme.value!
+                                          .numberWeeks !=
                                       null) {
                                     final int indexUnderscore = controller
                                                 .selectedProgramme
                                                 .value!
                                                 .numberWeeks !=
                                             null
-                                        ? controller
-                                            .selectedProgramme.value!.numberWeeks!
+                                        ? controller.selectedProgramme.value!
+                                            .numberWeeks!
                                             .indexOf('_')
                                         : 0;
 
-                                    final int numberWeekInt = int.parse(controller
-                                        .selectedProgramme.value!.numberWeeks!
-                                        .substring(0, indexUnderscore));
+                                    final int numberWeekInt = int.parse(
+                                        controller.selectedProgramme.value!
+                                            .numberWeeks!
+                                            .substring(0, indexUnderscore));
                                     return Hero(
                                       tag:
                                           "${controller.selectedProgramme.value!.uid}-badge",
@@ -115,10 +117,11 @@ class ProgramDetailPage extends StatelessWidget {
                                         elevation: 0,
                                         toAnimate: false,
                                         shape: BadgeShape.square,
-                                        badgeColor: Theme.of(context).primaryColor,
+                                        badgeColor:
+                                            Theme.of(context).primaryColor,
                                         borderRadius: BorderRadius.circular(8),
                                         badgeContent: Text(
-                                          '$numberWeekInt semaines',
+                                          '$numberWeekInt ' + 'weeks'.tr,
                                           style: GoogleFonts.comfortaa(
                                               color: Colors.white),
                                         ),
@@ -142,13 +145,15 @@ class ProgramDetailPage extends StatelessWidget {
                               ),
                             ),
                           ),
-                          if (controller.selectedProgramme.value?.description != null)
+                          if (controller.selectedProgramme.value?.description !=
+                              null)
                             Padding(
                               padding: const EdgeInsets.all(10),
                               child: Align(
                                 alignment: AlignmentDirectional.topStart,
                                 child: Text(
-                                  controller.selectedProgramme.value!.description!,
+                                  controller
+                                      .selectedProgramme.value!.description!,
                                   style: GoogleFonts.comfortaa(fontSize: 16),
                                 ),
                               ),
@@ -179,7 +184,8 @@ class ProgramDetailPage extends StatelessWidget {
 }
 
 class CreatorWidget extends StatelessWidget {
-  const CreatorWidget({Key? key, required this.trainers, this.addToFavorite, this.program})
+  const CreatorWidget(
+      {Key? key, required this.trainers, this.addToFavorite, this.program})
       : super(key: key);
   final Trainers trainers;
   final PublishedProgramme? program;
@@ -214,7 +220,7 @@ class CreatorWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Trainer',
+                          'trainer'.tr,
                           style: GoogleFonts.comfortaa(fontSize: 12),
                         ),
                         Text(

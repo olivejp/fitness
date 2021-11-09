@@ -339,8 +339,8 @@ class ListTrainers extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
-            "Trainers",
-            style: GoogleFonts.comfortaa(fontSize: 22),
+            'trainer'.tr,
+            style: Theme.of(context).textTheme.headline2?.copyWith(color: Colors.black),
           ),
         ),
         SizedBox(

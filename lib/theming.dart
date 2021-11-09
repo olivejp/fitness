@@ -78,6 +78,12 @@ class Theming {
     return TextTheme(
       bodyText1: GoogleFonts.nunito(),
       bodyText2: GoogleFonts.nunito(),
+
+      headline2: GoogleFonts.nunito(
+        fontWeight: FontWeight.normal,
+        fontSize: 25,
+      ),
+
       headline3: GoogleFonts.anton(
         fontWeight: FontWeight.normal,
         fontSize: 30,

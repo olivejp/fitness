@@ -36,11 +36,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.lazyPut(() => DarkModeController());
     return FutureBuilder(
       future: Firebase.initializeApp(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
+          Get.lazyPut(() => DarkModeController());
           Get.lazyPut(() => ConfigService());
           Get.lazyPut(() => ConnectivityService());
           Get.lazyPut(() => DisplayTypeService());

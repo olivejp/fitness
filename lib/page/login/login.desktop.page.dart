@@ -1,6 +1,7 @@
 import 'package:fitnc_user/page/login/login.page.dart';
 import 'package:fitnc_user/widget/bottom.widget.dart';
 import 'package:fitness_domain/constants.dart';
+import 'package:fitness_domain/service/display.service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -12,6 +13,7 @@ class LoginDesktopPage extends StatelessWidget {
   LoginDesktopPage({Key? key}) : super(key: key);
 
   final LoginPageController controller = Get.find();
+  final DisplayTypeService displayTypeService = Get.find();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   @override
@@ -26,7 +28,7 @@ class LoginDesktopPage extends StatelessWidget {
           child: Hero(
             tag: 'IMAGE_ASSET',
             child: Image.asset(
-              FitnessMobileConstants.imageLogin,
+              '${FitnessMobileConstants.imageLogin}-L${FitnessMobileConstants.imageLoginExtension}',
               fit: BoxFit.cover,
             ),
           ),

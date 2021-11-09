@@ -16,7 +16,7 @@ class CalendarPage extends StatelessWidget {
 
   final CalendarController controller = Get.put(CalendarController());
 
-  void goToExerciceChoice(BuildContext context) {
+  void goToExerciseChoice(BuildContext context) {
     controller.initialDate = controller.selectedDate;
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -35,7 +35,7 @@ class CalendarPage extends StatelessWidget {
     controller.selectedDate = DateTime.now();
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () => goToExerciceChoice(context),
+        onPressed: () => goToExerciseChoice(context),
         child: const Icon(
           Icons.add,
           color: Colors.white,
@@ -73,14 +73,14 @@ class CalendarPage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             IconButton(
-                              onPressed: () => goToExerciceChoice(context),
+                              onPressed: () => goToExerciseChoice(context),
                               icon: const Icon(Icons.post_add),
                               color: Theme.of(context).primaryColor,
                               iconSize: 45,
                             ),
                             TextButton(
-                              onPressed: () => goToExerciceChoice(context),
-                              child: const Text('Ajouter une nouvelle séance'),
+                              onPressed: () => goToExerciseChoice(context),
+                              child: Text('addWorkout'.tr),
                             ),
                           ],
                         ),
@@ -130,7 +130,7 @@ class Timeline extends StatelessWidget {
                   controller.selectedDate = DateTime.now();
                 },
                 child: Text(
-                  'Today',
+                  'today'.tr,
                   style: GoogleFonts.comfortaa(),
                 ),
               ),
@@ -284,7 +284,7 @@ class WorkoutInstanceCard extends StatelessWidget {
                       ),
                       PopupMenuButton<int>(
                         iconSize: 24,
-                        tooltip: 'Voir plus',
+                        tooltip: 'showMore'.tr,
                         icon: const Icon(Icons.more_horiz, color: Colors.grey),
                         onSelected: (value) {
                           controller.initialDate = controller.selectedDate;
@@ -312,13 +312,13 @@ class WorkoutInstanceCard extends StatelessWidget {
                                           Navigator.of(context).pop();
                                         },
                                         icon: const Icon(Icons.check),
-                                        label: const Text('Valider'),
+                                        label: Text('validate'.tr),
                                       ),
                                       TextButton.icon(
                                         onPressed: () =>
                                             Navigator.of(context).pop(),
                                         icon: const Icon(Icons.clear),
-                                        label: const Text('Annuler'),
+                                        label: Text('cancel'.tr),
                                       )
                                     ],
                                   );
@@ -335,9 +335,9 @@ class WorkoutInstanceCard extends StatelessWidget {
                           PopupMenuItem<int>(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: const <Widget>[
-                                Text('Modifier la date'),
-                                Icon(
+                              children: <Widget>[
+                                Text('updateDate'.tr),
+                                const Icon(
                                   Icons.calendar_today_outlined,
                                   color: Colors.grey,
                                 ),
@@ -348,9 +348,9 @@ class WorkoutInstanceCard extends StatelessWidget {
                           PopupMenuItem<int>(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: const <Widget>[
-                                Text('Supprimer'),
-                                Icon(
+                              children: <Widget>[
+                                Text('delete'.tr),
+                                const Icon(
                                   Icons.delete,
                                   color: Colors.grey,
                                 ),
@@ -412,8 +412,8 @@ class WorkoutInstanceCard extends StatelessWidget {
                           icon: const Icon(
                             Icons.add_circle_outline_outlined,
                           ),
-                          label: const Text(
-                            'Ajouter un exercice',
+                          label: Text(
+                            'addExercise'.tr,
                           ),
                         ),
                       ],

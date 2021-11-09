@@ -126,6 +126,9 @@ class FitnessUserService extends AbstractFitnessStorageService<FitnessUser> {
         .toList();
   }
 
+  ///
+  /// Fonction pour commencer à suivre un programme.
+  ///
   Future<void> register(PublishedProgramme publishedProgramme) async {
     FitnessUser fitnessUser = await _checkFitnessUserConnected();
 

@@ -2,6 +2,7 @@ import 'package:fitnc_user/constants.dart';
 import 'package:fitnc_user/page/login/login.page.dart';
 import 'package:fitnc_user/widget/bottom.widget.dart';
 import 'package:fitness_domain/constants.dart';
+import 'package:fitness_domain/service/display.service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_animations/loading_animations.dart';
@@ -12,6 +13,7 @@ class LoginMobilePage extends StatelessWidget {
   LoginMobilePage({Key? key}) : super(key: key);
 
   final LoginPageController controller = Get.find();
+  final DisplayTypeService displayTypeService = Get.find();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   @override
@@ -26,10 +28,18 @@ class LoginMobilePage extends StatelessWidget {
             left: 0,
             child: Hero(
               tag: 'IMAGE_ASSET',
-              child: Image.asset(
-                FitnessMobileConstants.imageLogin,
-                fit: BoxFit.cover,
-              ),
+              child: Obx(() {
+                DisplayType type = displayTypeService.displayType.value;
+                String size = (type == DisplayType.mobile)
+                    ? 'S'
+                    : (type == DisplayType.tablet)
+                        ? 'M'
+                        : 'L';
+                return Image.asset(
+                  '${FitnessMobileConstants.imageLogin}-$size${FitnessMobileConstants.imageLoginExtension}',
+                  fit: BoxFit.cover,
+                );
+              }),
             ),
           ),
           Center(
