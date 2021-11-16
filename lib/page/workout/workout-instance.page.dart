@@ -69,6 +69,15 @@ class WorkoutPageController extends GetxController {
     });
   }
 
+  void check(){
+    if (autoPlay.value) {
+      if (timer.isRunning) {
+        stopTimer();
+      }
+      startTimer();
+    }
+  }
+
   void refreshWorkoutPage() {
     onRefresh.update((val) {
       val = !val!;
@@ -234,7 +243,7 @@ class WorkoutPage extends StatelessWidget {
                                                     .headline3,
                                               );
                                             }
-                                            return Text('');
+                                            return const Text('');
                                           }),
                                     ],
                                   ),
@@ -278,7 +287,7 @@ class WorkoutPage extends StatelessWidget {
                                         Flexible(
                                           child: Column(
                                             children: [
-                                              Text('Heure'),
+                                              const Text('Heure'),
                                               Container(
                                                 decoration: BoxDecoration(
                                                   borderRadius:
@@ -298,11 +307,11 @@ class WorkoutPage extends StatelessWidget {
                                             ],
                                           ),
                                         ),
-                                        Padding(padding: EdgeInsets.all(10)),
+                                        const Padding(padding: EdgeInsets.all(10)),
                                         Flexible(
                                           child: Column(
                                             children: [
-                                              Text('Minute'),
+                                              const Text('Minute'),
                                               Container(
                                                 decoration: BoxDecoration(
                                                   borderRadius:
@@ -322,11 +331,11 @@ class WorkoutPage extends StatelessWidget {
                                             ],
                                           ),
                                         ),
-                                        Padding(padding: EdgeInsets.all(10)),
+                                        const Padding(padding: EdgeInsets.all(10)),
                                         Flexible(
                                           child: Column(
                                             children: [
-                                              Text('Seconde'),
+                                              const Text('Seconde'),
                                               Container(
                                                 decoration: BoxDecoration(
                                                   borderRadius:
@@ -351,7 +360,7 @@ class WorkoutPage extends StatelessWidget {
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        Text('Auto play'),
+                                        const Text('Auto play'),
                                         Checkbox(
                                           value: controller.autoPlay.value,
                                           onChanged: (bool? value) => controller

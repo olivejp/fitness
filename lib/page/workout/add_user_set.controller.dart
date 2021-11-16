@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fitnc_user/page/workout/workout-instance.page.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
@@ -11,7 +12,8 @@ import 'package:get/get.dart';
 class UserSetController extends GetxController {
   final WorkoutInstanceService workoutInstanceService = Get.find();
   final UserSetService userSetService = Get.find();
-  final ExerciceService exerciceService = Get.find();
+  final ExerciceService exerciseService = Get.find();
+  final WorkoutPageController pageController = Get.find();
   final Rx<UserSet> userSet = UserSet().obs;
   final RxList<UserLine> listLines = <UserLine>[].obs;
   final int debounceTime = 200;
@@ -71,6 +73,9 @@ class UserSetController extends GetxController {
     userSet.value.lines[index].checked = checked;
     userSetService.save(userSet.value);
     initList(userSet.value.lines);
+    if (checked) {
+      pageController.check();
+    }
   }
 
   void changeTime(int index, String value) {
@@ -105,6 +110,6 @@ class UserSetController extends GetxController {
   }
 
   Future<Exercice?> getExercise(String uidExercise) {
-    return exerciceService.read(uidExercise);
+    return exerciseService.read(uidExercise);
   }
 }
