@@ -1,6 +1,7 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fitnc_user/fitness_translations.dart';
-import 'package:fitnc_user/page/home/home.page.dart';
+import 'package:fitnc_user/page/main/main.page.dart';
 import 'package:fitnc_user/page/login/login.page.dart';
 import 'package:fitnc_user/page/login/sign-up.page.dart';
 import 'package:fitnc_user/service/config.service.dart';
@@ -13,7 +14,6 @@ import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:fitnc_user/theming.dart';
 import 'package:fitnc_user/widget/dark-mode.widget.dart';
-import 'package:fitnc_user/widget/firebase.widget.dart';
 import 'package:fitness_domain/constants.dart';
 import 'package:fitness_domain/middleware/is_connected_middleware.dart';
 import 'package:fitness_domain/middleware/layout_notifier_middleware.dart';
@@ -40,8 +40,8 @@ class MyApp extends StatelessWidget {
       future: Firebase.initializeApp(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
+          ConfigService configService = Get.put(ConfigService());
           Get.lazyPut(() => DarkModeController());
-          Get.lazyPut(() => ConfigService());
           Get.lazyPut(() => ConnectivityService());
           Get.lazyPut(() => DisplayTypeService());
           Get.lazyPut(() => AuthService());
@@ -52,6 +52,16 @@ class MyApp extends StatelessWidget {
           Get.lazyPut(() => ExerciceService());
           Get.lazyPut(() => WorkoutInstanceService());
           Get.lazyPut(() => UserSetService());
+
+          // Pour les tests sur Cloud Functions
+          if (configService.get(FitnessMobileConstants.profileCommandLineArgument) ==
+              'DEV') {
+            print(
+                '[WARNING] Application launched with profile DEV : Firebase Function emulators will be used.');
+            FirebaseFunctions.instanceFor(region: FitnessMobileConstants.firebaseRegion)
+                .useFunctionsEmulator('localhost', 5001);
+          }
+
           return OKToast(
             child: DarkModeWidget(
               builder: () {
@@ -87,13 +97,13 @@ class MyApp extends StatelessWidget {
   ///
   List<GetPage<dynamic>> getPages() {
     return <GetPage<dynamic>>[
-      GetPage<FirebaseWidget>(
+      GetPage<MainPage>(
         name: FitnessConstants.routeHome,
         middlewares: <GetMiddleware>[
           IsConnectedMiddleware(),
           LayoutNotifierMiddleware(),
         ],
-        page: () => HomePage(),
+        page: () => MainPage(),
       ),
       GetPage<SignUpPage>(
         transition: Transition.rightToLeft,

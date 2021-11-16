@@ -1,4 +1,3 @@
-
 import 'package:fitnc_user/constants.dart';
 import 'package:get/get.dart';
 
@@ -17,6 +16,14 @@ class ConfigService extends GetxService {
       () => const String.fromEnvironment(
           FitnessMobileConstants.profileCommandLineArgument,
           defaultValue: ''),
+    );
+    mapConfig.putIfAbsent(
+      'EMAIL',
+      () => const String.fromEnvironment('EMAIL', defaultValue: ''),
+    );
+    mapConfig.putIfAbsent(
+      'PASSWORD',
+      () => const String.fromEnvironment('PASSWORD', defaultValue: ''),
     );
   }
 }

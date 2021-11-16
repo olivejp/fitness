@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:fitnc_user/page/exercice/add_exercice.page.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:fitnc_user/page/exercice/exercice-choice.dialog.dart';
 import 'package:fitnc_user/page/workout/add_user_set.page.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animations/loading_animations.dart';
+import 'package:numberpicker/numberpicker.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class Stepper {
   Stepper(
@@ -26,12 +28,24 @@ class Stepper {
 class WorkoutPageController extends GetxController {
   final WorkoutInstanceService service = Get.find();
   final UserSetService userSetService = Get.find();
-  RxInt initialPage = 0.obs;
-  Rx<WorkoutInstance?> workoutInstance = WorkoutInstance().obs;
-  RxList<Stepper> stepperList = <Stepper>[].obs;
-  bool goToLastPage = false;
-  RxBool onRefresh = false.obs;
+  final RxInt initialPage = 0.obs;
+  final RxBool bottomSheetIsExpanded = false.obs;
+  final Rx<WorkoutInstance?> workoutInstance = WorkoutInstance().obs;
+  final RxList<Stepper> stepperList = <Stepper>[].obs;
+  final RxBool onRefresh = false.obs;
+  final RxBool autoPlay = false.obs;
+  final RxBool timerStarted = false.obs;
+  final AudioPlayer audioPlayer = AudioPlayer(mode: PlayerMode.LOW_LATENCY);
+  final StopWatchTimer timer = StopWatchTimer(
+      mode: StopWatchMode.countDown,
+      presetMillisecond: StopWatchTimer.getMilliSecFromMinute(0));
   StreamSubscription? userSetSubscription;
+  bool goToLastPage = false;
+  int timerMillisecond = 0;
+  int timerHour = 0;
+  int timerMinute = 0;
+  int timerSecond = 0;
+  StreamSubscription? timerSubscription;
 
   void init(WorkoutInstance workoutInstance, {bool goToLastPage = false}) {
     this.workoutInstance.value = workoutInstance;
@@ -90,6 +104,52 @@ class WorkoutPageController extends GetxController {
     }
     stepperList.refresh();
   }
+
+  void startTimer() {
+    timerStarted.value = true;
+    timer.onExecute.add(StopWatchExecute.start);
+    timerSubscription = timer.rawTime.listen((event) {
+      if (event == 0) {
+        audioPlayer.play('sounds/notification.wav', isLocal: true)
+        .then((value) => null);
+        changeTimer();
+      }
+    });
+  }
+
+  void stopTimer() {
+    timerStarted.value = false;
+    timer.onExecute.add(StopWatchExecute.stop);
+    timerSubscription?.cancel();
+  }
+
+  void changeHour(int newValue) {
+    timerHour = newValue;
+    changeTimer();
+  }
+
+  void changeMinute(int newValue) {
+    timerMinute = newValue;
+    changeTimer();
+  }
+
+  void changeSecond(int newValue) {
+    timerSecond = newValue;
+    changeTimer();
+  }
+
+  void changeTimer() {
+    stopTimer();
+    timer.onExecute.add(StopWatchExecute.reset);
+    timer.clearPresetTime();
+    timer.setPresetHoursTime(timerHour);
+    timer.setPresetMinuteTime(timerMinute);
+    timer.setPresetSecondTime(timerSecond);
+  }
+
+  StopWatchTimer getTimer() {
+    return timer;
+  }
 }
 
 class WorkoutPage extends StatelessWidget {
@@ -101,6 +161,9 @@ class WorkoutPage extends StatelessWidget {
   final WorkoutPageController controller = Get.put(WorkoutPageController());
   final WorkoutInstance instance;
   final bool goToLastPage;
+  final double iconHorizontalPadding = 25;
+  final double containerHeight = 60;
+  final double containerMaxHeight = 250;
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +173,203 @@ class WorkoutPage extends StatelessWidget {
         bool onRefresh = controller.onRefresh.value;
         return SafeArea(
           child: Scaffold(
+            bottomSheet: BottomSheet(
+              onClosing: () => print('close'),
+              builder: (_) {
+                return Material(
+                  elevation: 5,
+                  child: Obx(
+                    () => AnimatedContainer(
+                      alignment: Alignment.topCenter,
+                      duration: const Duration(milliseconds: 150),
+                      height: controller.bottomSheetIsExpanded.value
+                          ? containerMaxHeight
+                          : containerHeight,
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: containerHeight,
+                            child: Container(
+                              color: Theme.of(context).primaryColor,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  IconButton(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: iconHorizontalPadding),
+                                    iconSize: 24,
+                                    color: Colors.white,
+                                    onPressed: () => controller
+                                            .bottomSheetIsExpanded.value =
+                                        !controller.bottomSheetIsExpanded.value,
+                                    icon: Obx(() {
+                                      if (controller
+                                          .bottomSheetIsExpanded.value) {
+                                        return const Icon(
+                                            Icons.keyboard_arrow_down);
+                                      } else {
+                                        return const Icon(
+                                            Icons.keyboard_arrow_up);
+                                      }
+                                    }),
+                                  ),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      StreamBuilder<int>(
+                                          stream: controller.getTimer().rawTime,
+                                          initialData: 0,
+                                          builder: (_, snapshot) {
+                                            if (snapshot.hasData) {
+                                              final value = snapshot.data;
+                                              final displayTime =
+                                                  StopWatchTimer.getDisplayTime(
+                                                      value!);
+                                              return Text(
+                                                displayTime,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .headline3,
+                                              );
+                                            }
+                                            return Text('');
+                                          }),
+                                    ],
+                                  ),
+                                  Obx(() {
+                                    if (controller.timerStarted.value) {
+                                      return IconButton(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: iconHorizontalPadding),
+                                        iconSize: 28,
+                                        color: Colors.white,
+                                        onPressed: controller.stopTimer,
+                                        icon: const Icon(
+                                            Icons.pause_circle_outline),
+                                      );
+                                    } else {
+                                      return IconButton(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: iconHorizontalPadding),
+                                        iconSize: 28,
+                                        color: Colors.white,
+                                        onPressed: controller.startTimer,
+                                        icon: const Icon(
+                                            Icons.play_circle_outline),
+                                      );
+                                    }
+                                  }),
+                                ],
+                              ),
+                            ),
+                          ),
+                          if (controller.bottomSheetIsExpanded.value)
+                            Flexible(
+                              child: Container(
+                                color: Theme.of(context).focusColor,
+                                height: containerMaxHeight - containerHeight,
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Flexible(
+                                          child: Column(
+                                            children: [
+                                              Text('Heure'),
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(5),
+                                                  color: Colors.white,
+                                                ),
+                                                child: ScrollIncrementerWidget(
+                                                  onChanged: (int newValue) =>
+                                                      controller
+                                                          .changeHour(newValue),
+                                                  initialValue:
+                                                      controller.timerHour,
+                                                  minValue: 0,
+                                                  maxValue: 23,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Padding(padding: EdgeInsets.all(10)),
+                                        Flexible(
+                                          child: Column(
+                                            children: [
+                                              Text('Minute'),
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(5),
+                                                  color: Colors.white,
+                                                ),
+                                                child: ScrollIncrementerWidget(
+                                                  onChanged: (int newValue) =>
+                                                      controller
+                                                          .changeMinute(newValue),
+                                                  initialValue:
+                                                      controller.timerMinute,
+                                                  minValue: 0,
+                                                  maxValue: 59,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Padding(padding: EdgeInsets.all(10)),
+                                        Flexible(
+                                          child: Column(
+                                            children: [
+                                              Text('Seconde'),
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(5),
+                                                  color: Colors.white,
+                                                ),
+                                                child: ScrollIncrementerWidget(
+                                                  onChanged: (int newValue) =>
+                                                      controller
+                                                          .changeSecond(newValue),
+                                                  initialValue:
+                                                      controller.timerSecond,
+                                                  minValue: 0,
+                                                  maxValue: 59,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text('Auto play'),
+                                        Checkbox(
+                                          value: controller.autoPlay.value,
+                                          onChanged: (bool? value) => controller
+                                              .autoPlay.value = value ??= false,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
             appBar: AppBar(
               backgroundColor: Colors.transparent,
               toolbarHeight: 70,
@@ -118,7 +378,10 @@ class WorkoutPage extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 0),
                 child: Text(
                   DateFormat('dd/MM/yy - kk:mm').format(instance.date!),
-                  style: Theme.of(context).textTheme.headline3?.copyWith(color: Theme.of(context).primaryColor),
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline3
+                      ?.copyWith(color: Theme.of(context).primaryColor),
                 ),
               ),
               leading: IconButton(
@@ -153,17 +416,6 @@ class WorkoutPage extends StatelessWidget {
                   ],
                 ),
               ],
-            ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => AddExercisePage(),
-                ),
-              ),
-              child: const Icon(
-                Icons.timer,
-                color: Colors.white,
-              ),
             ),
             body: Column(
               children: <Widget>[
@@ -257,6 +509,49 @@ class WorkoutPage extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class ScrollIncrementerWidget extends StatelessWidget {
+  ScrollIncrementerWidget({
+    Key? key,
+    required this.onChanged,
+    this.initialValue = 0,
+    required this.maxValue,
+    required this.minValue,
+  }) : super(key: key) {
+    vnIncrementer = ValueNotifier(initialValue);
+  }
+
+  final int initialValue;
+  final int maxValue;
+  final int minValue;
+  final void Function(int newValue) onChanged;
+  late final ValueNotifier<int> vnIncrementer;
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<int>(
+      valueListenable: vnIncrementer,
+      builder: (_, value, __) => NumberPicker(
+        selectedTextStyle: Theme.of(context)
+            .textTheme
+            .headline3
+            ?.copyWith(color: Theme.of(context).primaryColor),
+        textStyle:
+            Theme.of(context).textTheme.headline3?.copyWith(fontSize: 23),
+        itemHeight: 35,
+        zeroPad: true,
+        infiniteLoop: true,
+        value: value,
+        minValue: minValue,
+        maxValue: maxValue,
+        onChanged: (value) {
+          vnIncrementer.value = value;
+          onChanged(value);
+        },
+      ),
     );
   }
 }

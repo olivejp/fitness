@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnc_user/service/config.service.dart';
 import 'package:fitness_domain/constants.dart';
 import 'package:fitness_domain/service/auth.service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../../constants.dart';
 
 class LoginPageController extends GetxController {
   final RxString _loginMsgError = ''.obs;
@@ -11,6 +14,17 @@ class LoginPageController extends GetxController {
   final RxBool _hidePassword = true.obs;
   final RxBool isLoading = false.obs;
   final AuthService authService = Get.find();
+
+  @override
+  void onInit() {
+    super.onInit();
+    final ConfigService configService = Get.find();
+    if (configService.get(FitnessMobileConstants.profileCommandLineArgument) ==
+        'DEV') {
+      _email.value = configService.get('EMAIL');
+      _password.value = configService.get('PASSWORD');
+    }
+  }
 
   String? resetPasswordCode;
   String? newPassword;

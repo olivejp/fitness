@@ -208,7 +208,7 @@ class UserSetUpdate extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Flexible(
-                            child: Center(child: Text('$index')),
+                            child: Center(child: Text('${index + 1}')),
                           ),
                           ...getColumnsFieldsByType(
                             userSet.typeExercice,

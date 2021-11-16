@@ -3,8 +3,8 @@ import 'dart:isolate';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:fitnc_user/page/home/home.page.dart';
 import 'package:fitnc_user/page/login/login.page.dart';
+import 'package:fitnc_user/page/main/main.page.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/service/fitness-user.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
@@ -111,7 +111,7 @@ class CrashlyticsWidget extends StatelessWidget {
       builder: (_, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           logUser(user);
-          return HomePage();
+          return MainPage();
         }
         return const Scaffold(
           body: Center(

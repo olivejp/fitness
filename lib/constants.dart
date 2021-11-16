@@ -1,6 +1,15 @@
 
 import 'package:flutter/material.dart';
 
+enum IndexPage {
+  home,
+  flux,
+  calendar,
+  search,
+  charts,
+  profile
+}
+
 class FitnessMobileConstants {
   static const double textFormFieldHeight = 60;
   static const double bottomAppBar = 55;

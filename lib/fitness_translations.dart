@@ -4,6 +4,8 @@ class FitnessTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
         'fr_FR': {
+          'plus': 'Plus',
+          'home': 'Accueil',
           'updateDate': 'Modifier la date',
           'validate': 'Valider',
           'today': "Aujourd'hui",
@@ -68,6 +70,8 @@ class FitnessTranslations extends Translations {
               'Réessayez ensuite de vous connecter.'
         },
         'en_US': {
+          'plus': 'Plus',
+          'home': 'Home',
           'updateDate': 'Update date',
           'validate': 'Validate',
           'today': "Today",

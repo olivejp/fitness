@@ -47,7 +47,11 @@ class FitnessUserService extends AbstractFitnessStorageService<FitnessUser> {
   }
 
   Future<FitnessUser?> getConnectedUser() {
-    return read(FirebaseAuth.instance.currentUser!.uid);
+    User? user = AuthService.getUserConnected();
+    if (user != null) {
+      return read(user.uid);
+    }
+    return Future.value(null);
   }
 
   Stream<FitnessUser?> listenFitnessUser() {
