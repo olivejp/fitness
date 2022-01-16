@@ -27,16 +27,10 @@ class MainPage extends StatelessWidget {
           children: [
             Obx(() {
               switch (controller.currentIndex.value) {
-                case IndexPage.home:
-                  return HomePage();
-                case IndexPage.flux:
-                  return SearchPage();
                 case IndexPage.calendar:
                   return CalendarPage();
                 case IndexPage.search:
                   return SearchPage();
-                case IndexPage.charts:
-                  return const Text('Page en cours de création');
                 case IndexPage.profile:
                   return ProfilePage();
                 default:
@@ -74,20 +68,6 @@ class HomeBottomAppBar2 extends StatelessWidget {
           children: [
             Flexible(
               child: BottomIcon(
-                label: 'home'.tr,
-                iconData: Icons.home,
-                indexPage: IndexPage.home,
-              ),
-            ),
-            Flexible(
-              child: BottomIcon(
-                label: 'home'.tr,
-                iconData: Icons.message_outlined,
-                indexPage: IndexPage.flux,
-              ),
-            ),
-            Flexible(
-              child: BottomIcon(
                 label: 'calendar'.tr,
                 iconData: Icons.calendar_today,
                 indexPage: IndexPage.calendar,
@@ -102,8 +82,8 @@ class HomeBottomAppBar2 extends StatelessWidget {
             ),
             Flexible(
               child: BottomIcon(
-                label: 'plus'.tr,
-                iconData: Icons.more,
+                label: 'profile'.tr,
+                iconData: Icons.person,
                 indexPage: IndexPage.profile,
               ),
             ),
@@ -218,24 +198,6 @@ class HomeBottomAppBar extends StatelessWidget {
             currentIndex: controller.currentIndex.value.index,
             items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
-                label: 'main'.tr,
-                activeIcon: const Icon(
-                  Icons.home,
-                ),
-                icon: SizedBox(
-                  height: iconSizedBox,
-                  width: iconSizedBox,
-                  child: IconButton(
-                    padding: const EdgeInsets.all(0),
-                    onPressed: () =>
-                        controller.currentIndex.value = IndexPage.home,
-                    icon: const Icon(
-                      Icons.home,
-                    ),
-                  ),
-                ),
-              ),
-              BottomNavigationBarItem(
                 label: 'calendar'.tr,
                 activeIcon: const Icon(
                   Icons.calendar_today,
@@ -267,24 +229,6 @@ class HomeBottomAppBar extends StatelessWidget {
                         controller.currentIndex.value = IndexPage.search,
                     icon: const Icon(
                       Icons.explore_rounded,
-                    ),
-                  ),
-                ),
-              ),
-              BottomNavigationBarItem(
-                label: 'tracking'.tr,
-                activeIcon: const Icon(
-                  Icons.bar_chart,
-                ),
-                icon: SizedBox(
-                  height: iconSizedBox,
-                  width: iconSizedBox,
-                  child: IconButton(
-                    padding: const EdgeInsets.all(0),
-                    onPressed: () =>
-                        controller.currentIndex.value = IndexPage.charts,
-                    icon: const Icon(
-                      Icons.bar_chart,
                     ),
                   ),
                 ),

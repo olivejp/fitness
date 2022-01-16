@@ -19,5 +19,5 @@ class MainController extends GetxController {
 
   final FitnessUserService fitnessUserService = Get.find();
   final Rx<FitnessUser?> user = FitnessUser().obs;
-  final Rx<IndexPage> currentIndex = IndexPage.home.obs;
+  final Rx<IndexPage> currentIndex = IndexPage.calendar.obs;
 }

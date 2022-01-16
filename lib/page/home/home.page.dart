@@ -62,7 +62,7 @@ class HomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
-            children: [
+            children: const [
               MyInfos(),
             ],
           ),
@@ -94,7 +94,7 @@ class MyInfos extends StatelessWidget {
           SizedBox(
             height: squareSize,
             child: ListView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               shrinkWrap: true,
               itemCount: 4,
               scrollDirection: Axis.horizontal,
@@ -103,7 +103,7 @@ class MyInfos extends StatelessWidget {
                   default:
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 2),
-                      child: SizedBox(width: squareSize, child: Card()),
+                      child: SizedBox(width: squareSize, child: const Card()),
                     );
                 }
               },

@@ -7,6 +7,7 @@ import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -35,7 +36,8 @@ class WorkoutPageController extends GetxController {
   final RxBool onRefresh = false.obs;
   final RxBool autoPlay = false.obs;
   final RxBool timerStarted = false.obs;
-  final AudioPlayer audioPlayer = AudioPlayer(mode: PlayerMode.LOW_LATENCY);
+  late AudioPlayer? audioPlayer;
+  late AudioCache? audioCache;
   final StopWatchTimer timer = StopWatchTimer(
       mode: StopWatchMode.countDown,
       presetMillisecond: StopWatchTimer.getMilliSecFromMinute(0));
@@ -46,6 +48,18 @@ class WorkoutPageController extends GetxController {
   int timerMinute = 0;
   int timerSecond = 0;
   StreamSubscription? timerSubscription;
+
+  @override
+  void onInit() {
+    super.onInit();
+    // To play asset we need AudioCache. But AudioCache is not provided for Web.
+    // see {https://github.com/bluefireteam/audioplayers/blob/master/packages/audioplayers/doc/audio_cache.md}
+    if (kIsWeb) {
+      audioPlayer = AudioPlayer(mode: PlayerMode.LOW_LATENCY);
+    } else {
+      audioCache = AudioCache();
+    }
+  }
 
   void init(WorkoutInstance workoutInstance, {bool goToLastPage = false}) {
     this.workoutInstance.value = workoutInstance;
@@ -119,9 +133,16 @@ class WorkoutPageController extends GetxController {
     timer.onExecute.add(StopWatchExecute.start);
     timerSubscription = timer.rawTime.listen((event) {
       if (event == 0) {
-        audioPlayer
-            .play('sounds/notification.wav', isLocal: true)
-            .then((value) => null);
+        if (kIsWeb) {
+          audioPlayer
+              ?.play('assets/notification.wav', isLocal: true)
+              .then((value) => null);
+        } else {
+          audioCache
+              ?.play('notification.wav', stayAwake: true)
+              .then((value) => null);
+        }
+
         changeTimer();
       }
     });

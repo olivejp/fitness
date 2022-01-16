@@ -1,6 +1,7 @@
+import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:fitnc_user/page/exercice/exercice-choice.dialog.dart';
 import 'package:fitnc_user/page/workout/workout-instance.page.dart';
-import 'package:fitnc_user/widget/date-picker.widget.dart';
+import 'package:fitnc_user/widget/fitness-date-picker.widget.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
 import 'package:fitness_domain/widget/generic_container.widget.dart';
@@ -71,17 +72,9 @@ class CalendarPage extends StatelessWidget {
                       child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                              onPressed: () => goToExerciseChoice(context),
-                              icon: const Icon(Icons.post_add),
-                              color: Theme.of(context).primaryColor,
-                              iconSize: 45,
-                            ),
-                            TextButton(
-                              onPressed: () => goToExerciseChoice(context),
-                              child: Text('addWorkout'.tr),
-                            ),
+                          children: const [
+                            Text('Aucun entrainement !', style: TextStyle(fontWeight: FontWeight.w900),),
+                            Text("Vous n'avez fait aucune séance d'entrainement pour ce jour.", style: TextStyle(fontWeight: FontWeight.w900)),
                           ],
                         ),
                       ),

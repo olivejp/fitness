@@ -67,6 +67,7 @@ class LoginForm extends StatelessWidget {
                   fillColor: Colors.white,
                   filled: true,
                   labelText: 'mail'.tr,
+                  labelStyle: TextStyle(color: Theme.of(context).primaryColor),
                   hintStyle: GoogleFonts.roboto(fontSize: 15),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
@@ -122,6 +123,7 @@ class LoginForm extends StatelessWidget {
                       fillColor: Colors.white,
                       filled: true,
                       labelText: 'password'.tr,
+                      labelStyle: TextStyle(color: Theme.of(context).primaryColor),
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                           width: 0.5,
