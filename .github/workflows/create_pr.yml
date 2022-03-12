@@ -21,9 +21,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v3.14.0
         with:
-          base: ${{ github.head_ref }}
+          base: main
           token: ${{ secrets.PULL_REQUEST_TOKEN }}
           body: >
             This is my body.
