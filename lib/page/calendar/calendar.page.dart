@@ -1,17 +1,14 @@
+import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:fitnc_user/page/exercice/exercice-choice.dialog.dart';
 import 'package:fitnc_user/page/workout/workout-instance.page.dart';
-import 'package:fitnc_user/widget/date-picker.widget.dart';
+import 'package:fitnc_user/widget/fitness-date-picker.widget.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
 import 'package:fitness_domain/widget/generic_container.widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:loading_animations/loading_animations.dart';
 
 import 'calendar.page.controller.dart';
 
@@ -20,23 +17,31 @@ class CalendarPage extends StatelessWidget {
 
   final CalendarController controller = Get.put(CalendarController());
 
+  void goToExerciseChoice(BuildContext context) {
+    controller.initialDate = controller.selectedDate;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ExerciseChoiceDialog(
+          isCreation: true,
+          date: controller.selectedDate,
+          workoutInstance: null,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     controller.initialDate = DateTime.now();
+    controller.selectedDate = DateTime.now();
     return Scaffold(
       floatingActionButton: FloatingActionButton(
+        onPressed: () => goToExerciseChoice(context),
         child: const Icon(
           Icons.add,
           color: Colors.white,
         ),
-        onPressed: () {
-          controller.initialDate = controller.selectedDate;
-          controller.createNewWorkoutInstance(controller.selectedDate).then((_) {
-            print('Création réussie');
-          });
-        },
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: Column(
         children: <Widget>[
           Material(
@@ -44,21 +49,34 @@ class CalendarPage extends StatelessWidget {
             child: StreamBuilder<List<WorkoutInstance>>(
                 stream: controller.workoutInstanceService.listenAll(),
                 builder: (_, snapshot) {
-                  List<WorkoutInstance> list = snapshot.hasData ? snapshot.data! : [];
+                  List<WorkoutInstance> list =
+                      snapshot.hasData ? snapshot.data! : [];
                   return Timeline(list: list);
                 }),
           ),
           Expanded(
             child: Obx(
               () => StreamList<WorkoutInstance>(
-                stream: controller.listenWorkoutInstanceByDate(controller.selectedDate),
-                builder: (BuildContext context, WorkoutInstance domain) => WorkoutInstanceCard(instance: domain),
-                padding: EdgeInsets.all(10),
+                stream: controller
+                    .listenWorkoutInstanceByDate(controller.selectedDate),
+                builder: (BuildContext context, WorkoutInstance domain) =>
+                    WorkoutInstanceCard(instance: domain),
+                padding: const EdgeInsets.only(top: 10),
+                separatorBuilder: (_, index) => const Divider(
+                  height: 20,
+                  // thickness: 20,
+                ),
                 emptyWidget: Column(
-                  children: const [
+                  children: [
                     Expanded(
                       child: Center(
-                        child: Text('Aucun élément'),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Text('Aucun entrainement !', style: TextStyle(fontWeight: FontWeight.w900),),
+                            Text("Vous n'avez fait aucune séance d'entrainement pour ce jour.", style: TextStyle(fontWeight: FontWeight.w900)),
+                          ],
+                        ),
                       ),
                     )
                   ],
@@ -104,7 +122,10 @@ class Timeline extends StatelessWidget {
                   controller.initialDate = DateTime.now();
                   controller.selectedDate = DateTime.now();
                 },
-                child: Text('Today'),
+                child: Text(
+                  'today'.tr,
+                  style: GoogleFonts.comfortaa(),
+                ),
               ),
             ),
           ],
@@ -144,12 +165,14 @@ class CalendarDayCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Theme.of(context).primaryColor,
-            width: selected ? 3 : 0,
-          ),
-        ),
+        border: (selected)
+            ? Border(
+                bottom: BorderSide(
+                  color: Theme.of(context).primaryColor,
+                  width: 4,
+                ),
+              )
+            : null,
       ),
       child: SizedBox(
         height: 30,
@@ -161,7 +184,7 @@ class CalendarDayCard extends StatelessWidget {
               child: Center(
                 child: Text(
                   dateTime.day.toString(),
-                  style: GoogleFonts.roboto(
+                  style: GoogleFonts.comfortaa(
                     color: selected ? Theme.of(context).primaryColor : null,
                     fontSize: 18,
                   ),
@@ -175,7 +198,8 @@ class CalendarDayCard extends StatelessWidget {
                     .map((e) => Icon(
                           Icons.circle,
                           size: 5,
-                          color: selected ? Theme.of(context).primaryColor : null,
+                          color:
+                              selected ? Theme.of(context).primaryColor : null,
                         ))
                     .toList(),
               ),
@@ -200,10 +224,8 @@ class WorkoutInstanceCard extends StatelessWidget {
       dateStr = DateFormat('dd/MM/yyyy - kk:mm').format(instance.date!);
     }
 
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-      elevation: 5,
+    return Material(
+      elevation: 3,
       child: InkWell(
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute(
@@ -225,30 +247,109 @@ class WorkoutInstanceCard extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text(
-                        dateStr,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            dateStr,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          StreamBuilder<bool>(
+                              stream: controller.areAllChecked(instance.uid!),
+                              initialData: false,
+                              builder: (_, snapshot) {
+                                if (snapshot.hasData && snapshot.data!) {
+                                  return const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8),
+                                    child: Icon(
+                                      Icons.verified_rounded,
+                                      color: Colors.green,
+                                    ),
+                                  );
+                                } else {
+                                  return Container();
+                                }
+                              }),
+                        ],
                       ),
-                      PopupMenuButton<dynamic>(
+                      PopupMenuButton<int>(
                         iconSize: 24,
-                        tooltip: 'Voir plus',
+                        tooltip: 'showMore'.tr,
                         icon: const Icon(Icons.more_horiz, color: Colors.grey),
-                        itemBuilder: (_) => <PopupMenuItem<dynamic>>[
-                          PopupMenuItem<dynamic>(
+                        onSelected: (value) {
+                          controller.initialDate = controller.selectedDate;
+                          switch (value) {
+                            case 1:
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  DateTime dateSelected = instance.date!;
+                                  return AlertDialog(
+                                    content: SizedBox(
+                                      height: 500,
+                                      width: 1200,
+                                      child: DateChangePicker(
+                                        initialDate: instance.date,
+                                        onDateChanged: (dateTime) =>
+                                            dateSelected = dateTime,
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton.icon(
+                                        onPressed: () {
+                                          controller.updateDate(
+                                              instance, dateSelected);
+                                          Navigator.of(context).pop();
+                                        },
+                                        icon: const Icon(Icons.check),
+                                        label: Text('validate'.tr),
+                                      ),
+                                      TextButton.icon(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
+                                        icon: const Icon(Icons.clear),
+                                        label: Text('cancel'.tr),
+                                      )
+                                    ],
+                                  );
+                                },
+                              );
+                              break;
+                            case 2:
+                              controller.deleteWorkout(instance);
+                              break;
+                          }
+                        },
+                        itemBuilder: (BuildContext buildContext) =>
+                            <PopupMenuItem<int>>[
+                          PopupMenuItem<int>(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: const <Widget>[
-                                Text('Supprimer'),
-                                Icon(
+                              children: <Widget>[
+                                Text('updateDate'.tr),
+                                const Icon(
+                                  Icons.calendar_today_outlined,
+                                  color: Colors.grey,
+                                ),
+                              ],
+                            ),
+                            value: 1,
+                          ),
+                          PopupMenuItem<int>(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text('delete'.tr),
+                                const Icon(
                                   Icons.delete,
                                   color: Colors.grey,
                                 ),
                               ],
                             ),
-                            onTap: () => controller.deleteWorkout(instance),
+                            value: 2,
                           ),
                         ],
                       ),
@@ -271,14 +372,16 @@ class WorkoutInstanceCard extends StatelessWidget {
                           Flexible(
                             child: Column(
                               children: [
-                                if (set.nameExercice != null) Text(set.nameExercice!),
+                                if (set.nameExercice != null)
+                                  Text(set.nameExercice!),
                               ],
                             ),
                           ),
                           Flexible(
                             child: IconButton(
                               onPressed: () => controller.deleteUserSet(set),
-                              icon: Icon(Icons.delete, color: Colors.grey, size: 20),
+                              icon: const Icon(Icons.delete,
+                                  color: Colors.grey, size: 20),
                             ),
                           ),
                         ],
@@ -295,14 +398,15 @@ class WorkoutInstanceCard extends StatelessWidget {
                           onPressed: () {
                             showDialog(
                               context: context,
-                              builder: (context) => ExerciceChoiceDialog(workoutInstance: instance),
+                              builder: (context) => ExerciseChoiceDialog(
+                                  workoutInstance: instance),
                             );
                           },
                           icon: const Icon(
                             Icons.add_circle_outline_outlined,
                           ),
-                          label: const Text(
-                            'Ajouter un exercice',
+                          label: Text(
+                            'addExercise'.tr,
                           ),
                         ),
                       ],

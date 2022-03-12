@@ -1,10 +1,15 @@
-
 import 'package:flutter/material.dart';
 
-class FitnessConstants {
+enum IndexPage { calendar, search, profile }
+
+class FitnessMobileConstants {
   static const double textFormFieldHeight = 60;
   static const double bottomAppBar = 55;
   static const String appTitle = 'Fitness Nc';
+  static const String firebaseRegion = 'australia-southeast1';
+  static const String profileCommandLineArgument = 'PROFILE';
+  static const String imageLogin = 'images/fitness_login_page/AmaniGymReversed';
+  static const String imageLoginExtension = '.jpg';
 }
 
 class FitnessNcColors {

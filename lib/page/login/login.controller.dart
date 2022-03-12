@@ -1,28 +1,50 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnc_user/service/config.service.dart';
+import 'package:fitness_domain/constants.dart';
 import 'package:fitness_domain/service/auth.service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../constants.dart';
+
 class LoginPageController extends GetxController {
-  final Rx<User?> _userConnected = null.obs;
   final RxString _loginMsgError = ''.obs;
   final RxString _email = ''.obs;
   final RxString _password = ''.obs;
   final RxBool _hidePassword = true.obs;
+  final RxBool isLoading = false.obs;
   final AuthService authService = Get.find();
+
+  @override
+  void onInit() {
+    super.onInit();
+    final ConfigService configService = Get.find();
+    if (configService.get(FitnessMobileConstants.profileCommandLineArgument) ==
+        'DEV') {
+      _email.value = configService.get('EMAIL');
+      _password.value = configService.get('PASSWORD');
+    }
+  }
+
+  String? resetPasswordCode;
+  String? newPassword;
 
   bool get hidePassword => _hidePassword.value;
 
   void authenticate(GlobalKey<FormState> formKey) {
     _loginMsgError.value = '';
+
     if (formKey.currentState?.validate() == true) {
+      isLoading.value = true;
       String emailTrimmed = email.trim();
-      authService.signInWithEmailPassword(emailTrimmed, password).then((UserCredential value) {
-        userConnected = authService.getCurrentUser();
+      authService.signInWithEmailPassword(emailTrimmed, password).then((value) {
         _password.value = '';
-      }).catchError((Object? error) {
-        if (error is FirebaseAuthException) {
-          _loginMsgError.value = error.message!;
+        isLoading.value = false;
+        Get.offNamed(FitnessConstants.routeHome);
+      }).catchError((onError) {
+        isLoading.value = false;
+        if (onError is FirebaseAuthException) {
+          _loginMsgError.value = onError.message!;
         }
       });
     }
@@ -44,15 +66,21 @@ class LoginPageController extends GetxController {
     _password.value = password;
   }
 
-  User? get userConnected => _userConnected.value;
-
-  set userConnected(User? user) {
-    _userConnected.value = user;
-  }
-
   String get loginMsgError => _loginMsgError.value;
 
   set loginMsgError(String error) {
     _loginMsgError.value = error;
+  }
+
+  Future<void> sendPasswordResetEmail() {
+    return FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+  }
+
+  Future<void> confirmPasswordReset() async {
+    if (resetPasswordCode != null && newPassword != null) {
+      return await FirebaseAuth.instance.confirmPasswordReset(
+          code: resetPasswordCode!, newPassword: newPassword!);
+    }
+    return;
   }
 }

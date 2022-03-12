@@ -1,90 +1,26 @@
-import 'dart:async';
-
-import 'package:fitnc_user/service/exercice.service.dart';
-import 'package:fitnc_user/service/user-set.service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fitnc_user/page/exercice/stat-exercice.page.dart';
+import 'package:fitness_domain/constants.dart';
+import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/user.line.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
-import 'package:fitness_domain/domain/workout.domain.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:loading_animations/loading_animations.dart';
 
-class UserSetController extends GetxController {
-  final ExerciceService exerciceService = Get.find();
-  final UserSetService userSetService = Get.find();
-  final Rx<UserSet> userSet = UserSet().obs;
-  final Rx<Workout> workout = Workout().obs;
-  final RxList<UserLine> listLines = <UserLine>[].obs;
-  final int debounceTime = 200;
-  Timer? _debounce;
-
-  void init(UserSet userSet) {
-    if (userSet.lines.isEmpty) {
-      userSet.lines.add(UserLine());
-    }
-    this.userSet.value = userSet;
-  }
-
-  void initList(List<UserLine> lines) {
-    listLines.clear();
-    listLines.addAll(lines);
-    listLines.refresh();
-  }
-
-  void addLine() {
-    userSet.update((val) {
-      val!.lines.add(UserLine());
-    });
-    initList(userSet.value.lines);
-  }
-
-  void afterDebounce(void Function() callback) {
-    if (_debounce?.isActive ?? false) _debounce?.cancel();
-    _debounce = Timer(Duration(milliseconds: debounceTime), () {
-      callback.call();
-    });
-  }
-
-  void removeLastLine() {
-    userSet.update((val) {
-      val!.lines.removeAt(val.lines.length - 1);
-    });
-    userSetService.save(userSet.value).then((value) {
-      initList(userSet.value.lines);
-    });
-  }
-
-  void changeReps(int index, String reps) {
-    userSet.value.lines[index].reps = reps;
-    afterDebounce(() {
-      userSetService.save(userSet.value);
-    });
-  }
-
-  void changeWeight(int index, String weight) {
-    userSet.value.lines[index].weight = weight;
-    afterDebounce(() {
-      userSetService.save(userSet.value);
-    });
-  }
-
-  void changeCheck(int index, bool checked) {
-    userSet.value.lines[index].checked = checked;
-    userSetService.save(userSet.value);
-    listLines[index].checked = checked;
-    listLines.refresh();
-  }
-}
+import 'add_user_set.controller.dart';
 
 class OpenUserSetInstance extends StatelessWidget {
-  const OpenUserSetInstance({Key? key, required this.userSet}) : super(key: key);
+  const OpenUserSetInstance({Key? key, required this.userSet})
+      : super(key: key);
 
   final UserSet userSet;
 
   @override
   Widget build(BuildContext context) {
-    final UserSetController controller = Get.put(UserSetController(), tag: userSet.uid);
+    final UserSetController controller =
+        Get.put(UserSetController(), tag: userSet.uid);
     controller.init(userSet);
     return UserSetUpdate(userSet: userSet);
   }
@@ -96,12 +32,126 @@ class UserSetUpdate extends StatelessWidget {
   final UserSet userSet;
   final double padding = 15;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final ScrollController scrollController = ScrollController();
+
+  /// Returns headers columns depending on the Exercise type.
+  List<Widget> getColumnsHeadersByType() {
+    if (userSet.typeExercice == TypeExercice.REPS_WEIGHT.name) {
+      return [
+        const Flexible(
+          flex: 2,
+          child: Center(child: Text('Reps')),
+        ),
+        const Flexible(
+          flex: 2,
+          child: Center(child: Text('Weight')),
+        )
+      ];
+    } else if (userSet.typeExercice == TypeExercice.REPS_ONLY.name) {
+      return [
+        const Flexible(
+          flex: 4,
+          child: Center(child: Text('Reps')),
+        )
+      ];
+    } else if (userSet.typeExercice == TypeExercice.TIME.name) {
+      return [
+        const Flexible(
+          flex: 4,
+          child: Center(child: Text('Time')),
+        )
+      ];
+    } else if (userSet.typeExercice == TypeExercice.DIST.name) {
+      return [
+        const Flexible(
+          flex: 4,
+          child: Center(child: Text('Dist')),
+        )
+      ];
+    } else {
+      throw Exception('Type exercise unknown');
+    }
+  }
+
+  /// Returns fields columns depending on the Exercise type.
+  List<Widget> getColumnsFieldsByType(
+    String? typeExercise,
+    UserLine userLine,
+    int index,
+    UserSetController controller,
+    GlobalKey keyReps,
+    GlobalKey keyWeight,
+    GlobalKey keyTime,
+    GlobalKey keyDist,
+  ) {
+    if (typeExercise == TypeExercice.REPS_ONLY.name) {
+      return [
+        Flexible(
+          flex: 4,
+          child: TextInputWidget(
+            keyWeight: keyReps,
+            initialValue: userLine.reps,
+            index: index,
+            callback: controller.changeReps,
+          ),
+        ),
+      ];
+    } else if (typeExercise == TypeExercice.DIST.name) {
+      return [
+        Flexible(
+          flex: 4,
+          child: TextInputWidget(
+            keyWeight: keyDist,
+            initialValue: userLine.dist,
+            index: index,
+            callback: controller.changeDist,
+          ),
+        ),
+      ];
+    } else if (typeExercise == TypeExercice.TIME.name) {
+      return [
+        Flexible(
+          flex: 4,
+          child: TextInputWidget(
+            keyWeight: keyTime,
+            initialValue: userLine.time,
+            index: index,
+            callback: controller.changeTime,
+          ),
+        ),
+      ];
+    } else if (typeExercise == TypeExercice.REPS_WEIGHT.name) {
+      return [
+        Flexible(
+          flex: 2,
+          child: TextInputWidget(
+            keyWeight: keyReps,
+            initialValue: userLine.reps,
+            index: index,
+            callback: controller.changeReps,
+          ),
+        ),
+        Flexible(
+          flex: 2,
+          child: TextInputWidget(
+            keyWeight: keyWeight,
+            initialValue: userLine.weight,
+            index: index,
+            callback: controller.changeWeight,
+          ),
+        )
+      ];
+    } else {
+      throw Exception('Type exercise unknown');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final UserSetController controller = Get.find(tag: userSet.uid);
     controller.initList(userSet.lines);
     return SingleChildScrollView(
+      controller: scrollController,
       child: Form(
         key: formKey,
         child: Column(
@@ -109,65 +159,30 @@ class UserSetUpdate extends StatelessWidget {
           children: <Widget>[
             Padding(
               padding: EdgeInsets.only(right: padding, left: padding),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  if (controller.userSet.value.imageUrlExercice != null)
-                    SizedBox.square(
-                      child: Card(
-                        clipBehavior: Clip.antiAlias,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Image(
-                          image: NetworkImage(controller.userSet.value.imageUrlExercice!),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      dimension: 100,
-                    ),
-                  if (controller.userSet.value.imageUrlExercice == null)
-                    SizedBox.square(
-                      child: Card(
-                        clipBehavior: Clip.antiAlias,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Container(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                      dimension: 100,
-                    ),
-                  Flexible(
-                    child: Text(controller.userSet.value.nameExercice!),
-                  )
-                ],
-              ),
+              child: RowExerciseDetails(controller: controller),
             ),
             Padding(
               padding: EdgeInsets.only(right: padding, left: padding),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const <Widget>[
-                  Flexible(
+                children: <Widget>[
+                  const Flexible(
                     child: Center(child: Text('Sets')),
                   ),
-                  Flexible(
-                    flex: 2,
-                    child: Center(child: Text('Reps')),
-                  ),
-                  Flexible(
-                    flex: 2,
-                    child: Center(child: Text('Weight')),
-                  ),
+                  ...getColumnsHeadersByType(),
                   Flexible(
                     child: Center(
-                      child: Icon(
-                        Icons.check_circle_outlined,
-                        color: Colors.green,
-                        size: 30,
+                      child: Obx(
+                        () {
+                          bool allIsChecked = controller.listLines
+                              .every((element) => element.checked);
+                          return IconButton(
+                            icon: const Icon(Icons.done_all_rounded),
+                            color: allIsChecked ? Colors.green : Colors.grey,
+                            iconSize: 30,
+                            onPressed: () => controller.checkAll(),
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -176,73 +191,34 @@ class UserSetUpdate extends StatelessWidget {
             ),
             Obx(
               () => ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: controller.listLines.length,
                   itemBuilder: (BuildContext context, int index) {
                     final GlobalKey keyReps = GlobalKey();
                     final GlobalKey keyWeight = GlobalKey();
                     final GlobalKey keyTime = GlobalKey();
-                    final UserLine userLine = controller.listLines.elementAt(index);
+                    final GlobalKey keyDist = GlobalKey();
+                    final UserLine userLine =
+                        controller.listLines.elementAt(index);
                     return Padding(
-                      padding: EdgeInsets.only(right: padding, left: padding, top: 5),
+                      padding: EdgeInsets.only(
+                          right: padding, left: padding, top: 5),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Flexible(
-                            child: Center(child: Text('$index')),
+                            child: Center(child: Text('${index + 1}')),
                           ),
-                          Flexible(
-                            flex: 2,
-                            child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 5, right: 5),
-                                child: TextFormField(
-                                  key: keyReps,
-                                  initialValue: userLine.reps,
-                                  textAlign: TextAlign.center,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                                  ],
-                                  decoration: InputDecoration(
-                                      constraints: BoxConstraints(maxHeight: 36),
-                                      border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: const BorderRadius.all(Radius.circular(5)),
-                                        borderSide: BorderSide(width: 1, color: Theme.of(context).primaryColor),
-                                      ),
-                                      hintStyle: const TextStyle(fontSize: 14),
-                                      hintText: '0'),
-                                  onChanged: (value) => controller.changeReps(index, value),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Flexible(
-                            flex: 2,
-                            child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 5, right: 5),
-                                child: TextFormField(
-                                  key: keyWeight,
-                                  initialValue: userLine.weight,
-                                  textAlign: TextAlign.center,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                                  ],
-                                  decoration: InputDecoration(
-                                      constraints: BoxConstraints(maxHeight: 36),
-                                      border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-                                      focusedBorder: OutlineInputBorder(
-                                          borderRadius: const BorderRadius.all(Radius.circular(5)),
-                                          borderSide: BorderSide(width: 1, color: Theme.of(context).primaryColor)),
-                                      hintStyle: const TextStyle(fontSize: 14),
-                                      hintText: '0'),
-                                  onChanged: (value) => controller.changeWeight(index, value),
-                                ),
-                              ),
-                            ),
+                          ...getColumnsFieldsByType(
+                            userSet.typeExercice,
+                            userLine,
+                            index,
+                            controller,
+                            keyReps,
+                            keyWeight,
+                            keyTime,
+                            keyDist,
                           ),
                           Flexible(
                             child: Center(
@@ -258,53 +234,254 @@ class UserSetUpdate extends StatelessWidget {
                     );
                   }),
             ),
+            RowAddRemoveSet(controller: controller),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Flexible(
-                  flex: 1,
-                  child: Container(),
-                ),
-                Flexible(
-                  flex: 2,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Obx(() {
-                        if (controller.userSet.value.lines.length > 1) {
-                          return IconButton(
-                            onPressed: () => controller.removeLastLine(),
-                            iconSize: 40,
-                            icon: Icon(Icons.remove_circle_outline, color: Theme.of(context).primaryColor),
-                          );
-                        } else {
-                          return IconButton(
-                            onPressed: () {},
-                            iconSize: 40,
-                            icon: Icon(
-                              Icons.remove_circle_outline,
-                              color: Colors.grey,
-                            ),
-                          );
-                        }
-                      }),
-                      Text('Set'),
-                      IconButton(
-                        onPressed: () => controller.addLine(),
-                        iconSize: 40,
-                        icon: Icon(Icons.add_circle_outline, color: Theme.of(context).primaryColor),
-                      ),
-                    ],
-                  ),
-                ),
-                Flexible(
-                  flex: 1,
-                  child: Container(),
+                TextButton.icon(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) =>
+                          AddCommentAlertDialog(controller: controller),
+                    );
+                  },
+                  label: Text('comment'.tr),
+                  icon: const Icon(Icons.note_outlined),
                 )
               ],
             )
           ],
         ),
       ),
+    );
+  }
+}
+
+class TextInputWidget extends StatelessWidget {
+  const TextInputWidget({
+    Key? key,
+    required this.keyWeight,
+    required this.callback,
+    required this.index,
+    required this.initialValue,
+  }) : super(key: key);
+
+  final GlobalKey<State<StatefulWidget>> keyWeight;
+  final String? initialValue;
+  final int index;
+  final void Function(int index, String value) callback;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.only(left: 5, right: 5),
+        child: TextFormField(
+          key: keyWeight,
+          initialValue: initialValue,
+          textAlign: TextAlign.center,
+          keyboardType: TextInputType.number,
+          inputFormatters: <TextInputFormatter>[
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+          ],
+          decoration: InputDecoration(
+              constraints: const BoxConstraints(maxHeight: 36),
+              border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(5))),
+              focusedBorder: OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(Radius.circular(5)),
+                  borderSide: BorderSide(
+                      width: 1, color: Theme.of(context).primaryColor)),
+              hintStyle: const TextStyle(fontSize: 14),
+              hintText: '0'),
+          onChanged: (value) => callback(index, value),
+        ),
+      ),
+    );
+  }
+}
+
+class RowExerciseDetails extends StatelessWidget {
+  const RowExerciseDetails({
+    Key? key,
+    required this.controller,
+  }) : super(key: key);
+
+  final UserSetController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        if (controller.userSet.value.imageUrlExercice != null)
+          SizedBox.square(
+            child: Card(
+              clipBehavior: Clip.antiAlias,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: CachedNetworkImage(
+                imageUrl: controller.userSet.value.imageUrlExercice!,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => LoadingBouncingGrid.circle(),
+                errorWidget: (context, url, error) => Container(
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+            ),
+            dimension: 100,
+          ),
+        if (controller.userSet.value.imageUrlExercice == null)
+          SizedBox.square(
+            child: Card(
+              clipBehavior: Clip.antiAlias,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Container(
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+            dimension: 100,
+          ),
+        Flexible(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(controller.userSet.value.nameExercice!),
+              IconButton(
+                icon: const Icon(
+                  Icons.insert_chart_outlined_rounded,
+                  color: Colors.grey,
+                ),
+                onPressed: () {
+                  controller
+                      .getExercise(controller.userSet.value.uidExercice)
+                      .then(
+                    (Exercice? exercise) {
+                      if (exercise != null) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                StatExercicePage(exercice: exercise),
+                          ),
+                        );
+                      }
+                    },
+                  );
+                },
+              )
+            ],
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class AddCommentAlertDialog extends StatelessWidget {
+  AddCommentAlertDialog({
+    Key? key,
+    required this.controller,
+  }) : super(key: key);
+
+  final UserSetController controller;
+  final GlobalKey<State<StatefulWidget>> commentKey = GlobalKey();
+
+  @override
+  Widget build(BuildContext context) {
+    String comment = controller.userSet.value.comment ?? '';
+    return AlertDialog(
+      title: Text(
+        'addComment'.tr,
+        style: Theme.of(context).textTheme.headline3,
+      ),
+      content: TextFormField(
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(5))),
+          hintText: 'comment'.tr + '...',
+        ),
+        controller: TextEditingController(text: comment),
+        key: commentKey,
+        maxLines: 10,
+        onChanged: (value) => comment = value,
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            controller.addComment(comment);
+            Navigator.of(context).pop();
+          },
+          child: Text('save'.tr),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text('cancel'.tr),
+        ),
+      ],
+    );
+  }
+}
+
+class RowAddRemoveSet extends StatelessWidget {
+  const RowAddRemoveSet({
+    Key? key,
+    required this.controller,
+  }) : super(key: key);
+
+  final UserSetController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Flexible(
+          flex: 1,
+          child: Container(),
+        ),
+        Flexible(
+          flex: 2,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Obx(() {
+                if (controller.userSet.value.lines.length > 1) {
+                  return IconButton(
+                    onPressed: () => controller.removeLastLine(),
+                    iconSize: 40,
+                    icon: Icon(Icons.remove_circle_outline,
+                        color: Theme.of(context).primaryColor),
+                  );
+                } else {
+                  return IconButton(
+                    onPressed: () {},
+                    iconSize: 40,
+                    icon: const Icon(
+                      Icons.remove_circle_outline,
+                      color: Colors.grey,
+                    ),
+                  );
+                }
+              }),
+              const Text('Set'),
+              IconButton(
+                onPressed: () => controller.addLine(),
+                iconSize: 40,
+                icon: Icon(Icons.add_circle_outline,
+                    color: Theme.of(context).primaryColor),
+              ),
+            ],
+          ),
+        ),
+        Flexible(
+          flex: 1,
+          child: Container(),
+        )
+      ],
     );
   }
 }
@@ -328,10 +505,12 @@ class UserLineCheckWidget extends StatelessWidget {
       key: keyChecked,
       onPressed: () => onPress(index, !userLine.checked),
       icon: Icon(
-        (userLine.checked) ? Icons.check_circle : Icons.circle_outlined,
+        (userLine.checked)
+            ? Icons.check_box_rounded
+            : Icons.check_box_outline_blank_rounded,
         size: 30,
       ),
-      color: Colors.green,
+      color: (userLine.checked) ? Colors.green : Colors.grey,
     );
   }
 }

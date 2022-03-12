@@ -1,13 +1,12 @@
 import 'package:badges/badges.dart';
-import 'package:fitnc_user/controller/display-type.controller.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnc_user/page/search/program_detail/program_detail.page.dart';
 import 'package:fitnc_user/page/search/search.controller.dart';
-import 'package:fitnc_user/service/trainers.service.dart';
+import 'package:fitnc_user/service/published_programme.service.dart';
 import 'package:fitness_domain/domain/published_programme.domain.dart';
 import 'package:fitness_domain/domain/trainers.domain.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:fitness_domain/service/display.service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animations/loading_animations.dart';
@@ -15,11 +14,12 @@ import 'package:loading_animations/loading_animations.dart';
 class SearchPage extends StatelessWidget {
   SearchPage({Key? key}) : super(key: key);
   final SearchPageController controller = Get.put(SearchPageController());
-  final DisplayTypeController displayTypeController = Get.find();
+  final DisplayTypeService displayTypeController = Get.find();
 
   @override
   Widget build(BuildContext context) {
-    controller.refreshSearchController();
+    controller.initSearchList(
+        getStreamList: controller.publishedProgrammeService.listenAll);
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.only(left: 10, right: 10),
@@ -51,7 +51,7 @@ class ListPublishedPrograms extends StatelessWidget {
   }) : super(key: key);
 
   final SearchPageController controller = Get.find();
-  final DisplayTypeController displayTypeController = Get.find();
+  final DisplayTypeService displayTypeController = Get.find();
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -73,9 +73,12 @@ class ListPublishedPrograms extends StatelessWidget {
                     children: [
                       Text(
                         "Programmes récents",
-                        style: Theme.of(context).textTheme.headline5,
+                        style: GoogleFonts.comfortaa(fontSize: 22),
                       ),
-                      Text("${snapshot.data!.length} résultats"),
+                      Text(
+                        "${snapshot.data!.length} résultats",
+                        style: GoogleFonts.comfortaa(),
+                      ),
                     ],
                   ),
                 ),
@@ -100,8 +103,11 @@ class ListPublishedPrograms extends StatelessWidget {
                         mainAxisSpacing: 20,
                         childAspectRatio: 16 / 9,
                         crossAxisCount: crossAxisCount,
-                        children:
-                            snapshot.data!.map((PublishedProgramme programme) => PublishedProgrammeCard(publishedProgramme: programme)).toList(),
+                        children: snapshot.data!
+                            .map((PublishedProgramme programme) =>
+                                PublishedProgrammeCard(
+                                    publishedProgramme: programme))
+                            .toList(),
                       );
                     },
                   ),
@@ -139,7 +145,9 @@ class PublishedProgrammeCard extends StatelessWidget {
     // Va récupérer les programmes de l'utilisateur connecté.
     controller.initMyPrograms();
 
-    final int indexUnderscore = publishedProgramme.numberWeeks != null ? publishedProgramme.numberWeeks!.indexOf('_') : 0;
+    final int indexUnderscore = publishedProgramme.numberWeeks != null
+        ? publishedProgramme.numberWeeks!.indexOf('_')
+        : 0;
 
     return SizedBox(
       height: 200,
@@ -159,8 +167,17 @@ class PublishedProgrammeCard extends StatelessWidget {
           child: Stack(
             children: <Widget>[
               (publishedProgramme.imageUrl?.isNotEmpty == true)
-                  ? Ink.image(image: NetworkImage(publishedProgramme.imageUrl!), fit: BoxFit.cover)
-                  : Container(decoration: const BoxDecoration(color: Colors.amber)),
+                  ? Hero(
+                      tag: "${publishedProgramme.uid!}-image",
+                      child: Material(
+                        child: Ink.image(
+                            image: CachedNetworkImageProvider(
+                                publishedProgramme.imageUrl!),
+                            fit: BoxFit.cover),
+                      ),
+                    )
+                  : Container(
+                      decoration: const BoxDecoration(color: Colors.amber)),
               Column(
                 children: [
                   Expanded(
@@ -185,12 +202,14 @@ class PublishedProgrammeCard extends StatelessWidget {
                               children: <Widget>[
                                 Flexible(
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 15),
                                     child: Text(
                                       publishedProgramme.name,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: GoogleFonts.cabinCondensed(color: Colors.white, fontSize: 25),
+                                      style: GoogleFonts.comfortaa(
+                                          color: Colors.white, fontSize: 18),
                                     ),
                                   ),
                                 ),
@@ -206,42 +225,55 @@ class PublishedProgrammeCard extends StatelessWidget {
                                   children: <Widget>[
                                     Builder(builder: (context) {
                                       String firstLetter = '';
-                                      if (publishedProgramme.creatorName != null) {
-                                        firstLetter = publishedProgramme.creatorName!.substring(0, 1);
+                                      if (publishedProgramme.creatorName !=
+                                          null) {
+                                        firstLetter = publishedProgramme
+                                            .creatorName!
+                                            .substring(0, 1);
                                       }
-                                      if (publishedProgramme.creatorPrenom != null) {
-                                        firstLetter = publishedProgramme.creatorPrenom!.substring(0, 1);
+                                      if (publishedProgramme.creatorPrenom !=
+                                          null) {
+                                        firstLetter = publishedProgramme
+                                            .creatorPrenom!
+                                            .substring(0, 1);
                                       }
-                                      return (publishedProgramme.creatorImageUrl?.isNotEmpty == true)
-                                          ? CircleAvatar(
-                                              maxRadius: 15,
-                                              minRadius: 5,
-                                              foregroundImage: NetworkImage(publishedProgramme.creatorImageUrl!),
+                                      return (publishedProgramme.creatorImageUrl
+                                                  ?.isNotEmpty ==
+                                              true)
+                                          ? Hero(
+                                              tag: '${publishedProgramme.creatorUid!}-${publishedProgramme.uid}',
+                                              child: CircleAvatar(
+                                                maxRadius: 15,
+                                                minRadius: 5,
+                                                foregroundImage:
+                                                    CachedNetworkImageProvider(
+                                                        publishedProgramme
+                                                            .creatorImageUrl!),
+                                              ),
                                             )
                                           : CircleAvatar(
                                               maxRadius: 15,
                                               minRadius: 5,
-                                              backgroundColor: Theme.of(context).primaryColor,
+                                              backgroundColor: Theme.of(context)
+                                                  .primaryColor,
                                               child: Text(
                                                 firstLetter,
-                                                style: const TextStyle(color: Colors.white),
+                                                style: const TextStyle(
+                                                    color: Colors.white),
                                               ),
                                             );
                                     }),
-                                    if (publishedProgramme.creatorName != null)
+                                    if (publishedProgramme.creatorName !=
+                                            null ||
+                                        publishedProgramme.creatorPrenom !=
+                                            null)
                                       Padding(
-                                        padding: const EdgeInsets.only(left: 10),
+                                        padding:
+                                            const EdgeInsets.only(left: 10),
                                         child: Text(
-                                          publishedProgramme.creatorName!,
-                                          style: GoogleFonts.cabin(color: Colors.white),
-                                        ),
-                                      ),
-                                    if (publishedProgramme.creatorPrenom != null)
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 10),
-                                        child: Text(
-                                          publishedProgramme.creatorPrenom!,
-                                          style: GoogleFonts.cabin(color: Colors.white),
+                                          "${publishedProgramme.creatorName} ${publishedProgramme.creatorPrenom}",
+                                          style: GoogleFonts.comfortaa(
+                                              color: Colors.white),
                                         ),
                                       ),
                                   ],
@@ -251,15 +283,22 @@ class PublishedProgrammeCard extends StatelessWidget {
                                 padding: const EdgeInsets.all(15.0),
                                 child: Builder(builder: (context) {
                                   if (publishedProgramme.numberWeeks != null) {
-                                    final int numberWeekInt = int.parse(publishedProgramme.numberWeeks!.substring(0, indexUnderscore));
-                                    return Badge(
-                                      toAnimate: false,
-                                      shape: BadgeShape.square,
-                                      badgeColor: Theme.of(context).primaryColor,
-                                      borderRadius: BorderRadius.circular(8),
-                                      badgeContent: Text(
-                                        '$numberWeekInt semaines',
-                                        style: const TextStyle(color: Colors.white),
+                                    final int numberWeekInt = int.parse(
+                                        publishedProgramme.numberWeeks!
+                                            .substring(0, indexUnderscore));
+                                    return Hero(
+                                      tag: "${publishedProgramme.uid}-badge",
+                                      child: Badge(
+                                        toAnimate: false,
+                                        shape: BadgeShape.square,
+                                        badgeColor:
+                                            Theme.of(context).primaryColor,
+                                        borderRadius: BorderRadius.circular(8),
+                                        badgeContent: Text(
+                                          '$numberWeekInt semaines',
+                                          style: GoogleFonts.comfortaa(
+                                              color: Colors.white),
+                                        ),
                                       ),
                                     );
                                   } else {
@@ -284,9 +323,10 @@ class PublishedProgrammeCard extends StatelessWidget {
 }
 
 class ListTrainers extends StatelessWidget {
-  ListTrainers({Key? key, this.height = 200, this.width = 100}) : super(key: key);
+  ListTrainers({Key? key, this.height = 200, this.width = 100})
+      : super(key: key);
+  final PublishedProgrammeService publishedProgrammeService = Get.find();
   final double height;
-  final TrainersService trainersService = Get.find();
   final double width;
 
   @override
@@ -299,8 +339,8 @@ class ListTrainers extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
-            "Trainers",
-            style: Theme.of(context).textTheme.headline5,
+            'trainer'.tr,
+            style: Theme.of(context).textTheme.headline2?.copyWith(color: Colors.black),
           ),
         ),
         SizedBox(
@@ -308,8 +348,10 @@ class ListTrainers extends StatelessWidget {
           child: Row(
             children: [
               FutureBuilder<List<Trainers>>(
-                  future: trainersService.getTrainersWithPublishedProgram(),
-                  builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                  future: publishedProgrammeService
+                      .getTrainersWithPublishedProgram(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                     if (snapshot.hasError) {
                       return Text('Erreur : ${snapshot.error.toString()}');
                     }
@@ -326,7 +368,10 @@ class ListTrainers extends StatelessWidget {
                         ),
                       );
                     }
-                    return Expanded(child: LoadingBouncingGrid.circle(backgroundColor: Theme.of(context).primaryColor,));
+                    return Expanded(
+                        child: LoadingBouncingGrid.circle(
+                      backgroundColor: Theme.of(context).primaryColor,
+                    ));
                   }),
             ],
           ),
@@ -337,7 +382,12 @@ class ListTrainers extends StatelessWidget {
 }
 
 class TrainerCard extends StatelessWidget {
-  const TrainerCard({Key? key, required this.trainer, required this.height, required this.width}) : super(key: key);
+  const TrainerCard(
+      {Key? key,
+      required this.trainer,
+      required this.height,
+      required this.width})
+      : super(key: key);
   final double height;
   final double width;
   final Trainers trainer;
@@ -346,7 +396,7 @@ class TrainerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget imageOrContainer = trainer.imageUrl != null
         ? Image(
-            image: NetworkImage(trainer.imageUrl!),
+            image: CachedNetworkImageProvider(trainer.imageUrl!),
             fit: BoxFit.fitHeight,
             width: double.infinity,
             height: double.infinity,
@@ -374,7 +424,11 @@ class TrainerCard extends StatelessWidget {
                 ),
                 child: Text(
                   '${trainer.name} ${trainer.prenom}',
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.comfortaa(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: Colors.white,
+                  ),
                   maxLines: 2,
                 ),
               ),
@@ -383,14 +437,5 @@ class TrainerCard extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class test extends StatelessWidget {
-  const test({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
   }
 }

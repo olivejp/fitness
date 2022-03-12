@@ -15,3 +15,28 @@ For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 "# fitness" 
+
+## To build and install on a phone
+- Connect a phone
+- Launch the buildApkAndInstall.sh
+
+## Generate Launcher Icon
+To change the launcher icon (icon located on the dock of an phone).
+You have to specify the icon to be use in the pubspec.yaml
+
+``
+flutter_icons:
+android: "launcher_icon"
+ios: true
+image_path: "images/fitness_logo.png"
+``
+
+generateLauncherIcon.sh
+
+## Build AAB
+To build the .aab, run the buildAppBundle.sh at the root of the project.
+The output is located in ./build/app/outputs/bundle/release/app-release.aab
+
+## Deploy 
+Go to 
+- [Play Store console](https://play.google.com/console/)

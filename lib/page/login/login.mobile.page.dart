@@ -1,10 +1,11 @@
 import 'package:fitnc_user/constants.dart';
 import 'package:fitnc_user/page/login/login.page.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:fitnc_user/widget/bottom.widget.dart';
+import 'package:fitness_domain/constants.dart';
+import 'package:fitness_domain/service/display.service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_animations/loading_animations.dart';
 
 import 'login.controller.dart';
 
@@ -12,87 +13,150 @@ class LoginMobilePage extends StatelessWidget {
   LoginMobilePage({Key? key}) : super(key: key);
 
   final LoginPageController controller = Get.find();
+  final DisplayTypeService displayTypeService = Get.find();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        Container(),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 500),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 30, left: 20),
-                      child: Text(
-                        FitnessConstants.appTitle,
-                        style: GoogleFonts.alfaSlabOne(
-                          color: Theme.of(context).primaryColor,
-                          fontSize: 25,
-                        ),
-                      ),
-                    ),
-                    Card(
-                      elevation: 20,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(60.0),
-                        child: Column(
-                          children: <Widget>[
-                            LoginForm(
-                              formKey: formKey,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 30),
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  minimumSize: const Size(double.infinity, 55),
-                                ),
-                                onPressed: () => controller.authenticate(formKey),
-                                child: Text(
-                                  'Continuer',
-                                  style: GoogleFonts.roboto(
-                                    color: Color(Colors.white.value),
-                                    fontSize: 15,
-                                  ),
-                                ),
+    return SafeArea(
+      child: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            bottom: 0,
+            right: 0,
+            left: 0,
+            child: Hero(
+              tag: 'IMAGE_ASSET',
+              child: Obx(() {
+                DisplayType type = displayTypeService.displayType.value;
+                String size = (type == DisplayType.mobile)
+                    ? 'S'
+                    : (type == DisplayType.tablet)
+                        ? 'M'
+                        : 'L';
+                return Image.asset(
+                  '${FitnessMobileConstants.imageLogin}-$size${FitnessMobileConstants.imageLoginExtension}',
+                  fit: BoxFit.cover,
+                );
+              }),
+            ),
+          ),
+          Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Flexible(
+                    child: SizedBox(
+                      width: 500,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(left: 30),
+                            child: Hero(
+                              tag: 'HERO_APP_TITLE',
+                              child: Text(
+                                FitnessMobileConstants.appTitle,
+                                style: Theme.of(context).textTheme.headline6,
                               ),
                             ),
-                            Obx(() => Text(controller.loginMsgError))
-                          ],
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 30, left: 20),
-                      child: Row(
-                        children: <Widget>[
-                          const Text("Vous n'avez pas de compte ?"),
-                          TextButton(
-                            onPressed: () => Navigator.pushNamed(context, '/sign_up'),
-                            child: const Text(
-                              "S'incrire",
-                              style: TextStyle(color: Colors.white),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 30, right: 30, bottom: 30),
+                            child: Column(
+                              children: <Widget>[
+                                LoginForm(
+                                  formKey: formKey,
+                                  paddingTop: 25,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 30),
+                                  child: ElevatedLoadingButton(
+                                    onPressed: () =>
+                                        controller.authenticate(formKey),
+                                    isLoading: controller.isLoading,
+                                    title: 'continue'.tr,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 15),
+                                  child: TextButton(
+                                    onPressed: () => Get.offNamed(
+                                        FitnessConstants.routeSignUp),
+                                    child: Text('signUp'.tr),
+                                  ),
+                                ),
+                                Obx(() => Text(controller.loginMsgError))
+                              ],
                             ),
                           ),
                         ],
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ],
+          ),
+          const Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: BottomCu(),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class ElevatedLoadingButton extends StatelessWidget {
+  const ElevatedLoadingButton({
+    Key? key,
+    this.onPressed,
+    required this.title,
+    required this.isLoading,
+    this.loadingWidget,
+  }) : super(key: key);
+  final VoidCallback? onPressed;
+  final String title;
+  final RxBool isLoading;
+  final Widget? loadingWidget;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Obx(() {
+            if (isLoading.value) {
+              if (loadingWidget != null) {
+                return loadingWidget!;
+              } else {
+                return LoadingBouncingGrid.circle(
+                  size: 20,
+                  backgroundColor: Colors.white,
+                );
+              }
+            }
+            return Container();
+          }),
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          Container()
+        ],
+      ),
     );
   }
 }
