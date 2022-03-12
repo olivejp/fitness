@@ -66,6 +66,7 @@ class FitnessDatePicker extends StatelessWidget {
   final Widget? trailing;
   final Widget Function(DateTime dateTime, bool selected)? builder;
 
+  /// Permet d'émettre la nouvelle date sélectionnée.
   void emitNewDate(int year, int month, int day) {
     if (onDateChange != null) {
       onDateChange!(DateTime(year, month, day));

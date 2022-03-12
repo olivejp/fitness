@@ -54,11 +54,13 @@ class MyApp extends StatelessWidget {
           Get.lazyPut(() => UserSetService());
 
           // Pour les tests sur Cloud Functions
-          if (configService.get(FitnessMobileConstants.profileCommandLineArgument) ==
+          if (configService
+                  .get(FitnessMobileConstants.profileCommandLineArgument) ==
               'DEV') {
             print(
                 '[WARNING] Application launched with profile DEV : Firebase Function emulators will be used.');
-            FirebaseFunctions.instanceFor(region: FitnessMobileConstants.firebaseRegion)
+            FirebaseFunctions.instanceFor(
+                    region: FitnessMobileConstants.firebaseRegion)
                 .useFunctionsEmulator('localhost', 5001);
           }
 
@@ -109,7 +111,10 @@ class MyApp extends StatelessWidget {
         transition: Transition.rightToLeft,
         name: FitnessConstants.routeSignUp,
         middlewares: <GetMiddleware>[LayoutNotifierMiddleware()],
-        page: () => SignUpPage(callback: (userCredential) => Get.offNamed(FitnessConstants.routeHome),),
+        page: () => SignUpPage(
+          callback: (userCredential) =>
+              Get.offNamed(FitnessConstants.routeHome),
+        ),
       ),
       GetPage<LoginPage>(
         transition: Transition.rightToLeft,
