@@ -14,7 +14,7 @@ class MyProgramsPageController extends GetxController {
 }
 
 class MyProgramsPage extends StatelessWidget {
-  MyProgramsPage({Key? key}) : super(key: key);
+  MyProgramsPage({super.key});
   final MyProgramsPageController controller = Get.put(MyProgramsPageController());
 
   @override

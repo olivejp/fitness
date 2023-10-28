@@ -9,7 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class ProgramDetailPage extends StatelessWidget {
-  const ProgramDetailPage({Key? key}) : super(key: key);
+  const ProgramDetailPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +167,7 @@ class ProgramDetailPage extends StatelessWidget {
 }
 
 class CreatorWidget extends StatelessWidget {
-  const CreatorWidget({Key? key, required this.trainers, this.addToFavorite, this.program}) : super(key: key);
+  const CreatorWidget({super.key, required this.trainers, this.addToFavorite, this.program});
   final Trainers trainers;
   final PublishedProgramme? program;
   final void Function(Trainers trainers)? addToFavorite;

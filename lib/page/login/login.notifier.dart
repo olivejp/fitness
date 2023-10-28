@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnc_user/fitness_router.dart';
 import 'package:fitnc_user/service/config.service.dart';
-import 'package:fitness_domain/constants.dart';
 import 'package:fitness_domain/service/auth.service.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../constants.dart';
 
@@ -36,7 +36,7 @@ class LoginPageNotifier extends ChangeNotifier {
     return _hidePassword;
   }
 
-  void authenticate(GlobalKey<FormState> formKey) {
+  void authenticate(BuildContext context, GlobalKey<FormState> formKey) {
     _loginMsgError = '';
 
     if (formKey.currentState?.validate() == true) {
@@ -45,7 +45,7 @@ class LoginPageNotifier extends ChangeNotifier {
       authService.signInWithEmailPassword(emailTrimmed, _password!).then((value) {
         cleanPassword();
         setIsLoading(false);
-        Get.offNamed(FitnessConstants.routeHome); // TODO Remplacer cette route.
+        context.go(FitncRouter.accueil);
       }).catchError((onError) {
         cleanPassword();
         setIsLoading(false);

@@ -3,7 +3,7 @@ import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class DateChangePicker extends StatelessWidget {
-  const DateChangePicker({Key? key, required this.initialDate, required this.onDateChanged}) : super(key: key);
+  const DateChangePicker({super.key, required this.initialDate, required this.onDateChanged});
   final DateTime? initialDate;
   final void Function(DateTime dateTime) onDateChanged;
 
@@ -39,7 +39,7 @@ class DateChangePicker extends StatelessWidget {
 
 class FitnessDatePicker extends StatelessWidget {
   const FitnessDatePicker({
-    Key? key,
+    super.key,
     this.onMonthChange,
     required this.initialDate,
     this.onDateChange,
@@ -52,7 +52,7 @@ class FitnessDatePicker extends StatelessWidget {
     this.widthMonth = 100,
     this.trailing,
     this.leading,
-  }) : super(key: key);
+  });
 
   final Color? unselectedDayColor;
   final Color? selectedDayColor;
@@ -139,8 +139,7 @@ class FitnessDatePicker extends StatelessWidget {
 }
 
 class MonthDropDown extends StatelessWidget {
-  MonthDropDown({Key? key, required this.year, required this.month, required this.onChanged, this.height, this.width})
-      : super(key: key);
+  MonthDropDown({super.key, required this.year, required this.month, required this.onChanged, this.height, this.width});
 
   final int year;
   final int month;
@@ -216,7 +215,7 @@ class MonthDropDown extends StatelessWidget {
 
 class DayTimeline extends StatelessWidget {
   const DayTimeline({
-    Key? key,
+    super.key,
     required this.year,
     required this.month,
     this.builder,
@@ -227,7 +226,7 @@ class DayTimeline extends StatelessWidget {
     this.selectedColor,
     this.selectedDayTextStyle,
     this.unselectedDayTextStyle,
-  }) : super(key: key);
+  });
 
   final int year;
   final int month;
@@ -292,7 +291,7 @@ class DayTimeline extends StatelessWidget {
 
 class DayCard extends StatelessWidget {
   const DayCard({
-    Key? key,
+    super.key,
     required this.dateTime,
     required this.isSelected,
     required this.selectedColor,
@@ -301,7 +300,7 @@ class DayCard extends StatelessWidget {
     required this.onDaySelect,
     required this.selectedDayTextStyle,
     required this.unselectedDayTextStyle,
-  }) : super(key: key);
+  });
 
   final DateTime dateTime;
   final bool isSelected;

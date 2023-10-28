@@ -1,20 +1,21 @@
+import 'package:fitnc_user/fitness_router.dart';
 import 'package:fitnc_user/page/login/login.mobile.page.dart';
 import 'package:fitnc_user/page/sign_up/sign-up.notifier.dart';
 import 'package:fitnc_user/page/sign_up/sign-up.page.dart';
 import 'package:fitnc_user/page/sign_up/sign-up.password-notifier.dart';
-import 'package:fitness_domain/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class SignUpForm extends StatelessWidget {
   SignUpForm({
-    Key? key,
+    super.key,
     required this.callback,
     this.accountTextColor = Colors.white,
     this.headlineColor = Colors.white,
-  }) : super(key: key);
+  });
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final CallbackUserCredential? callback;
   final Color accountTextColor;
@@ -182,6 +183,7 @@ class SignUpForm extends StatelessWidget {
                         if (signUpReadOnlyNotifier.password != signUpReadOnlyNotifier.passwordCheck) {
                           return 'noIdenticalPassword'.tr;
                         }
+                        return null;
                       }),
                 ),
               ),
@@ -203,7 +205,7 @@ class SignUpForm extends StatelessWidget {
                       style: TextStyle(color: accountTextColor),
                     ),
                     TextButton(
-                      onPressed: () => Get.offNamed(FitnessConstants.routeLogin),
+                      onPressed: () => context.go(FitncRouter.sign_in),
                       child: Text(
                         'signIn'.tr,
                       ),

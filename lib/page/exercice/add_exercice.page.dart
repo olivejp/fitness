@@ -13,7 +13,7 @@ import 'package:provider/provider.dart';
 /// Widget page to add a new exercise.
 ///
 class AddExercisePage extends StatelessWidget {
-  AddExercisePage({Key? key, this.exercise}) : super(key: key);
+  AddExercisePage({super.key, this.exercise});
   final ParamService paramService = GetIt.I.get();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final Exercice? exercise;
@@ -178,10 +178,10 @@ class AddExercisePage extends StatelessWidget {
 
 class AddExerciseBottomAppBar extends StatelessWidget {
   const AddExerciseBottomAppBar({
-    Key? key,
+    super.key,
     required this.formKey,
     required this.controller,
-  }) : super(key: key);
+  });
 
   final GlobalKey<FormState> formKey;
   final AddExercisePageNotifier controller;

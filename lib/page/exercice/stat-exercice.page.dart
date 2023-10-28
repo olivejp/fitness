@@ -1,209 +1,94 @@
 // import 'package:charts_flutter/flutter.dart' as charts;
 // import 'package:charts_flutter/flutter.dart';
-import 'package:fitnc_user/service/user-set.service.dart';
-import 'package:fitnc_user/service/workout-instance.service.dart';
+import 'package:fitnc_user/page/exercice/stat-exercice.notifier.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
-import 'package:fitness_domain/domain/user.line.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
-import 'package:fitness_domain/domain/workout-instance.domain.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/painting/text_style.dart' as text_style;
-import 'package:get/get.dart';
-import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animations/loading_animations.dart';
+import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
-
-enum TypeChart {
-  volume,
-  reps,
-  weight,
-}
-
-/// Controller
-class StatExercicePageController extends GetxController {
-  final UserSetService userSetService = GetIt.I.get();
-  final WorkoutInstanceService workoutInstanceService = GetIt.I.get();
-  final Rx<Tuple2<String, DateTime>> dateSelected = Tuple2('', DateTime.now()).obs;
-  final Rx<TypeChart> typeChart = TypeChart.volume.obs;
-  final Rx<UserSet> selectedUserSet = UserSet().obs;
-
-  Future<List<UserSet>> getAllUserSetByExercice(String exerciceUid) {
-    return userSetService.getForExercice(exerciceUid);
-  }
-
-  Future<WorkoutInstance?> getWorkoutInstance(String uidWorkout) {
-    return workoutInstanceService.read(uidWorkout);
-  }
-
-  // List<charts.Series<TimeSeries, DateTime>> toChartSeries(String exerciceUid, List<TimeSeries> data) {
-  //   data.sort((a, b) => a.time.compareTo(b.time));
-  //   return [
-  //     charts.Series<TimeSeries, DateTime>(
-  //       id: exerciceUid,
-  //       colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-  //       domainFn: (TimeSeries sales, _) => sales.time,
-  //       measureFn: (TimeSeries sales, _) => sales.total,
-  //       data: data,
-  //     )
-  //   ];
-  // }
-
-  int getVolume(UserSet userSet) {
-    int volume = 0;
-    if (userSet.lines.isNotEmpty) {
-      for (UserLine userLine in userSet.lines) {
-        if (userLine.weight != null && userLine.reps != null) {
-          volume += int.parse(userLine.weight!) * int.parse(userLine.reps!);
-        }
-      }
-    }
-    return volume;
-  }
-
-  int getMaxReps(UserSet userSet) {
-    int maxReps = 0;
-    if (userSet.lines.isNotEmpty) {
-      for (UserLine userLine in userSet.lines) {
-        if (userLine.reps != null) {
-          int userLineReps = int.parse(userLine.reps!);
-          maxReps = (userLineReps > maxReps) ? userLineReps : maxReps;
-        }
-      }
-    }
-    return maxReps;
-  }
-
-  int getMaxWeight(UserSet userSet) {
-    int maxWeight = 0;
-    if (userSet.lines.isNotEmpty) {
-      for (UserLine userLine in userSet.lines) {
-        if (userLine.weight != null) {
-          int userLineReps = int.parse(userLine.weight!);
-          maxWeight = (userLineReps > maxWeight) ? userLineReps : maxWeight;
-        }
-      }
-    }
-    return maxWeight;
-  }
-
-// List<charts.Series<TimeSeries, DateTime>> getWorkoutVolume(List<UserSet> listUserSet, Exercice exercice) {
-//   if (listUserSet.isEmpty) {
-//     return [];
-//   }
-//
-//   final String exerciceUid = exercice.uid!;
-//   final data = <TimeSeries>[];
-//   for (UserSet userSet in listUserSet) {
-//     data.add(TimeSeries<UserSet>(userSet.date!, getVolume(userSet), userSet));
-//   }
-//
-//   return toChartSeries(exerciceUid, data);
-// }
-
-// List<charts.Series<TimeSeries, DateTime>> getWorkoutMaxReps(List<UserSet> listUserSet, Exercice exercice) {
-//   if (listUserSet.isEmpty) {
-//     return [];
-//   }
-//
-//   final String exerciceUid = exercice.uid!;
-//   final data = <TimeSeries>[];
-//   for (UserSet userSet in listUserSet) {
-//     data.add(TimeSeries<UserSet>(userSet.date!, getMaxReps(userSet), userSet));
-//   }
-//
-//   return toChartSeries(exerciceUid, data);
-// }
-
-// List<charts.Series<TimeSeries, DateTime>> getWorkoutMaxWeight(List<UserSet> listUserSet, Exercice exercice) {
-//   if (listUserSet.isEmpty) {
-//     return [];
-//   }
-//
-//   final String exerciceUid = exercice.uid!;
-//   final data = <TimeSeries>[];
-//   for (UserSet userSet in listUserSet) {
-//     data.add(TimeSeries<UserSet>(userSet.date!, getMaxWeight(userSet), userSet));
-//   }
-//
-//   return toChartSeries(exerciceUid, data);
-// }
-}
 
 /// Main Widget
 class StatExercicePage extends StatelessWidget {
-  const StatExercicePage({Key? key, required this.exercice}) : super(key: key);
+  const StatExercicePage({super.key, required this.exercice});
+
   final Exercice exercice;
 
   @override
   Widget build(BuildContext context) {
-    final StatExercicePageController controller = Get.put(StatExercicePageController());
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          'Stats : ${exercice.name}',
-          style: GoogleFonts.comfortaa(fontSize: 18),
-        ),
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.amber,
-          ),
-        ),
-      ),
-      body: FutureBuilder<List<UserSet>>(
-        initialData: const <UserSet>[],
-        future: controller.getAllUserSetByExercice(exercice.uid!),
-        builder: (_, snapshot) {
-          if (snapshot.hasError) {
-            return SelectableText(snapshot.error.toString());
-          }
-          if (snapshot.hasData) {
-            final List<UserSet> listUserSet = snapshot.data!;
-            if (listUserSet.isNotEmpty) {
-              controller.selectedUserSet.value = listUserSet.elementAt(0);
-            }
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Material(
-                  elevation: 2,
-                  borderOnForeground: false,
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12),
-                        child: Chart(exercice: exercice, listUserSet: listUserSet),
-                      ),
-                      const BarButtons(),
-                    ],
+    return ChangeNotifierProvider.value(
+        value: StatExercicePageNotifier(),
+        builder: (context, child) {
+          return Consumer<StatExercicePageNotifier>(builder: (context, controller, child) {
+            return Scaffold(
+              appBar: AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                title: Text(
+                  'Stats : ${exercice.name}',
+                  style: GoogleFonts.comfortaa(fontSize: 18),
+                ),
+                leading: IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.amber,
                   ),
                 ),
-                Expanded(child: ListSeance(exercice: exercice, listUserSet: listUserSet)),
-              ],
+              ),
+              body: FutureBuilder<List<UserSet>>(
+                initialData: const <UserSet>[],
+                future: controller.getAllUserSetByExercice(exercice.uid!),
+                builder: (_, snapshot) {
+                  if (snapshot.hasError) {
+                    return SelectableText(snapshot.error.toString());
+                  }
+                  if (snapshot.hasData) {
+                    final List<UserSet> listUserSet = snapshot.data!;
+                    if (listUserSet.isNotEmpty) {
+                      controller.selectedUserSet.value = listUserSet.elementAt(0);
+                    }
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Material(
+                          elevation: 2,
+                          borderOnForeground: false,
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 12),
+                                child: Chart(exercice: exercice, listUserSet: listUserSet),
+                              ),
+                              const BarButtons(),
+                            ],
+                          ),
+                        ),
+                        Expanded(child: ListSeance(exercice: exercice, listUserSet: listUserSet)),
+                      ],
+                    );
+                  }
+                  return LoadingRotating.square();
+                },
+              ),
             );
-          }
-          return LoadingRotating.square();
-        },
-      ),
-    );
+          });
+        });
   }
 }
 
 class BarButtons extends StatelessWidget {
-  const BarButtons({Key? key}) : super(key: key);
+  const BarButtons({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final StatExercicePageController controller = Get.find();
-    return Obx(
-      () {
+    return Consumer<StatExercicePageNotifier>(
+      builder: (context, controller, child) {
         TypeChart typeChartSelected = controller.typeChart.value;
         return ButtonBar(
           alignment: MainAxisAlignment.center,
@@ -264,7 +149,8 @@ class BarButtons extends StatelessWidget {
 }
 
 class ListSeance extends StatelessWidget {
-  const ListSeance({Key? key, required this.exercice, required this.listUserSet}) : super(key: key);
+  const ListSeance({super.key, required this.exercice, required this.listUserSet});
+
   final Exercice exercice;
   final List<UserSet> listUserSet;
 
@@ -296,18 +182,17 @@ class ListSeance extends StatelessWidget {
 }
 
 class Chart extends StatelessWidget {
-  const Chart({Key? key, required this.exercice, required this.listUserSet}) : super(key: key);
+  const Chart({super.key, required this.exercice, required this.listUserSet});
+
   final Exercice exercice;
   final List<UserSet> listUserSet;
 
   @override
   Widget build(BuildContext context) {
-    final StatExercicePageController controller = Get.find();
-
     return SizedBox(
       height: 200,
-      child: Obx(
-        () {
+      child: Consumer<StatExercicePageNotifier>(
+        builder: (context, controller, child) {
           // List<charts.Series<TimeSeries, DateTime>> list = [];
           // switch (controller.typeChart.value) {
           //   case TypeChart.volume:
@@ -346,15 +231,15 @@ class Chart extends StatelessWidget {
 }
 
 class UserSetCard extends StatelessWidget {
-  const UserSetCard({Key? key, required this.userSet}) : super(key: key);
+  const UserSetCard({super.key, required this.userSet});
+
   final UserSet userSet;
 
   @override
   Widget build(BuildContext context) {
-    final StatExercicePageController controller = Get.find();
-    return InkWell(
-      child: Obx(
-        () => ListTile(
+    return Consumer<StatExercicePageNotifier>(builder: (context, controller, child) {
+      return InkWell(
+        child: ListTile(
           selected: controller.selectedUserSet.value.uid == userSet.uid,
           selectedTileColor: Colors.grey.withAlpha(50),
           title: Padding(
@@ -405,13 +290,13 @@ class UserSetCard extends StatelessWidget {
             ),
           ),
         ),
-      ),
-      onTap: () {
-        if (userSet.date != null) {
-          controller.dateSelected.value = Tuple2(userSet.uidExercice, userSet.date!);
-        }
-        controller.selectedUserSet.value = userSet;
-      },
-    );
+        onTap: () {
+          if (userSet.date != null) {
+            controller.dateSelected.value = Tuple2(userSet.uidExercice, userSet.date!);
+          }
+          controller.selectedUserSet.value = userSet;
+        },
+      );
+    });
   }
 }

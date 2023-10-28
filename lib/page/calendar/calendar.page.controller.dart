@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:fitnc_user/service/debug_printer.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
@@ -5,7 +8,7 @@ import 'package:fitness_domain/domain/workout-instance.domain.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 
-class CalendarController extends ChangeNotifier {
+class CalendarNotifier extends ChangeNotifier {
   final WorkoutInstanceService workoutInstanceService = GetIt.I.get();
   final UserSetService userSetService = GetIt.I.get();
 
@@ -15,6 +18,12 @@ class CalendarController extends ChangeNotifier {
   DateTime get selectedDate => _selectedValue;
 
   set selectedDate(DateTime dateTime) {
+    DebugPrinter.printLn('selectedDate $dateTime');
+    _selectedValue = dateTime;
+  }
+
+  selectDateAndNotify(DateTime dateTime) {
+    DebugPrinter.printLn('Selected date : $dateTime');
     _selectedValue = dateTime;
     notifyListeners();
   }
@@ -22,6 +31,10 @@ class CalendarController extends ChangeNotifier {
   DateTime get initialDate => _initialDate;
 
   set initialDate(DateTime dateTime) {
+    _initialDate = dateTime;
+  }
+
+  setInitialDateAndNotify(DateTime dateTime) {
     _initialDate = dateTime;
     notifyListeners();
   }

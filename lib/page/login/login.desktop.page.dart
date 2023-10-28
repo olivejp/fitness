@@ -11,7 +11,7 @@ import 'login.mobile.page.dart';
 import 'login.notifier.dart';
 
 class LoginDesktopPage extends StatelessWidget {
-  LoginDesktopPage({Key? key}) : super(key: key);
+  LoginDesktopPage({super.key});
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -92,7 +92,7 @@ class LoginDesktopPage extends StatelessWidget {
                                           padding: const EdgeInsets.only(top: 30),
                                           child: Consumer<LoginPageNotifier>(builder: (context, notifier, child) {
                                             return ElevatedLoadingButton(
-                                              onPressed: () => notifier.authenticate(formKey),
+                                              onPressed: () => notifier.authenticate(context, formKey),
                                               isLoading: notifier.isLoading,
                                               title: 'continue'.tr,
                                             );
@@ -145,8 +145,8 @@ class LoginDesktopPage extends StatelessWidget {
 
 class DecoSecondSlide extends StatelessWidget {
   const DecoSecondSlide({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -173,8 +173,8 @@ class DecoSecondSlide extends StatelessWidget {
 
 class DecoFirstSlide extends StatelessWidget {
   const DecoFirstSlide({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

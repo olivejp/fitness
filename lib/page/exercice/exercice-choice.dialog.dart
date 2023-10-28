@@ -11,15 +11,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:loading_animations/loading_animations.dart';
+import 'package:provider/provider.dart';
 
 import 'add_exercice.page.dart';
 
-class ExerciseChoiceDialogController extends GetxController with SearchMixin<Exercice> {
+class ExerciseChoiceDialogController extends ChangeNotifier with SearchMixin<Exercice> {
   final ExerciceService service = GetIt.I.get();
   final UserSetService userSetService = GetIt.I.get();
   final WorkoutInstanceService workoutInstanceService = GetIt.I.get();
+
   final RxList<Exercice> listChosen = <Exercice>[].obs;
-  final WorkoutPageController workoutPageController = Get.put(WorkoutPageController());
 
   Future<WorkoutInstance> createNewWorkoutInstance(DateTime dateTime) async {
     DateTime now = DateTime.now();
@@ -61,7 +62,7 @@ class ExerciseChoiceDialogController extends GetxController with SearchMixin<Exe
       (userSet) {
         if (popOnChoice) {
           // TODO Sur le clik on doit rafraichir le UserSet.
-          workoutPageController.refreshWorkoutPage();
+          Provider.of<WorkoutPageController>(context, listen: false).refreshWorkoutPage();
           Navigator.of(context).pop();
         } else {
           Navigator.of(context).pop();
@@ -94,7 +95,7 @@ class ExerciseChoiceDialogController extends GetxController with SearchMixin<Exe
 
 class ExerciseChoiceDialog extends StatelessWidget {
   ExerciseChoiceDialog({
-    Key? key,
+    super.key,
     this.workoutInstance,
     this.popOnChoice = false,
     this.isCreation = false,
@@ -102,10 +103,8 @@ class ExerciseChoiceDialog extends StatelessWidget {
   })  : assert(((isCreation && workoutInstance == null) || (!isCreation && workoutInstance != null)),
             "If isCreation then workoutInstance should be null."),
         assert(
-            (isCreation && date != null) || ((!isCreation && date == null)), "If isCreation, date should not be null."),
-        super(key: key);
+            (isCreation && date != null) || ((!isCreation && date == null)), "If isCreation, date should not be null.");
   final ExerciseChoiceDialogController controller = Get.put(ExerciseChoiceDialogController());
-  final WorkoutPageController workoutPageController = Get.put(WorkoutPageController());
   final WorkoutInstance? workoutInstance;
   final bool popOnChoice;
   final bool isCreation;
@@ -253,10 +252,10 @@ class ExerciseChoiceDialog extends StatelessWidget {
 
 class ExerciseChoiceCard extends StatelessWidget {
   const ExerciseChoiceCard({
-    Key? key,
+    super.key,
     required this.exercise,
     required this.selected,
-  }) : super(key: key);
+  });
   final Exercice exercise;
   final bool selected;
 

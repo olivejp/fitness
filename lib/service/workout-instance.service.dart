@@ -22,6 +22,16 @@ class WorkoutInstanceService extends AbstractFitnessStorageService<WorkoutInstan
     );
   }
 
+  Future<List<WorkoutInstance>> getByDate(DateTime dateTime) {
+    DateTime dateMinus = DateTime(dateTime.year, dateTime.month, dateTime.day);
+    DateTime dateMax = DateTime(dateTime.year, dateTime.month, dateTime.day, 23, 59, 59);
+    return where(
+      'date',
+      isGreaterThanOrEqualTo: dateMinus.millisecondsSinceEpoch,
+      isLessThanOrEqualTo: dateMax.millisecondsSinceEpoch,
+    );
+  }
+
   String getWorkoutStoragePath(WorkoutInstance workout) {
     User user = AuthService.getUserConnectedOrThrow();
     return 'users/${user.uid}/workouts/${workout.uid}/mainImage';

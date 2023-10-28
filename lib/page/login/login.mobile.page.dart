@@ -1,17 +1,18 @@
 import 'package:fitnc_user/constants.dart';
+import 'package:fitnc_user/fitness_router.dart';
 import 'package:fitnc_user/page/login/login.page.dart';
 import 'package:fitnc_user/widget/bottom.widget.dart';
-import 'package:fitness_domain/constants.dart';
 import 'package:fitness_domain/service/display.service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:provider/provider.dart';
 
 import 'login.notifier.dart';
 
 class LoginMobilePage extends StatelessWidget {
-  LoginMobilePage({Key? key}) : super(key: key);
+  LoginMobilePage({super.key});
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -76,7 +77,7 @@ class LoginMobilePage extends StatelessWidget {
                                   padding: const EdgeInsets.only(top: 30),
                                   child: Consumer<LoginPageNotifier>(builder: (context, notifier, child) {
                                     return ElevatedLoadingButton(
-                                      onPressed: () => notifier.authenticate(formKey),
+                                      onPressed: () => notifier.authenticate(context, formKey),
                                       isLoading: notifier.isLoading,
                                       title: 'continue'.tr,
                                     );
@@ -85,7 +86,7 @@ class LoginMobilePage extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 15),
                                   child: TextButton(
-                                    onPressed: () => Get.offNamed(FitnessConstants.routeSignUp),
+                                    onPressed: () => context.go(FitncRouter.sign_up),
                                     child: Text('signUp'.tr),
                                   ),
                                 ),
@@ -117,12 +118,12 @@ class LoginMobilePage extends StatelessWidget {
 
 class ElevatedLoadingButton extends StatelessWidget {
   const ElevatedLoadingButton({
-    Key? key,
+    super.key,
     this.onPressed,
     required this.title,
     required this.isLoading,
     this.loadingWidget,
-  }) : super(key: key);
+  });
   final VoidCallback? onPressed;
   final String title;
   final bool isLoading;

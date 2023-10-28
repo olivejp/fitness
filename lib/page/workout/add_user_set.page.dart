@@ -8,24 +8,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:loading_animations/loading_animations.dart';
+import 'package:provider/provider.dart';
 
 import 'add_user_set.controller.dart';
 
 class OpenUserSetInstance extends StatelessWidget {
-  const OpenUserSetInstance({Key? key, required this.userSet}) : super(key: key);
+  const OpenUserSetInstance({super.key, required this.userSet});
 
   final UserSet userSet;
 
   @override
   Widget build(BuildContext context) {
-    final UserSetController controller = Get.put(UserSetController(), tag: userSet.uid);
-    controller.init(userSet);
-    return UserSetUpdate(userSet: userSet);
+    return ChangeNotifierProvider.value(
+        value: UserSetController(),
+        builder: (context, child) {
+          Provider.of<UserSetController>(context, listen: false).init(userSet);
+          return UserSetUpdate(userSet: userSet);
+        });
   }
 }
 
 class UserSetUpdate extends StatelessWidget {
-  UserSetUpdate({Key? key, required this.userSet}) : super(key: key);
+  UserSetUpdate({super.key, required this.userSet});
 
   final UserSet userSet;
   final double padding = 15;
@@ -254,12 +258,12 @@ class UserSetUpdate extends StatelessWidget {
 
 class TextInputWidget extends StatelessWidget {
   const TextInputWidget({
-    Key? key,
+    super.key,
     required this.keyWeight,
     required this.callback,
     required this.index,
     required this.initialValue,
-  }) : super(key: key);
+  });
 
   final GlobalKey<State<StatefulWidget>> keyWeight;
   final String? initialValue;
@@ -296,9 +300,9 @@ class TextInputWidget extends StatelessWidget {
 
 class RowExerciseDetails extends StatelessWidget {
   const RowExerciseDetails({
-    Key? key,
+    super.key,
     required this.controller,
-  }) : super(key: key);
+  });
 
   final UserSetController controller;
 
@@ -308,7 +312,7 @@ class RowExerciseDetails extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        if (controller.userSet.value.imageUrlExercice != null)
+        if (controller.userSet.imageUrlExercice != null)
           SizedBox.square(
             dimension: 100,
             child: Card(
@@ -317,7 +321,7 @@ class RowExerciseDetails extends StatelessWidget {
                 borderRadius: BorderRadius.circular(5),
               ),
               child: CachedNetworkImage(
-                imageUrl: controller.userSet.value.imageUrlExercice!,
+                imageUrl: controller.userSet.imageUrlExercice!,
                 fit: BoxFit.cover,
                 placeholder: (context, url) => LoadingBouncingGrid.circle(),
                 errorWidget: (context, url, error) => Container(
@@ -326,7 +330,7 @@ class RowExerciseDetails extends StatelessWidget {
               ),
             ),
           ),
-        if (controller.userSet.value.imageUrlExercice == null)
+        if (controller.userSet.imageUrlExercice == null)
           SizedBox.square(
             dimension: 100,
             child: Card(
@@ -343,14 +347,14 @@ class RowExerciseDetails extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(controller.userSet.value.nameExercice!),
+              Text(controller.userSet.nameExercice!),
               IconButton(
                 icon: const Icon(
                   Icons.insert_chart_outlined_rounded,
                   color: Colors.grey,
                 ),
                 onPressed: () {
-                  controller.getExercise(controller.userSet.value.uidExercice).then(
+                  controller.getExercise(controller.userSet.uidExercice).then(
                     (Exercice? exercise) {
                       if (exercise != null) {
                         Navigator.of(context).push(
@@ -373,16 +377,16 @@ class RowExerciseDetails extends StatelessWidget {
 
 class AddCommentAlertDialog extends StatelessWidget {
   AddCommentAlertDialog({
-    Key? key,
+    super.key,
     required this.controller,
-  }) : super(key: key);
+  });
 
   final UserSetController controller;
   final GlobalKey<State<StatefulWidget>> commentKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
-    String comment = controller.userSet.value.comment ?? '';
+    String comment = controller.userSet.comment ?? '';
     return AlertDialog(
       title: Text(
         'addComment'.tr,
@@ -417,9 +421,9 @@ class AddCommentAlertDialog extends StatelessWidget {
 
 class RowAddRemoveSet extends StatelessWidget {
   const RowAddRemoveSet({
-    Key? key,
+    super.key,
     required this.controller,
-  }) : super(key: key);
+  });
 
   final UserSetController controller;
 
@@ -437,7 +441,7 @@ class RowAddRemoveSet extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Obx(() {
-                if (controller.userSet.value.lines.length > 1) {
+                if (controller.userSet.lines.length > 1) {
                   return IconButton(
                     onPressed: () => controller.removeLastLine(),
                     iconSize: 40,
@@ -474,11 +478,11 @@ class RowAddRemoveSet extends StatelessWidget {
 
 class UserLineCheckWidget extends StatelessWidget {
   UserLineCheckWidget({
-    Key? key,
+    super.key,
     required this.userLine,
     required this.index,
     required this.onPress,
-  }) : super(key: key);
+  });
 
   final UserLine userLine;
   final int index;

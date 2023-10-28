@@ -14,294 +14,291 @@ import 'package:loading_animations/loading_animations.dart';
 import 'package:provider/provider.dart';
 
 class SearchPage extends StatelessWidget {
-  const SearchPage({Key? key}) : super(key: key);
+  const SearchPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
         value: SearchPageController(),
         builder: (context, child) {
-          return Consumer<SearchPageController>(builder: (context, controller, child) {
-            controller.initSearchList(getStreamList: controller.publishedProgrammeService.listenAll);
-            return Scaffold(
-              body: Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ListTrainers(height: 200, width: 100),
-                            ListPublishedPrograms(),
-                          ],
-                        ),
+          final SearchPageController searchController = Provider.of<SearchPageController>(context, listen: false);
+          searchController.initSearchList(getStreamList: searchController.publishedProgrammeService.listenAll);
+
+          return Scaffold(
+            body: Padding(
+              padding: const EdgeInsets.only(left: 10, right: 10),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ListTrainers(height: 200, width: 100),
+                          ListPublishedPrograms(),
+                        ],
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  )
+                ],
               ),
-            );
-          });
+            ),
+          );
         });
   }
 }
 
 class ListPublishedPrograms extends StatelessWidget {
   ListPublishedPrograms({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
   final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider.value(
-        value: SearchPageController(),
-        builder: (context, child) {
-          return Consumer<SearchPageController>(builder: (context, controller, child) {
-            return Padding(
-              padding: const EdgeInsets.only(top: 20, bottom: 10),
-              child: StreamBuilder<List<PublishedProgramme>>(
-                stream: controller.streamList,
-                initialData: const <PublishedProgramme>[],
-                builder: (_, AsyncSnapshot<List<PublishedProgramme>> snapshot) {
-                  if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
+    return Consumer<SearchPageController>(builder: (context, controller, child) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 20, bottom: 10),
+        child: StreamBuilder<List<PublishedProgramme>>(
+          stream: controller.streamList,
+          initialData: const <PublishedProgramme>[],
+          builder: (_, AsyncSnapshot<List<PublishedProgramme>> snapshot) {
+            if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Programmes récents",
-                                style: GoogleFonts.comfortaa(fontSize: 22),
-                              ),
-                              Text(
-                                "${snapshot.data!.length} résultats",
-                                style: GoogleFonts.comfortaa(),
-                              ),
-                            ],
-                          ),
+                        Text(
+                          "Programmes récents",
+                          style: GoogleFonts.comfortaa(fontSize: 22),
                         ),
-                        Flexible(
-                          child: Consumer<DisplayTypeNotifier>(
-                            builder: (context, displayTypeController, child) {
-                              int crossAxisCount;
-                              switch (displayTypeController.displayType) {
-                                case DisplayType.desktop:
-                                  crossAxisCount = 4;
-                                  break;
-                                case DisplayType.tablet:
-                                  crossAxisCount = 2;
-                                  break;
-                                default:
-                                  crossAxisCount = 1;
-                              }
-                              return GridView.count(
-                                controller: _scrollController,
-                                semanticChildCount: snapshot.data!.length,
-                                shrinkWrap: true,
-                                mainAxisSpacing: 20,
-                                childAspectRatio: 16 / 9,
-                                crossAxisCount: crossAxisCount,
-                                children: snapshot.data!
-                                    .map((PublishedProgramme programme) =>
-                                        PublishedProgrammeCard(publishedProgramme: programme))
-                                    .toList(),
-                              );
-                            },
-                          ),
+                        Text(
+                          "${snapshot.data!.length} résultats",
+                          style: GoogleFonts.comfortaa(),
                         ),
                       ],
-                    );
-                  }
-                  if (!snapshot.hasData) {
-                    return const Center(
-                      child: Text('Aucun programme publié'),
-                    );
-                  }
-                  return Center(
-                      child: LoadingBouncingGrid.circle(
-                    backgroundColor: Theme.of(context).primaryColor,
-                  ));
-                },
-              ),
-            );
-          });
-        });
+                    ),
+                  ),
+                  Flexible(
+                    child: Consumer<DisplayTypeNotifier>(
+                      builder: (context, displayTypeController, child) {
+                        int crossAxisCount;
+                        switch (displayTypeController.displayType) {
+                          case DisplayType.desktop:
+                            crossAxisCount = 4;
+                            break;
+                          case DisplayType.tablet:
+                            crossAxisCount = 2;
+                            break;
+                          default:
+                            crossAxisCount = 1;
+                        }
+                        return GridView.count(
+                          controller: _scrollController,
+                          semanticChildCount: snapshot.data!.length,
+                          shrinkWrap: true,
+                          mainAxisSpacing: 20,
+                          childAspectRatio: 16 / 9,
+                          crossAxisCount: crossAxisCount,
+                          children: snapshot.data!
+                              .map((PublishedProgramme programme) =>
+                                  PublishedProgrammeCard(publishedProgramme: programme))
+                              .toList(),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              );
+            }
+            if (!snapshot.hasData) {
+              return const Center(
+                child: Text('Aucun programme publié'),
+              );
+            }
+            return Center(
+                child: LoadingBouncingGrid.circle(
+              backgroundColor: Theme.of(context).primaryColor,
+            ));
+          },
+        ),
+      );
+    });
   }
 }
 
 class PublishedProgrammeCard extends StatelessWidget {
-  PublishedProgrammeCard({
-    Key? key,
+  const PublishedProgrammeCard({
+    super.key,
     required this.publishedProgramme,
-  }) : super(key: key);
+  });
 
-  final SearchPageController controller = Get.find();
   final PublishedProgramme publishedProgramme;
   final double padding = 10;
 
   @override
   Widget build(BuildContext context) {
-    // Va récupérer les programmes de l'utilisateur connecté.
-    controller.initMyPrograms();
+    return Consumer<SearchPageController>(builder: (context, controller, child) {
+      // Va récupérer les programmes de l'utilisateur connecté.
+      controller.initMyPrograms();
 
-    final int indexUnderscore =
-        publishedProgramme.numberWeeks != null ? publishedProgramme.numberWeeks!.indexOf('_') : 0;
+      final int indexUnderscore =
+          publishedProgramme.numberWeeks != null ? publishedProgramme.numberWeeks!.indexOf('_') : 0;
 
-    return SizedBox(
-      height: 200,
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-        elevation: 5,
-        child: InkWell(
-          onTap: () {
-            controller.selectProgramme(publishedProgramme);
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => ProgramDetailPage(),
-              ),
-            );
-          },
-          child: Stack(
-            children: <Widget>[
-              (publishedProgramme.imageUrl?.isNotEmpty == true)
-                  ? Hero(
-                      tag: "${publishedProgramme.uid!}-image",
-                      child: Material(
-                        child: Ink.image(
-                            image: CachedNetworkImageProvider(publishedProgramme.imageUrl!), fit: BoxFit.cover),
-                      ),
-                    )
-                  : Container(decoration: const BoxDecoration(color: Colors.amber)),
-              Column(
-                children: [
-                  Expanded(
-                    child: Container(),
-                  ),
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.black, Colors.white.withOpacity(0)],
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
+      return SizedBox(
+        height: 200,
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+          elevation: 5,
+          child: InkWell(
+            onTap: () {
+              controller.selectProgramme(publishedProgramme);
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const ProgramDetailPage(),
+                ),
+              );
+            },
+            child: Stack(
+              children: <Widget>[
+                (publishedProgramme.imageUrl?.isNotEmpty == true)
+                    ? Hero(
+                        tag: "${publishedProgramme.uid!}-image",
+                        child: Material(
+                          child: Ink.image(
+                              image: CachedNetworkImageProvider(publishedProgramme.imageUrl!), fit: BoxFit.cover),
                         ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Flexible(
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Flexible(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                                    child: Text(
-                                      publishedProgramme.name,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: GoogleFonts.comfortaa(color: Colors.white, fontSize: 18),
+                      )
+                    : Container(decoration: const BoxDecoration(color: Colors.amber)),
+                Column(
+                  children: [
+                    Expanded(
+                      child: Container(),
+                    ),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Colors.black, Colors.white.withOpacity(0)],
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Flexible(
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Flexible(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                                      child: Text(
+                                        publishedProgramme.name,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: GoogleFonts.comfortaa(color: Colors.white, fontSize: 18),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(15.0),
-                                child: Row(
-                                  children: <Widget>[
-                                    Builder(builder: (context) {
-                                      String firstLetter = '';
-                                      if (publishedProgramme.creatorName != null) {
-                                        firstLetter = publishedProgramme.creatorName!.substring(0, 1);
-                                      }
-                                      if (publishedProgramme.creatorPrenom != null) {
-                                        firstLetter = publishedProgramme.creatorPrenom!.substring(0, 1);
-                                      }
-                                      return (publishedProgramme.creatorImageUrl?.isNotEmpty == true)
-                                          ? Hero(
-                                              tag: '${publishedProgramme.creatorUid!}-${publishedProgramme.uid}',
-                                              child: CircleAvatar(
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: Row(
+                                    children: <Widget>[
+                                      Builder(builder: (context) {
+                                        String firstLetter = '';
+                                        if (publishedProgramme.creatorName != null) {
+                                          firstLetter = publishedProgramme.creatorName!.substring(0, 1);
+                                        }
+                                        if (publishedProgramme.creatorPrenom != null) {
+                                          firstLetter = publishedProgramme.creatorPrenom!.substring(0, 1);
+                                        }
+                                        return (publishedProgramme.creatorImageUrl?.isNotEmpty == true)
+                                            ? Hero(
+                                                tag: '${publishedProgramme.creatorUid!}-${publishedProgramme.uid}',
+                                                child: CircleAvatar(
+                                                  maxRadius: 15,
+                                                  minRadius: 5,
+                                                  foregroundImage:
+                                                      CachedNetworkImageProvider(publishedProgramme.creatorImageUrl!),
+                                                ),
+                                              )
+                                            : CircleAvatar(
                                                 maxRadius: 15,
                                                 minRadius: 5,
-                                                foregroundImage:
-                                                    CachedNetworkImageProvider(publishedProgramme.creatorImageUrl!),
-                                              ),
-                                            )
-                                          : CircleAvatar(
-                                              maxRadius: 15,
-                                              minRadius: 5,
-                                              backgroundColor: Theme.of(context).primaryColor,
-                                              child: Text(
-                                                firstLetter,
-                                                style: const TextStyle(color: Colors.white),
-                                              ),
-                                            );
-                                    }),
-                                    if (publishedProgramme.creatorName != null ||
-                                        publishedProgramme.creatorPrenom != null)
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 10),
-                                        child: Text(
-                                          "${publishedProgramme.creatorName} ${publishedProgramme.creatorPrenom}",
-                                          style: GoogleFonts.comfortaa(color: Colors.white),
+                                                backgroundColor: Theme.of(context).primaryColor,
+                                                child: Text(
+                                                  firstLetter,
+                                                  style: const TextStyle(color: Colors.white),
+                                                ),
+                                              );
+                                      }),
+                                      if (publishedProgramme.creatorName != null ||
+                                          publishedProgramme.creatorPrenom != null)
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 10),
+                                          child: Text(
+                                            "${publishedProgramme.creatorName} ${publishedProgramme.creatorPrenom}",
+                                            style: GoogleFonts.comfortaa(color: Colors.white),
+                                          ),
                                         ),
-                                      ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(15.0),
-                                child: Builder(builder: (context) {
-                                  if (publishedProgramme.numberWeeks != null) {
-                                    final int numberWeekInt =
-                                        int.parse(publishedProgramme.numberWeeks!.substring(0, indexUnderscore));
-                                    return Hero(
-                                      tag: "${publishedProgramme.uid}-badge",
-                                      child: badge.Badge(
-                                        badgeContent: Text(
-                                          '$numberWeekInt semaines',
-                                          style: GoogleFonts.comfortaa(color: Colors.white),
+                                Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: Builder(builder: (context) {
+                                    if (publishedProgramme.numberWeeks != null) {
+                                      final int numberWeekInt =
+                                          int.parse(publishedProgramme.numberWeeks!.substring(0, indexUnderscore));
+                                      return Hero(
+                                        tag: "${publishedProgramme.uid}-badge",
+                                        child: badge.Badge(
+                                          badgeContent: Text(
+                                            '$numberWeekInt semaines',
+                                            style: GoogleFonts.comfortaa(color: Colors.white),
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  } else {
-                                    return Container();
-                                  }
-                                }),
-                              )
-                            ],
-                          )
-                        ],
+                                      );
+                                    } else {
+                                      return Container();
+                                    }
+                                  }),
+                                )
+                              ],
+                            )
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
 
 class ListTrainers extends StatelessWidget {
-  ListTrainers({Key? key, this.height = 200, this.width = 100}) : super(key: key);
+  ListTrainers({super.key, this.height = 200, this.width = 100});
   final PublishedProgrammeService publishedProgrammeService = GetIt.I.get();
   final double height;
   final double width;
@@ -357,7 +354,7 @@ class ListTrainers extends StatelessWidget {
 }
 
 class TrainerCard extends StatelessWidget {
-  const TrainerCard({Key? key, required this.trainer, required this.height, required this.width}) : super(key: key);
+  const TrainerCard({super.key, required this.trainer, required this.height, required this.width});
   final double height;
   final double width;
   final Trainers trainer;

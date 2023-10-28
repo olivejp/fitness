@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
 class DarkModeWidget extends StatelessWidget {
-  const DarkModeWidget({Key? key, required this.builder}) : super(key: key);
+  const DarkModeWidget({super.key, required this.builder});
   static const String isDarkModeKey = 'isDarkMode';
   final Widget Function() builder;
 
@@ -28,11 +28,11 @@ class DarkModeWidget extends StatelessWidget {
 
 class GetStorageWidget extends StatelessWidget {
   const GetStorageWidget({
-    Key? key,
+    super.key,
     required this.child,
     this.errorWidget,
     this.waitingWidget,
-  }) : super(key: key);
+  });
 
   final Widget child;
   final Widget? errorWidget;

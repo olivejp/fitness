@@ -21,6 +21,7 @@ import './stepper.data.dart';
 class WorkoutPageController extends ChangeNotifier {
   final WorkoutInstanceService service = GetIt.I.get();
   final UserSetService userSetService = GetIt.I.get();
+
   final RxInt initialPage = 0.obs;
   final RxBool bottomSheetIsExpanded = false.obs;
   final Rx<WorkoutInstance?> workoutInstance = WorkoutInstance().obs;
@@ -28,10 +29,12 @@ class WorkoutPageController extends ChangeNotifier {
   final RxBool onRefresh = false.obs;
   final RxBool autoPlay = false.obs;
   final RxBool timerStarted = false.obs;
-  late AudioPlayer? audioPlayer;
-  late AudioCache? audioCache;
+
   final StopWatchTimer timer =
       StopWatchTimer(mode: StopWatchMode.countDown, presetMillisecond: StopWatchTimer.getMilliSecFromMinute(0));
+
+  late AudioPlayer? audioPlayer;
+  late AudioCache? audioCache;
   StreamSubscription? userSetSubscription;
   bool goToLastPage = false;
   int timerMillisecond = 0;
@@ -163,7 +166,7 @@ class WorkoutPageController extends ChangeNotifier {
 }
 
 class WorkoutPage extends StatelessWidget {
-  WorkoutPage({Key? key, required this.instance, this.goToLastPage = false}) : super(key: key) {
+  WorkoutPage({super.key, required this.instance, this.goToLastPage = false}) {
     controller.init(instance, goToLastPage: goToLastPage);
   }
 
@@ -327,12 +330,12 @@ class WorkoutPage extends StatelessWidget {
 
 class ChronoBottomSheet extends StatelessWidget {
   const ChronoBottomSheet({
-    Key? key,
+    super.key,
     required this.controller,
     required this.containerMaxHeight,
     required this.containerHeight,
     required this.iconHorizontalPadding,
-  }) : super(key: key);
+  });
 
   final WorkoutPageController controller;
   final double containerMaxHeight;
@@ -509,12 +512,12 @@ class ChronoBottomSheet extends StatelessWidget {
 
 class ScrollIncrementerWidget extends StatelessWidget {
   ScrollIncrementerWidget({
-    Key? key,
+    super.key,
     required this.onChanged,
     this.initialValue = 0,
     required this.maxValue,
     required this.minValue,
-  }) : super(key: key) {
+  }) {
     vnIncrementer = ValueNotifier(initialValue);
   }
 

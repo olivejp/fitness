@@ -6,7 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +68,7 @@ class HomePage extends StatelessWidget {
 }
 
 class MyInfos extends StatelessWidget {
-  const MyInfos({Key? key}) : super(key: key);
+  const MyInfos({super.key});
   final double squareSize = 120;
 
   @override

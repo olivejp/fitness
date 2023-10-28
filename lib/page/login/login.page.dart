@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnc_user/page/login/login.desktop.page.dart';
 import 'package:fitnc_user/page/login/login.mobile.page.dart';
 import 'package:fitness_domain/service/display.service.dart';
+import 'package:fitness_domain/widget/layout-display.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,21 +15,23 @@ import 'login.notifier.dart';
 typedef CallbackUserCredential = void Function(UserCredential userCredential);
 
 class LoginPage extends StatelessWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: FitnessNcColors.blue50,
-      body: ChangeNotifierProvider.value(
-        value: LoginPageNotifier(),
-        builder: (context, child) {
-          return Consumer<DisplayTypeNotifier>(builder: (context, notifier, child) {
-            return (<DisplayType>[DisplayType.mobile, DisplayType.tablet].contains(notifier.displayType))
-                ? LoginMobilePage()
-                : LoginDesktopPage();
-          });
-        },
+    return LayoutNotifier(
+      child: Scaffold(
+        backgroundColor: FitnessNcColors.blue50,
+        body: ChangeNotifierProvider.value(
+          value: LoginPageNotifier(),
+          builder: (context, child) {
+            return Consumer<DisplayTypeNotifier>(builder: (context, notifier, child) {
+              return (<DisplayType>[DisplayType.mobile, DisplayType.tablet].contains(notifier.displayType))
+                  ? LoginMobilePage()
+                  : LoginDesktopPage();
+            });
+          },
+        ),
       ),
     );
   }
@@ -36,12 +39,12 @@ class LoginPage extends StatelessWidget {
 
 class LoginForm extends StatelessWidget {
   const LoginForm({
-    Key? key,
+    super.key,
     required this.formKey,
     this.paddingTop = 30,
     this.paddingInBetween = 30,
     this.callback,
-  }) : super(key: key);
+  });
 
   final CallbackUserCredential? callback;
   final GlobalKey<FormState> formKey;
@@ -88,7 +91,7 @@ class LoginForm extends StatelessWidget {
                 ),
               ),
               onChanged: notifierReadOnly.setEmail,
-              onFieldSubmitted: (String value) => notifierReadOnly.authenticate(formKey),
+              onFieldSubmitted: (String value) => notifierReadOnly.authenticate(context, formKey),
               validator: (String? value) {
                 String? emailTrimmed = value?.trim();
                 if (emailTrimmed == null || emailTrimmed.isEmpty) {
@@ -149,7 +152,7 @@ class LoginForm extends StatelessWidget {
                       ),
                     ),
                     onChanged: notifier.setPassword,
-                    onFieldSubmitted: (_) => notifier.authenticate(formKey),
+                    onFieldSubmitted: (_) => notifier.authenticate(context, formKey),
                   ),
                 ),
                 TextButton(

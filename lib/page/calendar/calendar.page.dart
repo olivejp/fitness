@@ -1,5 +1,6 @@
 import 'package:fitnc_user/page/exercice/exercice-choice.dialog.dart';
 import 'package:fitnc_user/page/workout/workout-instance.page.dart';
+import 'package:fitnc_user/service/debug_printer.dart';
 import 'package:fitnc_user/widget/fitness-date-picker.widget.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
@@ -13,9 +14,9 @@ import 'package:provider/provider.dart';
 import 'calendar.page.controller.dart';
 
 class CalendarPage extends StatelessWidget {
-  const CalendarPage({Key? key}) : super(key: key);
+  const CalendarPage({super.key});
 
-  void goToExerciseChoice(BuildContext context, CalendarController controller) {
+  void goToExerciseChoice(BuildContext context, CalendarNotifier controller) {
     controller.initialDate = controller.selectedDate;
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -31,14 +32,18 @@ class CalendarPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
-        value: CalendarController(),
+        value: CalendarNotifier(),
         builder: (context, child) {
-          return Consumer<CalendarController>(builder: (context, controller, child) {
-            controller.initialDate = DateTime.now();
-            controller.selectedDate = DateTime.now();
+          final CalendarNotifier notifierReadOnly = Provider.of<CalendarNotifier>(context, listen: false);
+          DebugPrinter.printLn('Building CalendarPage');
+          notifierReadOnly.initialDate = DateTime.now();
+          notifierReadOnly.selectedDate = DateTime.now();
+
+          return Consumer<CalendarNotifier>(builder: (context, notifier, child) {
+            DebugPrinter.printLn('Building Consumer');
             return Scaffold(
               floatingActionButton: FloatingActionButton(
-                onPressed: () => goToExerciseChoice(context, controller),
+                onPressed: () => goToExerciseChoice(context, notifier),
                 child: const Icon(
                   Icons.add,
                   color: Colors.white,
@@ -49,7 +54,7 @@ class CalendarPage extends StatelessWidget {
                   Material(
                     elevation: 5,
                     child: StreamBuilder<List<WorkoutInstance>>(
-                        stream: controller.workoutInstanceService.listenAll(),
+                        stream: notifierReadOnly.workoutInstanceService.listenAll(),
                         builder: (_, snapshot) {
                           List<WorkoutInstance> list = snapshot.hasData ? snapshot.data! : [];
                           return Timeline(list: list);
@@ -57,7 +62,7 @@ class CalendarPage extends StatelessWidget {
                   ),
                   Expanded(
                     child: StreamList<WorkoutInstance>(
-                      stream: controller.listenWorkoutInstanceByDate(controller.selectedDate),
+                      stream: notifier.listenWorkoutInstanceByDate(notifier.selectedDate),
                       builder: (BuildContext context, WorkoutInstance domain) => WorkoutInstanceCard(instance: domain),
                       padding: const EdgeInsets.only(top: 10),
                       separatorBuilder: (_, index) => const Divider(
@@ -65,22 +70,14 @@ class CalendarPage extends StatelessWidget {
                         // thickness: 20,
                       ),
                       emptyWidget: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Expanded(
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Aucun entrainement !',
-                                    style: TextStyle(fontWeight: FontWeight.w900),
-                                  ),
-                                  Text("Vous n'avez fait aucune séance d'entrainement pour ce jour.",
-                                      style: TextStyle(fontWeight: FontWeight.w900)),
-                                ],
-                              ),
-                            ),
-                          )
+                          Text(
+                            'Aucun entrainement !',
+                            style: TextStyle(fontWeight: FontWeight.w900),
+                          ),
+                          Text("Vous n'avez fait aucune séance d'entrainement pour ce jour.",
+                              style: TextStyle(fontWeight: FontWeight.w900)),
                         ],
                       ),
                     ),
@@ -95,67 +92,67 @@ class CalendarPage extends StatelessWidget {
 
 class Timeline extends StatelessWidget {
   const Timeline({
-    Key? key,
+    super.key,
     required this.list,
-  }) : super(key: key);
+  });
 
   final List<WorkoutInstance> list;
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<CalendarController>(builder: (context, controller, child) {
-      return FitnessDatePicker(
-        heigthMonth: 48,
-        initialDate: controller.initialDate,
-        onDateChange: (date) => controller.selectedDate = date,
-        selectedDayTextStyle: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-        ),
-        trailing: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: OutlinedButton(
-                onPressed: () {
-                  controller.initialDate = DateTime.now();
-                  controller.selectedDate = DateTime.now();
-                },
-                child: Text(
-                  'today'.tr,
-                  style: GoogleFonts.comfortaa(),
-                ),
+    DebugPrinter.printLn('Building TimeLine');
+    final CalendarNotifier notifierReadOnly = Provider.of<CalendarNotifier>(context, listen: false);
+    return FitnessDatePicker(
+      heigthMonth: 48,
+      initialDate: notifierReadOnly.selectedDate,
+      onDateChange: (value) => notifierReadOnly.selectedDate = value,
+      selectedDayTextStyle: const TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
+      trailing: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: OutlinedButton(
+              onPressed: () {
+                notifierReadOnly.initialDate = DateTime.now();
+                notifierReadOnly.selectDateAndNotify(DateTime.now());
+              },
+              child: Text(
+                'today'.tr,
+                style: GoogleFonts.comfortaa(),
               ),
             ),
-          ],
-        ),
-        builder: (dateTime, selected) {
-          List<DateTime> listWorkoutForTheDay = list
-              .where((workout) => workout.date != null)
-              .map((workout) => workout.date)
-              .map((date) => DateTime(date!.year, date.month, date.day))
-              .where((date) => date.compareTo(dateTime) == 0)
-              .take(4)
-              .toList();
-          return CalendarDayCard(
-            dateTime: dateTime,
-            listWorkoutForTheDay: listWorkoutForTheDay,
-            selected: selected,
-          );
-        },
-      );
-    });
+          ),
+        ],
+      ),
+      builder: (dateTime, selected) {
+        List<DateTime> listWorkoutForTheDay = list
+            .where((workout) => workout.date != null)
+            .map((workout) => workout.date)
+            .map((date) => DateTime(date!.year, date.month, date.day))
+            .where((date) => date.compareTo(dateTime) == 0)
+            .take(4)
+            .toList();
+        return CalendarDayCard(
+          dateTime: dateTime,
+          listWorkoutForTheDay: listWorkoutForTheDay,
+          selected: selected,
+        );
+      },
+    );
   }
 }
 
 class CalendarDayCard extends StatelessWidget {
   const CalendarDayCard({
-    Key? key,
+    super.key,
     required this.listWorkoutForTheDay,
     required this.selected,
     required this.dateTime,
-  }) : super(key: key);
+  });
 
   final List<DateTime> listWorkoutForTheDay;
   final bool selected;
@@ -211,7 +208,7 @@ class CalendarDayCard extends StatelessWidget {
 }
 
 class WorkoutInstanceCard extends StatelessWidget {
-  const WorkoutInstanceCard({Key? key, required this.instance}) : super(key: key);
+  const WorkoutInstanceCard({super.key, required this.instance});
 
   final WorkoutInstance instance;
 
@@ -221,6 +218,8 @@ class WorkoutInstanceCard extends StatelessWidget {
     if (instance.date != null) {
       dateStr = DateFormat('dd/MM/yyyy - kk:mm').format(instance.date!);
     }
+
+    final CalendarNotifier notifier = Provider.of<CalendarNotifier>(context, listen: false);
 
     return Material(
       elevation: 3,
@@ -234,179 +233,177 @@ class WorkoutInstanceCard extends StatelessWidget {
         ),
         child: Stack(
           children: <Widget>[
-            Consumer<CalendarController>(builder: (context, controller, child) {
-              return Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: 20,
-                      right: 12,
-                      top: 8,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Row(
-                          children: [
-                            Text(
-                              dateStr,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                            ),
-                            StreamBuilder<bool>(
-                                stream: controller.areAllChecked(instance.uid!),
-                                initialData: false,
-                                builder: (_, snapshot) {
-                                  if (snapshot.hasData && snapshot.data!) {
-                                    return const Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 8),
-                                      child: Icon(
-                                        Icons.verified_rounded,
-                                        color: Colors.green,
-                                      ),
-                                    );
-                                  } else {
-                                    return Container();
-                                  }
-                                }),
-                          ],
-                        ),
-                        PopupMenuButton<int>(
-                          iconSize: 24,
-                          tooltip: 'showMore'.tr,
-                          icon: const Icon(Icons.more_horiz, color: Colors.grey),
-                          onSelected: (value) {
-                            controller.initialDate = controller.selectedDate;
-                            switch (value) {
-                              case 1:
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    DateTime dateSelected = instance.date!;
-                                    return AlertDialog(
-                                      content: SizedBox(
-                                        height: 500,
-                                        width: 1200,
-                                        child: DateChangePicker(
-                                          initialDate: instance.date,
-                                          onDateChanged: (dateTime) => dateSelected = dateTime,
-                                        ),
-                                      ),
-                                      actions: [
-                                        TextButton.icon(
-                                          onPressed: () {
-                                            controller.updateDate(instance, dateSelected);
-                                            Navigator.of(context).pop();
-                                          },
-                                          icon: const Icon(Icons.check),
-                                          label: Text('validate'.tr),
-                                        ),
-                                        TextButton.icon(
-                                          onPressed: () => Navigator.of(context).pop(),
-                                          icon: const Icon(Icons.clear),
-                                          label: Text('cancel'.tr),
-                                        )
-                                      ],
-                                    );
-                                  },
-                                );
-                                break;
-                              case 2:
-                                controller.deleteWorkout(instance);
-                                break;
-                            }
-                          },
-                          itemBuilder: (BuildContext buildContext) => <PopupMenuItem<int>>[
-                            PopupMenuItem<int>(
-                              value: 1,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Text('updateDate'.tr),
-                                  const Icon(
-                                    Icons.calendar_today_outlined,
-                                    color: Colors.grey,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            PopupMenuItem<int>(
-                              value: 2,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Text('delete'.tr),
-                                  const Icon(
-                                    Icons.delete,
-                                    color: Colors.grey,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+            Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 20,
+                    right: 12,
+                    top: 8,
                   ),
-                  StreamList<UserSet>(
-                    showLoading: true,
-                    stream: controller.listenUserSet(instance),
-                    physics: const NeverScrollableScrollPhysics(),
-                    builder: (context, set) {
-                      return Padding(
-                        padding: const EdgeInsets.only(
-                          left: 20,
-                          right: 12,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Flexible(
-                              child: Column(
-                                children: [
-                                  if (set.nameExercice != null) Text(set.nameExercice!),
-                                ],
-                              ),
-                            ),
-                            Flexible(
-                              child: IconButton(
-                                onPressed: () => controller.deleteUserSet(set),
-                                icon: const Icon(Icons.delete, color: Colors.grey, size: 20),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      ButtonBar(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Row(
                         children: [
-                          TextButton.icon(
-                            onPressed: () {
+                          Text(
+                            dateStr,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          StreamBuilder<bool>(
+                              stream: notifier.areAllChecked(instance.uid!),
+                              initialData: false,
+                              builder: (_, snapshot) {
+                                if (snapshot.hasData && snapshot.data!) {
+                                  return const Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 8),
+                                    child: Icon(
+                                      Icons.verified_rounded,
+                                      color: Colors.green,
+                                    ),
+                                  );
+                                } else {
+                                  return Container();
+                                }
+                              }),
+                        ],
+                      ),
+                      PopupMenuButton<int>(
+                        iconSize: 24,
+                        tooltip: 'showMore'.tr,
+                        icon: const Icon(Icons.more_horiz, color: Colors.grey),
+                        onSelected: (value) {
+                          notifier.initialDate = notifier.selectedDate;
+                          switch (value) {
+                            case 1:
                               showDialog(
                                 context: context,
-                                builder: (context) => ExerciseChoiceDialog(workoutInstance: instance),
+                                builder: (context) {
+                                  DateTime dateSelected = instance.date!;
+                                  return AlertDialog(
+                                    content: SizedBox(
+                                      height: 500,
+                                      width: 1200,
+                                      child: DateChangePicker(
+                                        initialDate: instance.date,
+                                        onDateChanged: (dateTime) => dateSelected = dateTime,
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton.icon(
+                                        onPressed: () {
+                                          notifier.updateDate(instance, dateSelected);
+                                          Navigator.of(context).pop();
+                                        },
+                                        icon: const Icon(Icons.check),
+                                        label: Text('validate'.tr),
+                                      ),
+                                      TextButton.icon(
+                                        onPressed: () => Navigator.of(context).pop(),
+                                        icon: const Icon(Icons.clear),
+                                        label: Text('cancel'.tr),
+                                      )
+                                    ],
+                                  );
+                                },
                               );
-                            },
-                            icon: const Icon(
-                              Icons.add_circle_outline_outlined,
+                              break;
+                            case 2:
+                              notifier.deleteWorkout(instance);
+                              break;
+                          }
+                        },
+                        itemBuilder: (BuildContext buildContext) => <PopupMenuItem<int>>[
+                          PopupMenuItem<int>(
+                            value: 1,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text('updateDate'.tr),
+                                const Icon(
+                                  Icons.calendar_today_outlined,
+                                  color: Colors.grey,
+                                ),
+                              ],
                             ),
-                            label: Text(
-                              'addExercise'.tr,
+                          ),
+                          PopupMenuItem<int>(
+                            value: 2,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text('delete'.tr),
+                                const Icon(
+                                  Icons.delete,
+                                  color: Colors.grey,
+                                ),
+                              ],
                             ),
                           ),
                         ],
-                      )
+                      ),
                     ],
-                  )
-                ],
-              );
-            })
+                  ),
+                ),
+                StreamList<UserSet>(
+                  showLoading: true,
+                  stream: notifier.listenUserSet(instance),
+                  physics: const NeverScrollableScrollPhysics(),
+                  builder: (context, set) {
+                    return Padding(
+                      padding: const EdgeInsets.only(
+                        left: 20,
+                        right: 12,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Flexible(
+                            child: Column(
+                              children: [
+                                if (set.nameExercice != null) Text(set.nameExercice!),
+                              ],
+                            ),
+                          ),
+                          Flexible(
+                            child: IconButton(
+                              onPressed: () => notifier.deleteUserSet(set),
+                              icon: const Icon(Icons.delete, color: Colors.grey, size: 20),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ButtonBar(
+                      children: [
+                        TextButton.icon(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => ExerciseChoiceDialog(workoutInstance: instance),
+                            );
+                          },
+                          icon: const Icon(
+                            Icons.add_circle_outline_outlined,
+                          ),
+                          label: Text(
+                            'addExercise'.tr,
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                )
+              ],
+            )
           ],
         ),
       ),

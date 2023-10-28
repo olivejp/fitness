@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 
 class GradientText extends StatelessWidget {
   const GradientText(this.text,
-      {Key? key,
-      this.primaryColor = Colors.amberAccent,
-      this.secondaryColor = Colors.purple,
-      this.textStyle})
-      : super(key: key);
+      {super.key, this.primaryColor = Colors.amberAccent, this.secondaryColor = Colors.purple, this.textStyle});
 
   final String text;
   final Color primaryColor;
