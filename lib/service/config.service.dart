@@ -1,21 +1,16 @@
 import 'package:fitnc_user/constants.dart';
-import 'package:get/get.dart';
 
-class ConfigService extends GetxService {
+class ConfigService {
   final Map<String, dynamic> mapConfig = {};
 
   dynamic get(String key) {
     return mapConfig[key];
   }
 
-  @override
-  void onInit() {
-    super.onInit();
+  ConfigService() {
     mapConfig.putIfAbsent(
       FitnessMobileConstants.profileCommandLineArgument,
-      () => const String.fromEnvironment(
-          FitnessMobileConstants.profileCommandLineArgument,
-          defaultValue: ''),
+      () => const String.fromEnvironment(FitnessMobileConstants.profileCommandLineArgument, defaultValue: ''),
     );
     mapConfig.putIfAbsent(
       'EMAIL',

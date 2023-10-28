@@ -3,14 +3,11 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get/get.dart';
 
-class ConnectivityService extends GetxService {
+class ConnectivityService {
   final RxBool isConnected = false.obs;
   StreamSubscription? streamSubscription;
 
-  @override
-  void onInit() {
-    super.onInit();
-
+  ConnectivityService() {
     // Initialize connectivity status.
     Connectivity().checkConnectivity().then((value) => updateConnectivityStatus(value));
 
@@ -19,17 +16,11 @@ class ConnectivityService extends GetxService {
         Connectivity().onConnectivityChanged.listen((ConnectivityResult result) => updateConnectivityStatus(result));
   }
 
-  @override
-  void onClose() {
-    if (streamSubscription != null) {
-      streamSubscription!.cancel();
-    }
-    super.onClose();
-  }
-
   void updateConnectivityStatus(ConnectivityResult result) {
     isConnected.update((val) {
-      val = (result == ConnectivityResult.mobile || result == ConnectivityResult.wifi);
+      val = (result == ConnectivityResult.mobile ||
+          result == ConnectivityResult.wifi ||
+          result == ConnectivityResult.ethernet);
     });
   }
 }

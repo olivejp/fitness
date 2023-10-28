@@ -2,10 +2,11 @@ import 'package:fitnc_user/service/fitness-user.service.dart';
 import 'package:fitness_domain/domain/published_programme.domain.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:loading_animations/loading_animations.dart';
 
 class MyProgramsPageController extends GetxController {
-  final FitnessUserService fitnessUserService = Get.find();
+  final FitnessUserService fitnessUserService = GetIt.I.get();
 
   Stream<List<PublishedProgramme>> listenMyPrograms() {
     return fitnessUserService.listenMyPrograms();
@@ -24,7 +25,7 @@ class MyProgramsPage extends StatelessWidget {
         children: <Widget>[
           Text(
             'Mes programmes',
-            style: Theme.of(context).textTheme.headline4,
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
           Expanded(
             child: StreamBuilder<List<PublishedProgramme>>(
@@ -48,7 +49,10 @@ class MyProgramsPage extends StatelessWidget {
                     );
                   }
                 }
-                return Center(child: LoadingBouncingGrid.circle(backgroundColor: Theme.of(context).primaryColor,));
+                return Center(
+                    child: LoadingBouncingGrid.circle(
+                  backgroundColor: Theme.of(context).primaryColor,
+                ));
               },
             ),
           ),

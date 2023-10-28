@@ -8,12 +8,13 @@ import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/user.line.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 
 class UserSetController extends GetxController {
-  final WorkoutInstanceService workoutInstanceService = Get.find();
-  final UserSetService userSetService = Get.find();
-  final ExerciceService exerciseService = Get.find();
-  final WorkoutPageController pageController = Get.find();
+  final WorkoutInstanceService workoutInstanceService = GetIt.I.get();
+  final UserSetService userSetService = GetIt.I.get();
+  final ExerciceService exerciseService = GetIt.I.get();
+  final WorkoutPageController pageController = GetIt.I.get();
   final Rx<UserSet> userSet = UserSet().obs;
   final RxList<UserLine> listLines = <UserLine>[].obs;
   final int debounceTime = 200;

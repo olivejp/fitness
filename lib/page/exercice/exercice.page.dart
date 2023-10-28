@@ -5,6 +5,7 @@ import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/widget/generic_container.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 
 class ExercisePage extends StatelessWidget {
   const ExercisePage({Key? key}) : super(key: key);
@@ -12,22 +13,21 @@ class ExercisePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ExerciceService exerciceService = Get.find();
+    final ExerciceService exerciceService = GetIt.I.get();
     return SafeArea(
       child: Scaffold(
         body: Stack(
           fit: StackFit.expand,
           children: [
             StreamList<Exercice>(
-              emptyWidget: Column(
+              emptyWidget: const Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: const [
+                children: [
                   Text('Aucun exercice trouvé.'),
                 ],
               ),
-              padding: EdgeInsets.only(
-                  bottom: bottomAppBarHeight, top: 8, left: 8, right: 8),
+              padding: EdgeInsets.only(bottom: bottomAppBarHeight, top: 8, left: 8, right: 8),
               stream: exerciceService.listenAll(),
               builder: (_, domain) => ExerciseCard(
                 exercise: domain,
@@ -44,8 +44,7 @@ class ExercisePage extends StatelessWidget {
               bottom: 0,
               left: 0,
               right: 0,
-              child:
-                  ExerciseBottomAppBar(bottomAppBarHeigth: bottomAppBarHeight),
+              child: ExerciseBottomAppBar(bottomAppBarHeigth: bottomAppBarHeight),
             ),
           ],
         ),
@@ -113,7 +112,7 @@ class ExerciseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ExerciceService service = Get.find();
+    final ExerciceService service = GetIt.I.get();
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -127,8 +126,7 @@ class ExerciseCard extends StatelessWidget {
               Row(
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(
-                        left: imagePadding, right: imagePadding),
+                    padding: EdgeInsets.only(left: imagePadding, right: imagePadding),
                     child: NetworkImageExerciseChoice(
                       imageUrl: exercise.imageUrl,
                       radius: 5,

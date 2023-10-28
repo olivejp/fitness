@@ -1,4 +1,3 @@
-import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:fitnc_user/page/exercice/exercice-choice.dialog.dart';
 import 'package:fitnc_user/page/workout/workout-instance.page.dart';
 import 'package:fitnc_user/widget/fitness-date-picker.widget.dart';
@@ -9,15 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import 'calendar.page.controller.dart';
 
 class CalendarPage extends StatelessWidget {
-  CalendarPage({Key? key}) : super(key: key);
+  const CalendarPage({Key? key}) : super(key: key);
 
-  final CalendarController controller = Get.put(CalendarController());
-
-  void goToExerciseChoice(BuildContext context) {
+  void goToExerciseChoice(BuildContext context, CalendarController controller) {
     controller.initialDate = controller.selectedDate;
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -32,61 +30,66 @@ class CalendarPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    controller.initialDate = DateTime.now();
-    controller.selectedDate = DateTime.now();
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => goToExerciseChoice(context),
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-        ),
-      ),
-      body: Column(
-        children: <Widget>[
-          Material(
-            elevation: 5,
-            child: StreamBuilder<List<WorkoutInstance>>(
-                stream: controller.workoutInstanceService.listenAll(),
-                builder: (_, snapshot) {
-                  List<WorkoutInstance> list =
-                      snapshot.hasData ? snapshot.data! : [];
-                  return Timeline(list: list);
-                }),
-          ),
-          Expanded(
-            child: Obx(
-              () => StreamList<WorkoutInstance>(
-                stream: controller
-                    .listenWorkoutInstanceByDate(controller.selectedDate),
-                builder: (BuildContext context, WorkoutInstance domain) =>
-                    WorkoutInstanceCard(instance: domain),
-                padding: const EdgeInsets.only(top: 10),
-                separatorBuilder: (_, index) => const Divider(
-                  height: 20,
-                  // thickness: 20,
-                ),
-                emptyWidget: Column(
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Text('Aucun entrainement !', style: TextStyle(fontWeight: FontWeight.w900),),
-                            Text("Vous n'avez fait aucune séance d'entrainement pour ce jour.", style: TextStyle(fontWeight: FontWeight.w900)),
-                          ],
-                        ),
-                      ),
-                    )
-                  ],
+    return ChangeNotifierProvider.value(
+        value: CalendarController(),
+        builder: (context, child) {
+          return Consumer<CalendarController>(builder: (context, controller, child) {
+            controller.initialDate = DateTime.now();
+            controller.selectedDate = DateTime.now();
+            return Scaffold(
+              floatingActionButton: FloatingActionButton(
+                onPressed: () => goToExerciseChoice(context, controller),
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.white,
                 ),
               ),
-            ),
-          )
-        ],
-      ),
-    );
+              body: Column(
+                children: <Widget>[
+                  Material(
+                    elevation: 5,
+                    child: StreamBuilder<List<WorkoutInstance>>(
+                        stream: controller.workoutInstanceService.listenAll(),
+                        builder: (_, snapshot) {
+                          List<WorkoutInstance> list = snapshot.hasData ? snapshot.data! : [];
+                          return Timeline(list: list);
+                        }),
+                  ),
+                  Expanded(
+                    child: StreamList<WorkoutInstance>(
+                      stream: controller.listenWorkoutInstanceByDate(controller.selectedDate),
+                      builder: (BuildContext context, WorkoutInstance domain) => WorkoutInstanceCard(instance: domain),
+                      padding: const EdgeInsets.only(top: 10),
+                      separatorBuilder: (_, index) => const Divider(
+                        height: 20,
+                        // thickness: 20,
+                      ),
+                      emptyWidget: const Column(
+                        children: [
+                          Expanded(
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Aucun entrainement !',
+                                    style: TextStyle(fontWeight: FontWeight.w900),
+                                  ),
+                                  Text("Vous n'avez fait aucune séance d'entrainement pour ce jour.",
+                                      style: TextStyle(fontWeight: FontWeight.w900)),
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            );
+          });
+        });
   }
 }
 
@@ -100,14 +103,11 @@ class Timeline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final CalendarController controller = Get.find();
-    return Obx(
-      () => FitnessDatePicker(
+    return Consumer<CalendarController>(builder: (context, controller, child) {
+      return FitnessDatePicker(
         heigthMonth: 48,
         initialDate: controller.initialDate,
-        onDateChange: (date) {
-          controller.selectedDate = date;
-        },
+        onDateChange: (date) => controller.selectedDate = date,
         selectedDayTextStyle: const TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,
@@ -144,8 +144,8 @@ class Timeline extends StatelessWidget {
             selected: selected,
           );
         },
-      ),
-    );
+      );
+    });
   }
 }
 
@@ -198,8 +198,7 @@ class CalendarDayCard extends StatelessWidget {
                     .map((e) => Icon(
                           Icons.circle,
                           size: 5,
-                          color:
-                              selected ? Theme.of(context).primaryColor : null,
+                          color: selected ? Theme.of(context).primaryColor : null,
                         ))
                     .toList(),
               ),
@@ -212,9 +211,8 @@ class CalendarDayCard extends StatelessWidget {
 }
 
 class WorkoutInstanceCard extends StatelessWidget {
-  WorkoutInstanceCard({Key? key, required this.instance}) : super(key: key);
+  const WorkoutInstanceCard({Key? key, required this.instance}) : super(key: key);
 
-  final CalendarController controller = Get.find();
   final WorkoutInstance instance;
 
   @override
@@ -236,185 +234,179 @@ class WorkoutInstanceCard extends StatelessWidget {
         ),
         child: Stack(
           children: <Widget>[
-            Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 20,
-                    right: 12,
-                    top: 8,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Row(
-                        children: [
-                          Text(
-                            dateStr,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
+            Consumer<CalendarController>(builder: (context, controller, child) {
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 20,
+                      right: 12,
+                      top: 8,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Row(
+                          children: [
+                            Text(
+                              dateStr,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
                             ),
-                          ),
-                          StreamBuilder<bool>(
-                              stream: controller.areAllChecked(instance.uid!),
-                              initialData: false,
-                              builder: (_, snapshot) {
-                                if (snapshot.hasData && snapshot.data!) {
-                                  return const Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 8),
-                                    child: Icon(
-                                      Icons.verified_rounded,
-                                      color: Colors.green,
-                                    ),
-                                  );
-                                } else {
-                                  return Container();
-                                }
-                              }),
-                        ],
-                      ),
-                      PopupMenuButton<int>(
-                        iconSize: 24,
-                        tooltip: 'showMore'.tr,
-                        icon: const Icon(Icons.more_horiz, color: Colors.grey),
-                        onSelected: (value) {
-                          controller.initialDate = controller.selectedDate;
-                          switch (value) {
-                            case 1:
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  DateTime dateSelected = instance.date!;
-                                  return AlertDialog(
-                                    content: SizedBox(
-                                      height: 500,
-                                      width: 1200,
-                                      child: DateChangePicker(
-                                        initialDate: instance.date,
-                                        onDateChanged: (dateTime) =>
-                                            dateSelected = dateTime,
+                            StreamBuilder<bool>(
+                                stream: controller.areAllChecked(instance.uid!),
+                                initialData: false,
+                                builder: (_, snapshot) {
+                                  if (snapshot.hasData && snapshot.data!) {
+                                    return const Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 8),
+                                      child: Icon(
+                                        Icons.verified_rounded,
+                                        color: Colors.green,
                                       ),
-                                    ),
-                                    actions: [
-                                      TextButton.icon(
-                                        onPressed: () {
-                                          controller.updateDate(
-                                              instance, dateSelected);
-                                          Navigator.of(context).pop();
-                                        },
-                                        icon: const Icon(Icons.check),
-                                        label: Text('validate'.tr),
+                                    );
+                                  } else {
+                                    return Container();
+                                  }
+                                }),
+                          ],
+                        ),
+                        PopupMenuButton<int>(
+                          iconSize: 24,
+                          tooltip: 'showMore'.tr,
+                          icon: const Icon(Icons.more_horiz, color: Colors.grey),
+                          onSelected: (value) {
+                            controller.initialDate = controller.selectedDate;
+                            switch (value) {
+                              case 1:
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    DateTime dateSelected = instance.date!;
+                                    return AlertDialog(
+                                      content: SizedBox(
+                                        height: 500,
+                                        width: 1200,
+                                        child: DateChangePicker(
+                                          initialDate: instance.date,
+                                          onDateChanged: (dateTime) => dateSelected = dateTime,
+                                        ),
                                       ),
-                                      TextButton.icon(
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(),
-                                        icon: const Icon(Icons.clear),
-                                        label: Text('cancel'.tr),
-                                      )
-                                    ],
-                                  );
-                                },
-                              );
-                              break;
-                            case 2:
-                              controller.deleteWorkout(instance);
-                              break;
-                          }
-                        },
-                        itemBuilder: (BuildContext buildContext) =>
-                            <PopupMenuItem<int>>[
-                          PopupMenuItem<int>(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('updateDate'.tr),
-                                const Icon(
-                                  Icons.calendar_today_outlined,
-                                  color: Colors.grey,
-                                ),
-                              ],
-                            ),
-                            value: 1,
-                          ),
-                          PopupMenuItem<int>(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('delete'.tr),
-                                const Icon(
-                                  Icons.delete,
-                                  color: Colors.grey,
-                                ),
-                              ],
-                            ),
-                            value: 2,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                StreamList<UserSet>(
-                  showLoading: true,
-                  stream: controller.listenUserSet(instance),
-                  physics: const NeverScrollableScrollPhysics(),
-                  builder: (context, set) {
-                    return Padding(
-                      padding: const EdgeInsets.only(
-                        left: 20,
-                        right: 12,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Flexible(
-                            child: Column(
-                              children: [
-                                if (set.nameExercice != null)
-                                  Text(set.nameExercice!),
-                              ],
-                            ),
-                          ),
-                          Flexible(
-                            child: IconButton(
-                              onPressed: () => controller.deleteUserSet(set),
-                              icon: const Icon(Icons.delete,
-                                  color: Colors.grey, size: 20),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    ButtonBar(
-                      children: [
-                        TextButton.icon(
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) => ExerciseChoiceDialog(
-                                  workoutInstance: instance),
-                            );
+                                      actions: [
+                                        TextButton.icon(
+                                          onPressed: () {
+                                            controller.updateDate(instance, dateSelected);
+                                            Navigator.of(context).pop();
+                                          },
+                                          icon: const Icon(Icons.check),
+                                          label: Text('validate'.tr),
+                                        ),
+                                        TextButton.icon(
+                                          onPressed: () => Navigator.of(context).pop(),
+                                          icon: const Icon(Icons.clear),
+                                          label: Text('cancel'.tr),
+                                        )
+                                      ],
+                                    );
+                                  },
+                                );
+                                break;
+                              case 2:
+                                controller.deleteWorkout(instance);
+                                break;
+                            }
                           },
-                          icon: const Icon(
-                            Icons.add_circle_outline_outlined,
-                          ),
-                          label: Text(
-                            'addExercise'.tr,
-                          ),
+                          itemBuilder: (BuildContext buildContext) => <PopupMenuItem<int>>[
+                            PopupMenuItem<int>(
+                              value: 1,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text('updateDate'.tr),
+                                  const Icon(
+                                    Icons.calendar_today_outlined,
+                                    color: Colors.grey,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem<int>(
+                              value: 2,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text('delete'.tr),
+                                  const Icon(
+                                    Icons.delete,
+                                    color: Colors.grey,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ],
-                    )
-                  ],
-                )
-              ],
-            )
+                    ),
+                  ),
+                  StreamList<UserSet>(
+                    showLoading: true,
+                    stream: controller.listenUserSet(instance),
+                    physics: const NeverScrollableScrollPhysics(),
+                    builder: (context, set) {
+                      return Padding(
+                        padding: const EdgeInsets.only(
+                          left: 20,
+                          right: 12,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Flexible(
+                              child: Column(
+                                children: [
+                                  if (set.nameExercice != null) Text(set.nameExercice!),
+                                ],
+                              ),
+                            ),
+                            Flexible(
+                              child: IconButton(
+                                onPressed: () => controller.deleteUserSet(set),
+                                icon: const Icon(Icons.delete, color: Colors.grey, size: 20),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ButtonBar(
+                        children: [
+                          TextButton.icon(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => ExerciseChoiceDialog(workoutInstance: instance),
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.add_circle_outline_outlined,
+                            ),
+                            label: Text(
+                              'addExercise'.tr,
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  )
+                ],
+              );
+            })
           ],
         ),
       ),

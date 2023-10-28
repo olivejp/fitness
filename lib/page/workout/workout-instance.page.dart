@@ -10,37 +10,28 @@ import 'package:fitness_domain/domain/workout-instance.domain.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
-class Stepper {
-  Stepper(
-      {this.checked = false,
-      required this.userSetUid,
-      this.allExerciseDone = false});
+import './stepper.data.dart';
 
-  bool checked;
-  String? userSetUid;
-  bool allExerciseDone;
-}
-
-class WorkoutPageController extends GetxController {
-  final WorkoutInstanceService service = Get.find();
-  final UserSetService userSetService = Get.find();
+class WorkoutPageController extends ChangeNotifier {
+  final WorkoutInstanceService service = GetIt.I.get();
+  final UserSetService userSetService = GetIt.I.get();
   final RxInt initialPage = 0.obs;
   final RxBool bottomSheetIsExpanded = false.obs;
   final Rx<WorkoutInstance?> workoutInstance = WorkoutInstance().obs;
-  final RxList<Stepper> stepperList = <Stepper>[].obs;
+  final RxList<FitStepper> stepperList = <FitStepper>[].obs;
   final RxBool onRefresh = false.obs;
   final RxBool autoPlay = false.obs;
   final RxBool timerStarted = false.obs;
   late AudioPlayer? audioPlayer;
   late AudioCache? audioCache;
-  final StopWatchTimer timer = StopWatchTimer(
-      mode: StopWatchMode.countDown,
-      presetMillisecond: StopWatchTimer.getMilliSecFromMinute(0));
+  final StopWatchTimer timer =
+      StopWatchTimer(mode: StopWatchMode.countDown, presetMillisecond: StopWatchTimer.getMilliSecFromMinute(0));
   StreamSubscription? userSetSubscription;
   bool goToLastPage = false;
   int timerMillisecond = 0;
@@ -49,13 +40,11 @@ class WorkoutPageController extends GetxController {
   int timerSecond = 0;
   StreamSubscription? timerSubscription;
 
-  @override
-  void onInit() {
-    super.onInit();
+  WorkoutPageController() {
     // To play asset we need AudioCache. But AudioCache is not provided for Web.
     // see {https://github.com/bluefireteam/audioplayers/blob/master/packages/audioplayers/doc/audio_cache.md}
     if (kIsWeb) {
-      audioPlayer = AudioPlayer(mode: PlayerMode.LOW_LATENCY);
+      audioPlayer = AudioPlayer();
     } else {
       audioCache = AudioCache();
     }
@@ -69,14 +58,11 @@ class WorkoutPageController extends GetxController {
     }
 
     // On écoute tous les userSet de ce workoutInstance.
-    userSetSubscription =
-        userSetService.listenAll(workoutInstance.uid!).listen((listUserSet) {
+    userSetSubscription = userSetService.listenAll(workoutInstance.uid!).listen((listUserSet) {
       for (var userSet in listUserSet) {
-        int index = stepperList
-            .indexWhere((stepper) => stepper.userSetUid == userSet.uid);
+        int index = stepperList.indexWhere((stepper) => stepper.userSetUid == userSet.uid);
         if (index > -1) {
-          stepperList[index].allExerciseDone = userSet.lines.isNotEmpty &&
-              userSet.lines.every((set) => set.checked);
+          stepperList[index].allExerciseDone = userSet.lines.isNotEmpty && userSet.lines.every((set) => set.checked);
         }
       }
       stepperList.refresh();
@@ -99,16 +85,13 @@ class WorkoutPageController extends GetxController {
   }
 
   Future<List<UserSet>> getAllUserSet() {
-    return userSetService
-        .orderByGet(workoutInstance.value!.uid!, 'createDate', false)
-        .then((listUserSet) {
+    return userSetService.orderByGet(workoutInstance.value!.uid!, 'createDate', false).then((listUserSet) {
       stepperList.clear();
       for (var element in listUserSet) {
-        stepperList.add(Stepper(
+        stepperList.add(FitStepper(
             userSetUid: element.uid,
             checked: false,
-            allExerciseDone: element.lines.isNotEmpty &&
-                element.lines.every((line) => line.checked)));
+            allExerciseDone: element.lines.isNotEmpty && element.lines.every((line) => line.checked)));
       }
       if (goToLastPage) {
         changeStepper(stepperList.length - 1);
@@ -130,17 +113,13 @@ class WorkoutPageController extends GetxController {
 
   void startTimer() {
     timerStarted.value = true;
-    timer.onExecute.add(StopWatchExecute.start);
+    timer.onStartTimer();
     timerSubscription = timer.rawTime.listen((event) {
       if (event == 0) {
         if (kIsWeb) {
-          audioPlayer
-              ?.play('assets/notification.wav', isLocal: true)
-              .then((value) => null);
+          audioPlayer?.setSourceAsset('assets/notification.wav').then((value) => null);
         } else {
-          audioCache
-              ?.play('notification.wav', stayAwake: true)
-              .then((value) => null);
+          audioCache?.load('notification.wav').then((value) => null);
         }
 
         changeTimer();
@@ -150,7 +129,7 @@ class WorkoutPageController extends GetxController {
 
   void stopTimer() {
     timerStarted.value = false;
-    timer.onExecute.add(StopWatchExecute.stop);
+    timer.onStopTimer();
     timerSubscription?.cancel();
   }
 
@@ -171,7 +150,7 @@ class WorkoutPageController extends GetxController {
 
   void changeTimer() {
     stopTimer();
-    timer.onExecute.add(StopWatchExecute.reset);
+    timer.onResetTimer();
     timer.clearPresetTime();
     timer.setPresetHoursTime(timerHour);
     timer.setPresetMinuteTime(timerMinute);
@@ -184,8 +163,7 @@ class WorkoutPageController extends GetxController {
 }
 
 class WorkoutPage extends StatelessWidget {
-  WorkoutPage({Key? key, required this.instance, this.goToLastPage = false})
-      : super(key: key) {
+  WorkoutPage({Key? key, required this.instance, this.goToLastPage = false}) : super(key: key) {
     controller.init(instance, goToLastPage: goToLastPage);
   }
 
@@ -222,10 +200,7 @@ class WorkoutPage extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 0),
                 child: Text(
                   DateFormat('dd/MM/yy - kk:mm').format(instance.date!),
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline3
-                      ?.copyWith(color: Theme.of(context).primaryColor),
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(color: Theme.of(context).primaryColor),
                 ),
               ),
               leading: IconButton(
@@ -268,12 +243,10 @@ class WorkoutPage extends StatelessWidget {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: controller.stepperList.map(
-                        (Stepper e) {
+                        (FitStepper e) {
                           return Icon(
                             e.checked ? Icons.circle : Icons.circle_outlined,
-                            color: e.allExerciseDone
-                                ? Colors.green
-                                : Theme.of(context).primaryColor,
+                            color: e.allExerciseDone ? Colors.green : Theme.of(context).primaryColor,
                           );
                         },
                       ).toList(),
@@ -289,8 +262,7 @@ class WorkoutPage extends StatelessWidget {
                           children: [
                             Expanded(
                               child: Center(
-                                child: Text(
-                                    'Error : ${snapshot.error.toString()}'),
+                                child: Text('Error : ${snapshot.error.toString()}'),
                               ),
                             ),
                           ],
@@ -301,15 +273,11 @@ class WorkoutPage extends StatelessWidget {
                           List<UserSet> listUserSet = snapshot.data!;
                           return Obx(() {
                             final PageController pageController =
-                                PageController(
-                                    initialPage: controller.initialPage.value);
+                                PageController(initialPage: controller.initialPage.value);
                             return PageView(
                               controller: pageController,
-                              children: listUserSet
-                                  .map((e) => OpenUserSetInstance(userSet: e))
-                                  .toList(),
-                              onPageChanged: (pageNumber) =>
-                                  controller.changeStepper(pageNumber),
+                              children: listUserSet.map((e) => OpenUserSetInstance(userSet: e)).toList(),
+                              onPageChanged: (pageNumber) => controller.changeStepper(pageNumber),
                             );
                           });
                         }
@@ -379,9 +347,7 @@ class ChronoBottomSheet extends StatelessWidget {
         () => AnimatedContainer(
           alignment: Alignment.topCenter,
           duration: const Duration(milliseconds: 150),
-          height: controller.bottomSheetIsExpanded.value
-              ? containerMaxHeight
-              : containerHeight,
+          height: controller.bottomSheetIsExpanded.value ? containerMaxHeight : containerHeight,
           child: Column(
             children: [
               SizedBox(
@@ -393,12 +359,11 @@ class ChronoBottomSheet extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: iconHorizontalPadding),
+                        padding: EdgeInsets.symmetric(horizontal: iconHorizontalPadding),
                         iconSize: 24,
                         color: Colors.white,
-                        onPressed: () => controller.bottomSheetIsExpanded
-                            .value = !controller.bottomSheetIsExpanded.value,
+                        onPressed: () =>
+                            controller.bottomSheetIsExpanded.value = !controller.bottomSheetIsExpanded.value,
                         icon: Obx(() {
                           if (controller.bottomSheetIsExpanded.value) {
                             return const Icon(Icons.keyboard_arrow_down);
@@ -416,12 +381,10 @@ class ChronoBottomSheet extends StatelessWidget {
                               builder: (_, snapshot) {
                                 if (snapshot.hasData) {
                                   final value = snapshot.data;
-                                  final displayTime =
-                                      StopWatchTimer.getDisplayTime(value!);
+                                  final displayTime = StopWatchTimer.getDisplayTime(value!);
                                   return Text(
                                     displayTime,
-                                    style:
-                                        Theme.of(context).textTheme.headline3,
+                                    style: Theme.of(context).textTheme.displaySmall,
                                   );
                                 }
                                 return const Text('');
@@ -431,8 +394,7 @@ class ChronoBottomSheet extends StatelessWidget {
                       Obx(() {
                         if (controller.timerStarted.value) {
                           return IconButton(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: iconHorizontalPadding),
+                            padding: EdgeInsets.symmetric(horizontal: iconHorizontalPadding),
                             iconSize: 28,
                             color: Colors.white,
                             onPressed: controller.stopTimer,
@@ -440,8 +402,7 @@ class ChronoBottomSheet extends StatelessWidget {
                           );
                         } else {
                           return IconButton(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: iconHorizontalPadding),
+                            padding: EdgeInsets.symmetric(horizontal: iconHorizontalPadding),
                             iconSize: 28,
                             color: Colors.white,
                             onPressed: controller.startTimer,
@@ -473,8 +434,7 @@ class ChronoBottomSheet extends StatelessWidget {
                                       color: Colors.white,
                                     ),
                                     child: ScrollIncrementerWidget(
-                                      onChanged: (int newValue) =>
-                                          controller.changeHour(newValue),
+                                      onChanged: (int newValue) => controller.changeHour(newValue),
                                       initialValue: controller.timerHour,
                                       minValue: 0,
                                       maxValue: 23,
@@ -494,8 +454,7 @@ class ChronoBottomSheet extends StatelessWidget {
                                       color: Colors.white,
                                     ),
                                     child: ScrollIncrementerWidget(
-                                      onChanged: (int newValue) =>
-                                          controller.changeMinute(newValue),
+                                      onChanged: (int newValue) => controller.changeMinute(newValue),
                                       initialValue: controller.timerMinute,
                                       minValue: 0,
                                       maxValue: 59,
@@ -515,8 +474,7 @@ class ChronoBottomSheet extends StatelessWidget {
                                       color: Colors.white,
                                     ),
                                     child: ScrollIncrementerWidget(
-                                      onChanged: (int newValue) =>
-                                          controller.changeSecond(newValue),
+                                      onChanged: (int newValue) => controller.changeSecond(newValue),
                                       initialValue: controller.timerSecond,
                                       minValue: 0,
                                       maxValue: 59,
@@ -533,8 +491,7 @@ class ChronoBottomSheet extends StatelessWidget {
                             const Text('Auto play'),
                             Checkbox(
                               value: controller.autoPlay.value,
-                              onChanged: (bool? value) =>
-                                  controller.autoPlay.value = value ??= false,
+                              onChanged: (bool? value) => controller.autoPlay.value = value ??= false,
                             ),
                           ],
                         ),
@@ -572,12 +529,8 @@ class ScrollIncrementerWidget extends StatelessWidget {
     return ValueListenableBuilder<int>(
       valueListenable: vnIncrementer,
       builder: (_, value, __) => NumberPicker(
-        selectedTextStyle: Theme.of(context)
-            .textTheme
-            .headline3
-            ?.copyWith(color: Theme.of(context).primaryColor),
-        textStyle:
-            Theme.of(context).textTheme.headline3?.copyWith(fontSize: 23),
+        selectedTextStyle: Theme.of(context).textTheme.displaySmall?.copyWith(color: Theme.of(context).primaryColor),
+        textStyle: Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 23),
         itemHeight: 35,
         zeroPad: true,
         infiniteLoop: true,

@@ -6,11 +6,11 @@ import 'package:fitnc_user/service/trainers.service.dart';
 import 'package:fitness_domain/domain/published_programme.domain.dart';
 import 'package:fitness_domain/domain/trainers.domain.dart';
 import 'package:fitness_domain/service/abstract.service.dart';
-import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 
 class PublishedProgrammeService extends AbstractFitnessStorageService<PublishedProgramme> {
   final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
-  final TrainersService trainersService = Get.find();
+  final TrainersService trainersService = GetIt.I.get();
   final String publishedProgrammeCollectionName = 'publishedProgrammes';
 
   @override
@@ -42,5 +42,4 @@ class PublishedProgrammeService extends AbstractFitnessStorageService<PublishedP
     List<String?> listTrainersUid = allPublishedPrograms.map((e) => e.creatorUid).toList();
     return trainersService.where('uid', whereIn: listTrainersUid);
   }
-
 }

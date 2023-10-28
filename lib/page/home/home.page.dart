@@ -1,25 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fitnc_user/service/fitness-user.service.dart';
 import 'package:fitness_domain/domain/fitness-user.domain.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'home.controller.dart';
-
 class HomePage extends StatelessWidget {
-  HomePage({Key? key}) : super(key: key);
-
-  final HomeController controller = Get.put(HomeController());
-
-  final double radius = 15;
-  final TextStyle welcomeTextStyle = GoogleFonts.nunito(
-    color: Colors.black,
-    fontSize: 18,
-    fontWeight: FontWeight.w900,
-  );
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final FitnessUserService fitnessUserService = GetIt.I.get();
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -32,20 +24,19 @@ class HomePage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(right: 20),
               child: FutureBuilder<FitnessUser?>(
-                future: controller.getConnectedUser(),
+                future: fitnessUserService.getConnectedUser(),
                 builder: (context, snapshot) => CircleAvatar(
-                  radius: radius,
+                  radius: 15,
                   foregroundColor: Theme.of(context).primaryColor,
-                  foregroundImage:
-                      (snapshot.hasData && snapshot.data?.imageUrl != null)
-                          ? CachedNetworkImageProvider(snapshot.data!.imageUrl!)
-                          : null,
+                  foregroundImage: (snapshot.hasData && snapshot.data?.imageUrl != null)
+                      ? CachedNetworkImageProvider(snapshot.data!.imageUrl!)
+                      : null,
                 ),
               ),
             )
           ],
           title: FutureBuilder<FitnessUser?>(
-            future: controller.getConnectedUser(),
+            future: fitnessUserService.getConnectedUser(),
             builder: (_, snapshot) {
               String? name = '';
               if (snapshot.hasData) {
@@ -53,16 +44,20 @@ class HomePage extends StatelessWidget {
               }
               return Text(
                 'Bienvenue $name 👋',
-                style: welcomeTextStyle,
+                style: GoogleFonts.nunito(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                ),
               );
             },
           ),
         ),
-        body: SingleChildScrollView(
+        body: const SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
-            children: const [
+            children: [
               MyInfos(),
             ],
           ),
@@ -87,8 +82,7 @@ class MyInfos extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Text(
               'Mes informations',
-              style:
-                  GoogleFonts.nunito(fontSize: 16, fontWeight: FontWeight.w900),
+              style: GoogleFonts.nunito(fontSize: 16, fontWeight: FontWeight.w900),
             ),
           ),
           SizedBox(

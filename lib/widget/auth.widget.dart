@@ -14,14 +14,13 @@ import 'package:fitness_domain/domain/fitness-user.domain.dart';
 import 'package:fitness_domain/service/auth.service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 
 class AuthWidget extends StatelessWidget {
   AuthWidget({Key? key}) : super(key: key);
-  final AuthService authService = Get.find();
+  final AuthService authService = GetIt.I.get();
 
-  void cacheImages(FitnessUserService fitnessUserService,
-      ExerciceService exerciseService) async {
+  void cacheImages(FitnessUserService fitnessUserService, ExerciceService exerciseService) async {
     List<String> listUrlToCache = [];
     FitnessUser? userConnected = await fitnessUserService.getConnectedUser();
     if (userConnected?.imageUrl != null) {
@@ -42,8 +41,7 @@ class AuthWidget extends StatelessWidget {
         for (String url in listUrlToCache) {
           if (url.isNotEmpty) {
             try {
-              CachedNetworkImageProvider cached =
-                  CachedNetworkImageProvider(url);
+              CachedNetworkImageProvider cached = CachedNetworkImageProvider(url);
               cached.resolve(ImageConfiguration.empty);
             } catch (e) {
               print("CACHING IMAGE FAILS !!!");
@@ -55,31 +53,26 @@ class AuthWidget extends StatelessWidget {
   }
 
   void instanciateServices() {
-    WorkoutInstanceService workoutInstanceService = Get.find();
-    UserSetService userSetService = Get.find();
+    WorkoutInstanceService workoutInstanceService = GetIt.I.get();
+    UserSetService userSetService = GetIt.I.get();
 
     // Retrieve all information from the user to store them into the local Firebase.
     // cacheImages(fitnessUserService, exerciseService);
 
-    workoutInstanceService
-        .getAll()
-        .then((value) => print('Workouts retrieved'));
-    userSetService
-        .getAllInAnyRoot()
-        .then((value) => print('UserSets retrieved'));
+    workoutInstanceService.getAll().then((value) => print('Workouts retrieved'));
+    userSetService.getAllInAnyRoot().then((value) => print('UserSets retrieved'));
   }
 
   @override
   Widget build(BuildContext context) {
-    final AuthService authService = Get.find();
+    final AuthService authService = GetIt.I.get();
     return StreamBuilder<User?>(
       stream: authService.listenUserConnected(),
       builder: (_, AsyncSnapshot<User?> snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
           final User? user = snapshot.data;
           if (user == null) {
-
-            return LoginPage();
+            return const LoginPage();
           }
         }
         return const Scaffold(
@@ -93,8 +86,7 @@ class AuthWidget extends StatelessWidget {
 }
 
 class CrashlyticsWidget extends StatelessWidget {
-  const CrashlyticsWidget({Key? key, required this.user, required this.child})
-      : super(key: key);
+  const CrashlyticsWidget({Key? key, required this.user, required this.child}) : super(key: key);
   final User user;
   final Widget child;
 
@@ -106,12 +98,11 @@ class CrashlyticsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<void>(
-      future:
-          FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true),
+      future: FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true),
       builder: (_, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           logUser(user);
-          return MainPage();
+          return const MainPage();
         }
         return const Scaffold(
           body: Center(

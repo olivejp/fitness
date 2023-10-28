@@ -6,14 +6,13 @@ import 'package:fitness_domain/service/display.service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_animations/loading_animations.dart';
+import 'package:provider/provider.dart';
 
-import 'login.controller.dart';
+import 'login.notifier.dart';
 
 class LoginMobilePage extends StatelessWidget {
   LoginMobilePage({Key? key}) : super(key: key);
 
-  final LoginPageController controller = Get.find();
-  final DisplayTypeService displayTypeService = Get.find();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   @override
@@ -28,8 +27,8 @@ class LoginMobilePage extends StatelessWidget {
             left: 0,
             child: Hero(
               tag: 'IMAGE_ASSET',
-              child: Obx(() {
-                DisplayType type = displayTypeService.displayType.value;
+              child: Consumer<DisplayTypeNotifier>(builder: (context, notifier, child) {
+                DisplayType type = notifier.displayType;
                 String size = (type == DisplayType.mobile)
                     ? 'S'
                     : (type == DisplayType.tablet)
@@ -61,37 +60,38 @@ class LoginMobilePage extends StatelessWidget {
                               tag: 'HERO_APP_TITLE',
                               child: Text(
                                 FitnessMobileConstants.appTitle,
-                                style: Theme.of(context).textTheme.headline6,
+                                style: Theme.of(context).textTheme.titleLarge,
                               ),
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(
-                                left: 30, right: 30, bottom: 30),
+                            padding: const EdgeInsets.only(left: 30, right: 30, bottom: 30),
                             child: Column(
-                              children: <Widget>[
+                              children: [
                                 LoginForm(
                                   formKey: formKey,
                                   paddingTop: 25,
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 30),
-                                  child: ElevatedLoadingButton(
-                                    onPressed: () =>
-                                        controller.authenticate(formKey),
-                                    isLoading: controller.isLoading,
-                                    title: 'continue'.tr,
-                                  ),
+                                  child: Consumer<LoginPageNotifier>(builder: (context, notifier, child) {
+                                    return ElevatedLoadingButton(
+                                      onPressed: () => notifier.authenticate(formKey),
+                                      isLoading: notifier.isLoading,
+                                      title: 'continue'.tr,
+                                    );
+                                  }),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 15),
                                   child: TextButton(
-                                    onPressed: () => Get.offNamed(
-                                        FitnessConstants.routeSignUp),
+                                    onPressed: () => Get.offNamed(FitnessConstants.routeSignUp),
                                     child: Text('signUp'.tr),
                                   ),
                                 ),
-                                Obx(() => Text(controller.loginMsgError))
+                                Consumer<LoginPageNotifier>(builder: (context, notifier, child) {
+                                  return Text(notifier.loginMsgError);
+                                })
                               ],
                             ),
                           ),
@@ -125,29 +125,31 @@ class ElevatedLoadingButton extends StatelessWidget {
   }) : super(key: key);
   final VoidCallback? onPressed;
   final String title;
-  final RxBool isLoading;
+  final bool isLoading;
   final Widget? loadingWidget;
 
   @override
   Widget build(BuildContext context) {
+    Widget widget;
+    if (isLoading) {
+      if (loadingWidget != null) {
+        widget = loadingWidget!;
+      } else {
+        widget = LoadingBouncingGrid.circle(
+          size: 20,
+          backgroundColor: Colors.white,
+        );
+      }
+    } else {
+      widget = Container();
+    }
+
     return ElevatedButton(
       onPressed: onPressed,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Obx(() {
-            if (isLoading.value) {
-              if (loadingWidget != null) {
-                return loadingWidget!;
-              } else {
-                return LoadingBouncingGrid.circle(
-                  size: 20,
-                  backgroundColor: Colors.white,
-                );
-              }
-            }
-            return Container();
-          }),
+          widget,
           Text(
             title,
             style: const TextStyle(

@@ -3,24 +3,23 @@ import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:fitnc_user/widget/network_image.widget.dart';
-import 'package:fitness_domain/mixin/search.mixin.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
+import 'package:fitness_domain/mixin/search.mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:loading_animations/loading_animations.dart';
 
 import 'add_exercice.page.dart';
 
-class ExerciseChoiceDialogController extends GetxController
-    with SearchMixin<Exercice> {
-  final ExerciceService service = Get.find();
-  final UserSetService userSetService = Get.find();
-  final WorkoutInstanceService workoutInstanceService = Get.find();
+class ExerciseChoiceDialogController extends GetxController with SearchMixin<Exercice> {
+  final ExerciceService service = GetIt.I.get();
+  final UserSetService userSetService = GetIt.I.get();
+  final WorkoutInstanceService workoutInstanceService = GetIt.I.get();
   final RxList<Exercice> listChosen = <Exercice>[].obs;
-  final WorkoutPageController workoutPageController =
-      Get.put(WorkoutPageController());
+  final WorkoutPageController workoutPageController = Get.put(WorkoutPageController());
 
   Future<WorkoutInstance> createNewWorkoutInstance(DateTime dateTime) async {
     DateTime now = DateTime.now();
@@ -42,10 +41,7 @@ class ExerciseChoiceDialogController extends GetxController
   }
 
   void toggle(Exercice exercise) {
-    if (listChosen
-        .map((element) => element.uid)
-        .toList()
-        .contains(exercise.uid)) {
+    if (listChosen.map((element) => element.uid).toList().contains(exercise.uid)) {
       listChosen.removeWhere((element) => element.uid == exercise.uid);
     } else {
       listChosen.add(exercise);
@@ -103,17 +99,13 @@ class ExerciseChoiceDialog extends StatelessWidget {
     this.popOnChoice = false,
     this.isCreation = false,
     this.date,
-  })  : assert(
-            ((isCreation && workoutInstance == null) ||
-                (!isCreation && workoutInstance != null)),
+  })  : assert(((isCreation && workoutInstance == null) || (!isCreation && workoutInstance != null)),
             "If isCreation then workoutInstance should be null."),
-        assert((isCreation && date != null) || ((!isCreation && date == null)),
-            "If isCreation, date should not be null."),
+        assert(
+            (isCreation && date != null) || ((!isCreation && date == null)), "If isCreation, date should not be null."),
         super(key: key);
-  final ExerciseChoiceDialogController controller =
-      Get.put(ExerciseChoiceDialogController());
-  final WorkoutPageController workoutPageController =
-      Get.put(WorkoutPageController());
+  final ExerciseChoiceDialogController controller = Get.put(ExerciseChoiceDialogController());
+  final WorkoutPageController workoutPageController = Get.put(WorkoutPageController());
   final WorkoutInstance? workoutInstance;
   final bool popOnChoice;
   final bool isCreation;
@@ -128,8 +120,9 @@ class ExerciseChoiceDialog extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (isCreation) {
-            controller.createNewWorkoutInstance(date!).then((instance) =>
-                controller.validate(context, popOnChoice, instance));
+            controller
+                .createNewWorkoutInstance(date!)
+                .then((instance) => controller.validate(context, popOnChoice, instance));
           } else {
             controller.validate(context, popOnChoice, workoutInstance!);
           }
@@ -143,7 +136,7 @@ class ExerciseChoiceDialog extends StatelessWidget {
         elevation: 0,
         title: Text(
           'exerciseChoice'.tr,
-          style: Theme.of(context).textTheme.headline3?.copyWith(
+          style: Theme.of(context).textTheme.displaySmall?.copyWith(
                 color: Theme.of(context).primaryColor,
               ),
         ),
@@ -158,8 +151,7 @@ class ExerciseChoiceDialog extends StatelessWidget {
               onChanged: controller.search,
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.all(5),
-                border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(25))),
+                border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(25))),
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: IconButton(
                   onPressed: () {
@@ -234,16 +226,13 @@ class ExerciseChoiceDialog extends StatelessWidget {
                           child: Obx(
                             () => ExerciseChoiceCard(
                               exercise: exercice,
-                              selected: controller.listChosen
-                                  .map((element) => element.uid)
-                                  .toList()
-                                  .contains(exercice.uid),
+                              selected:
+                                  controller.listChosen.map((element) => element.uid).toList().contains(exercice.uid),
                             ),
                           ),
                         );
                       },
-                      separatorBuilder: (BuildContext context, int index) =>
-                          const Divider(
+                      separatorBuilder: (BuildContext context, int index) => const Divider(
                         height: 2.0,
                         color: Colors.grey,
                       ),

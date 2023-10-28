@@ -7,7 +7,6 @@ class DateChangePicker extends StatelessWidget {
   final DateTime? initialDate;
   final void Function(DateTime dateTime) onDateChanged;
 
-
   @override
   Widget build(BuildContext context) {
     DateTime dateSelected = initialDate ?? DateTime.now();
@@ -20,14 +19,16 @@ class DateChangePicker extends StatelessWidget {
           initialSelectedDate: initialDate,
           onSelectionChanged: (dateRangePickerSelectionChangedArgs) {
             DateTime dateItemSelected = dateRangePickerSelectionChangedArgs.value;
-            dateSelected = DateTime(dateItemSelected.year, dateItemSelected.month, dateItemSelected.day, timeSelected.hour, timeSelected.minute, timeSelected.second);
+            dateSelected = DateTime(dateItemSelected.year, dateItemSelected.month, dateItemSelected.day,
+                timeSelected.hour, timeSelected.minute, timeSelected.second);
             onDateChanged(dateSelected);
           },
         ),
         TimePickerSpinner(
           time: initialDate,
           onTimeChange: (dateTime) {
-            timeSelected = DateTime(dateSelected.year, dateSelected.month, dateSelected.day, dateTime.hour, dateTime.minute, dateTime.second);
+            timeSelected = DateTime(dateSelected.year, dateSelected.month, dateSelected.day, dateTime.hour,
+                dateTime.minute, dateTime.second);
             onDateChanged(timeSelected);
           },
         ),
@@ -169,6 +170,7 @@ class MonthDropDown extends StatelessWidget {
     for (int i = 0; i < monthList.length; i++) {
       listDropdown.add(
         DropdownMenuItem(
+          value: i,
           child: Center(
             child: RichText(
               text: TextSpan(
@@ -189,7 +191,6 @@ class MonthDropDown extends StatelessWidget {
               ),
             ),
           ),
-          value: i,
         ),
       );
     }

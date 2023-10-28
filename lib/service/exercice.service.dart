@@ -6,11 +6,11 @@ import 'package:fitnc_user/service/fitness-user.service.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/service/abstract.service.dart';
 import 'package:fitness_domain/service/auth.service.dart';
-import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 
 class ExerciceService extends AbstractFitnessStorageService<Exercice> {
-  final FitnessUserService fitnessUserService = Get.find();
-  final AuthService authService = Get.find();
+  final FitnessUserService fitnessUserService = GetIt.I.get();
+  final AuthService authService = GetIt.I.get();
 
   @override
   Exercice fromJson(Map<String, dynamic> map) {

@@ -6,11 +6,11 @@ import 'package:fitnc_user/service/fitness-user.service.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
 import 'package:fitness_domain/service/abstract.service.dart';
 import 'package:fitness_domain/service/auth.service.dart';
-import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 
 class WorkoutInstanceService extends AbstractFitnessStorageService<WorkoutInstance> {
-  final FitnessUserService fitnessUserService = Get.find();
-  final AuthService authService = Get.find();
+  final FitnessUserService fitnessUserService = GetIt.I.get();
+  final AuthService authService = GetIt.I.get();
 
   Stream<List<WorkoutInstance>> listenByDate(DateTime dateTime) {
     DateTime dateMinus = DateTime(dateTime.year, dateTime.month, dateTime.day);

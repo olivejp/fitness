@@ -6,28 +6,28 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:provider/provider.dart';
 
 import '../../constants.dart';
-import 'login.controller.dart';
+import 'login.notifier.dart';
 
 typedef CallbackUserCredential = void Function(UserCredential userCredential);
 
 class LoginPage extends StatelessWidget {
-  LoginPage({Key? key}) : super(key: key);
-
-  final LoginPageController controller = Get.put(LoginPageController());
-  final DisplayTypeService displayTypeController = Get.find();
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: FitnessNcColors.blue50,
-      body: GetX<DisplayTypeService>(
-        builder: (DisplayTypeService controller) {
-          return (<DisplayType>[DisplayType.mobile, DisplayType.tablet]
-                  .contains(displayTypeController.displayType.value))
-              ? LoginMobilePage()
-              : LoginDesktopPage();
+      body: ChangeNotifierProvider.value(
+        value: LoginPageNotifier(),
+        builder: (context, child) {
+          return Consumer<DisplayTypeNotifier>(builder: (context, notifier, child) {
+            return (<DisplayType>[DisplayType.mobile, DisplayType.tablet].contains(notifier.displayType))
+                ? LoginMobilePage()
+                : LoginDesktopPage();
+          });
         },
       ),
     );
@@ -35,22 +35,22 @@ class LoginPage extends StatelessWidget {
 }
 
 class LoginForm extends StatelessWidget {
-  LoginForm(
-      {Key? key,
-      required this.formKey,
-      this.paddingTop = 30,
-      this.paddingInBetween = 30,
-      this.callback})
-      : super(key: key);
+  const LoginForm({
+    Key? key,
+    required this.formKey,
+    this.paddingTop = 30,
+    this.paddingInBetween = 30,
+    this.callback,
+  }) : super(key: key);
 
   final CallbackUserCredential? callback;
   final GlobalKey<FormState> formKey;
-  final LoginPageController controller = Get.find();
   final double paddingTop;
   final double paddingInBetween;
 
   @override
   Widget build(BuildContext context) {
+    final LoginPageNotifier notifierReadOnly = Provider.of<LoginPageNotifier>(context, listen: false);
     return Form(
       key: formKey,
       child: Column(
@@ -58,53 +58,50 @@ class LoginForm extends StatelessWidget {
         children: <Widget>[
           Padding(
             padding: EdgeInsets.only(top: paddingTop),
-            child: Obx(
-              () => TextFormField(
-                initialValue: controller.email,
-                style: GoogleFonts.roboto(fontSize: 15),
-                decoration: InputDecoration(
-                  suffixIcon: const Icon(Icons.email),
-                  fillColor: Colors.white,
-                  filled: true,
-                  labelText: 'mail'.tr,
-                  labelStyle: TextStyle(color: Theme.of(context).primaryColor),
-                  hintStyle: GoogleFonts.roboto(fontSize: 15),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 0.5,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 0.5,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 0.5,
-                      color: Theme.of(context).primaryColor,
-                    ),
+            child: TextFormField(
+              initialValue: notifierReadOnly.email,
+              style: GoogleFonts.roboto(fontSize: 15),
+              decoration: InputDecoration(
+                suffixIcon: const Icon(Icons.email),
+                fillColor: Colors.white,
+                filled: true,
+                labelText: 'mail'.tr,
+                labelStyle: TextStyle(color: Theme.of(context).primaryColor),
+                hintStyle: GoogleFonts.roboto(fontSize: 15),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    width: 0.5,
+                    color: Theme.of(context).primaryColor,
                   ),
                 ),
-                onChanged: (String value) => controller.email = value,
-                onFieldSubmitted: (String value) =>
-                    controller.authenticate(formKey),
-                validator: (String? value) {
-                  String? emailTrimmed = value?.trim();
-                  if (emailTrimmed == null || emailTrimmed.isEmpty) {
-                    return 'pleaseFillEmail'.tr;
-                  }
-                  if (!RegExp(
-                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
-                  ).hasMatch(emailTrimmed)) {
-                    return 'emailNotCorrect'.tr;
-                  }
-                  return null;
-                },
-                textInputAction: TextInputAction.done,
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    width: 0.5,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    width: 0.5,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
               ),
+              onChanged: notifierReadOnly.setEmail,
+              onFieldSubmitted: (String value) => notifierReadOnly.authenticate(formKey),
+              validator: (String? value) {
+                String? emailTrimmed = value?.trim();
+                if (emailTrimmed == null || emailTrimmed.isEmpty) {
+                  return 'pleaseFillEmail'.tr;
+                }
+                if (!RegExp(
+                  r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
+                ).hasMatch(emailTrimmed)) {
+                  return 'emailNotCorrect'.tr;
+                }
+                return null;
+              },
+              textInputAction: TextInputAction.done,
             ),
           ),
           Padding(
@@ -112,11 +109,11 @@ class LoginForm extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
-                Obx(
-                  () => TextFormField(
-                    initialValue: controller.password,
+                Consumer<LoginPageNotifier>(
+                  builder: (context, notifier, child) => TextFormField(
+                    initialValue: notifier.password,
                     style: GoogleFonts.roboto(fontSize: 15),
-                    obscureText: controller.hidePassword,
+                    obscureText: notifier.hidePassword,
                     enableSuggestions: false,
                     autocorrect: false,
                     decoration: InputDecoration(
@@ -144,24 +141,21 @@ class LoginForm extends StatelessWidget {
                       ),
                       hintStyle: GoogleFonts.roboto(fontSize: 15),
                       suffixIcon: IconButton(
-                        tooltip: controller.hidePassword
-                            ? 'showPassword'.tr
-                            : 'hidePassword'.tr,
-                        onPressed: () =>
-                            controller.hidePassword = !controller.hidePassword,
-                        icon: controller.hidePassword
+                        tooltip: notifier.hidePassword ? 'showPassword'.tr : 'hidePassword'.tr,
+                        onPressed: notifier.switchHidePassword,
+                        icon: notifier.hidePassword
                             ? const Icon(Icons.visibility_outlined)
                             : const Icon(Icons.visibility_off_outlined),
                       ),
                     ),
-                    onChanged: (String value) => controller.password = value,
-                    onFieldSubmitted: (_) => controller.authenticate(formKey),
+                    onChanged: notifier.setPassword,
+                    onFieldSubmitted: (_) => notifier.authenticate(formKey),
                   ),
                 ),
                 TextButton(
                   onPressed: () {
-                    if (controller.email.isNotEmpty) {
-                      controller.sendPasswordResetEmail().then(
+                    if (notifierReadOnly.email != null && notifierReadOnly.email!.isNotEmpty) {
+                      notifierReadOnly.sendPasswordResetEmail().then(
                             (value) => showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
@@ -170,8 +164,7 @@ class LoginForm extends StatelessWidget {
                                 actions: [
                                   TextButton(
                                     child: Text('iUnderstood'.tr),
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(),
+                                    onPressed: () => Navigator.of(context).pop(),
                                   ),
                                 ],
                               ),

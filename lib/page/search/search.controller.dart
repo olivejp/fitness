@@ -4,14 +4,16 @@ import 'package:fitnc_user/service/trainers.service.dart';
 import 'package:fitness_domain/domain/published_programme.domain.dart';
 import 'package:fitness_domain/domain/trainers.domain.dart';
 import 'package:fitness_domain/mixin/search.mixin.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 
-class SearchPageController extends GetxController with SearchMixin<PublishedProgramme> {
+class SearchPageController extends ChangeNotifier with SearchMixin<PublishedProgramme> {
   SearchPageController() : super();
 
-  final PublishedProgrammeService publishedProgrammeService = Get.find();
-  final FitnessUserService fitnessUserService = Get.find();
-  final TrainersService trainersService = Get.find();
+  final PublishedProgrammeService publishedProgrammeService = GetIt.I.get();
+  final FitnessUserService fitnessUserService = GetIt.I.get();
+  final TrainersService trainersService = GetIt.I.get();
 
   final RxList<PublishedProgramme> listMyPrograms = <PublishedProgramme>[].obs;
   final Rx<PublishedProgramme?> selectedProgramme = PublishedProgramme().obs;
@@ -31,9 +33,7 @@ class SearchPageController extends GetxController with SearchMixin<PublishedProg
   }
 
   void initMyPrograms() {
-    fitnessUserService
-        .getMyPrograms()
-        .then((List<PublishedProgramme> list) => listMyPrograms.value = list);
+    fitnessUserService.getMyPrograms().then((List<PublishedProgramme> list) => listMyPrograms.value = list);
   }
 
   Stream<List<PublishedProgramme>> listenAll() {
@@ -59,9 +59,7 @@ class SearchPageController extends GetxController with SearchMixin<PublishedProg
   }
 
   Future<bool> isFollowed() async {
-    final List<PublishedProgramme> listProgrammes =
-        await fitnessUserService.getMyPrograms();
-    return listProgrammes
-        .any((element) => element.uid == selectedProgramme.value!.uid);
+    final List<PublishedProgramme> listProgrammes = await fitnessUserService.getMyPrograms();
+    return listProgrammes.any((element) => element.uid == selectedProgramme.value!.uid);
   }
 }

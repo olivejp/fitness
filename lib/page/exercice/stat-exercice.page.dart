@@ -1,8 +1,7 @@
-import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:charts_flutter/flutter.dart';
+// import 'package:charts_flutter/flutter.dart' as charts;
+// import 'package:charts_flutter/flutter.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
-import 'package:fitnc_user/widget/time-series-chart.widget.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/user.line.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
@@ -10,6 +9,7 @@ import 'package:fitness_domain/domain/workout-instance.domain.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/painting/text_style.dart' as text_style;
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animations/loading_animations.dart';
@@ -23,8 +23,8 @@ enum TypeChart {
 
 /// Controller
 class StatExercicePageController extends GetxController {
-  final UserSetService userSetService = Get.find();
-  final WorkoutInstanceService workoutInstanceService = Get.find();
+  final UserSetService userSetService = GetIt.I.get();
+  final WorkoutInstanceService workoutInstanceService = GetIt.I.get();
   final Rx<Tuple2<String, DateTime>> dateSelected = Tuple2('', DateTime.now()).obs;
   final Rx<TypeChart> typeChart = TypeChart.volume.obs;
   final Rx<UserSet> selectedUserSet = UserSet().obs;
@@ -37,18 +37,18 @@ class StatExercicePageController extends GetxController {
     return workoutInstanceService.read(uidWorkout);
   }
 
-  List<charts.Series<TimeSeries, DateTime>> toChartSeries(String exerciceUid, List<TimeSeries> data) {
-    data.sort((a, b) => a.time.compareTo(b.time));
-    return [
-      charts.Series<TimeSeries, DateTime>(
-        id: exerciceUid,
-        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-        domainFn: (TimeSeries sales, _) => sales.time,
-        measureFn: (TimeSeries sales, _) => sales.total,
-        data: data,
-      )
-    ];
-  }
+  // List<charts.Series<TimeSeries, DateTime>> toChartSeries(String exerciceUid, List<TimeSeries> data) {
+  //   data.sort((a, b) => a.time.compareTo(b.time));
+  //   return [
+  //     charts.Series<TimeSeries, DateTime>(
+  //       id: exerciceUid,
+  //       colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+  //       domainFn: (TimeSeries sales, _) => sales.time,
+  //       measureFn: (TimeSeries sales, _) => sales.total,
+  //       data: data,
+  //     )
+  //   ];
+  // }
 
   int getVolume(UserSet userSet) {
     int volume = 0;
@@ -88,47 +88,47 @@ class StatExercicePageController extends GetxController {
     return maxWeight;
   }
 
-  List<charts.Series<TimeSeries, DateTime>> getWorkoutVolume(List<UserSet> listUserSet, Exercice exercice) {
-    if (listUserSet.isEmpty) {
-      return [];
-    }
+// List<charts.Series<TimeSeries, DateTime>> getWorkoutVolume(List<UserSet> listUserSet, Exercice exercice) {
+//   if (listUserSet.isEmpty) {
+//     return [];
+//   }
+//
+//   final String exerciceUid = exercice.uid!;
+//   final data = <TimeSeries>[];
+//   for (UserSet userSet in listUserSet) {
+//     data.add(TimeSeries<UserSet>(userSet.date!, getVolume(userSet), userSet));
+//   }
+//
+//   return toChartSeries(exerciceUid, data);
+// }
 
-    final String exerciceUid = exercice.uid!;
-    final data = <TimeSeries>[];
-    for (UserSet userSet in listUserSet) {
-      data.add(TimeSeries<UserSet>(userSet.date!, getVolume(userSet), userSet));
-    }
+// List<charts.Series<TimeSeries, DateTime>> getWorkoutMaxReps(List<UserSet> listUserSet, Exercice exercice) {
+//   if (listUserSet.isEmpty) {
+//     return [];
+//   }
+//
+//   final String exerciceUid = exercice.uid!;
+//   final data = <TimeSeries>[];
+//   for (UserSet userSet in listUserSet) {
+//     data.add(TimeSeries<UserSet>(userSet.date!, getMaxReps(userSet), userSet));
+//   }
+//
+//   return toChartSeries(exerciceUid, data);
+// }
 
-    return toChartSeries(exerciceUid, data);
-  }
-
-  List<charts.Series<TimeSeries, DateTime>> getWorkoutMaxReps(List<UserSet> listUserSet, Exercice exercice) {
-    if (listUserSet.isEmpty) {
-      return [];
-    }
-
-    final String exerciceUid = exercice.uid!;
-    final data = <TimeSeries>[];
-    for (UserSet userSet in listUserSet) {
-      data.add(TimeSeries<UserSet>(userSet.date!, getMaxReps(userSet), userSet));
-    }
-
-    return toChartSeries(exerciceUid, data);
-  }
-
-  List<charts.Series<TimeSeries, DateTime>> getWorkoutMaxWeight(List<UserSet> listUserSet, Exercice exercice) {
-    if (listUserSet.isEmpty) {
-      return [];
-    }
-
-    final String exerciceUid = exercice.uid!;
-    final data = <TimeSeries>[];
-    for (UserSet userSet in listUserSet) {
-      data.add(TimeSeries<UserSet>(userSet.date!, getMaxWeight(userSet), userSet));
-    }
-
-    return toChartSeries(exerciceUid, data);
-  }
+// List<charts.Series<TimeSeries, DateTime>> getWorkoutMaxWeight(List<UserSet> listUserSet, Exercice exercice) {
+//   if (listUserSet.isEmpty) {
+//     return [];
+//   }
+//
+//   final String exerciceUid = exercice.uid!;
+//   final data = <TimeSeries>[];
+//   for (UserSet userSet in listUserSet) {
+//     data.add(TimeSeries<UserSet>(userSet.date!, getMaxWeight(userSet), userSet));
+//   }
+//
+//   return toChartSeries(exerciceUid, data);
+// }
 }
 
 /// Main Widget
@@ -210,47 +210,50 @@ class BarButtons extends StatelessWidget {
           children: [
             OutlinedButton(
               onPressed: () => controller.typeChart.value = TypeChart.volume,
-              child: Text(
-                'Volume',
-                style: text_style.TextStyle(
-                    color: typeChartSelected == TypeChart.volume ? Colors.white : Theme.of(context).primaryColor),
-              ),
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.resolveWith((states) {
                   if (typeChartSelected == TypeChart.volume) {
                     return Theme.of(context).primaryColor;
                   }
+                  return null;
                 }),
+              ),
+              child: Text(
+                'Volume',
+                style: text_style.TextStyle(
+                    color: typeChartSelected == TypeChart.volume ? Colors.white : Theme.of(context).primaryColor),
               ),
             ),
             OutlinedButton(
               onPressed: () => controller.typeChart.value = TypeChart.reps,
-              child: Text(
-                'Max reps.',
-                style: text_style.TextStyle(
-                    color: typeChartSelected == TypeChart.reps ? Colors.white : Theme.of(context).primaryColor),
-              ),
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.resolveWith((states) {
                   if (typeChartSelected == TypeChart.reps) {
                     return Theme.of(context).primaryColor;
                   }
+                  return null;
                 }),
+              ),
+              child: Text(
+                'Max reps.',
+                style: text_style.TextStyle(
+                    color: typeChartSelected == TypeChart.reps ? Colors.white : Theme.of(context).primaryColor),
               ),
             ),
             OutlinedButton(
               onPressed: () => controller.typeChart.value = TypeChart.weight,
-              child: Text(
-                'Max weight',
-                style: text_style.TextStyle(
-                    color: typeChartSelected == TypeChart.weight ? Colors.white : Theme.of(context).primaryColor),
-              ),
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.resolveWith((states) {
                   if (typeChartSelected == TypeChart.weight) {
                     return Theme.of(context).primaryColor;
                   }
+                  return null;
                 }),
+              ),
+              child: Text(
+                'Max weight',
+                style: text_style.TextStyle(
+                    color: typeChartSelected == TypeChart.weight ? Colors.white : Theme.of(context).primaryColor),
               ),
             ),
           ],
@@ -305,35 +308,37 @@ class Chart extends StatelessWidget {
       height: 200,
       child: Obx(
         () {
-          List<charts.Series<TimeSeries, DateTime>> list = [];
-          switch (controller.typeChart.value) {
-            case TypeChart.volume:
-              list = controller.getWorkoutVolume(listUserSet, exercice);
-              break;
-            case TypeChart.reps:
-              list = controller.getWorkoutMaxReps(listUserSet, exercice);
-              break;
-            case TypeChart.weight:
-              list = controller.getWorkoutMaxWeight(listUserSet, exercice);
-              break;
-          }
+          // List<charts.Series<TimeSeries, DateTime>> list = [];
+          // switch (controller.typeChart.value) {
+          //   case TypeChart.volume:
+          //     list = controller.getWorkoutVolume(listUserSet, exercice);
+          //     break;
+          //   case TypeChart.reps:
+          //     list = controller.getWorkoutMaxReps(listUserSet, exercice);
+          //     break;
+          //   case TypeChart.weight:
+          //     list = controller.getWorkoutMaxWeight(listUserSet, exercice);
+          //     break;
+          // }
 
-          if (list.isEmpty) {
-            return const Text('Aucun élément à afficher');
-          } else {
-            return Obx(
-              () => SimpleTimeSeriesChart(
-                list,
-                animate: true,
-                initialDateSelection: controller.dateSelected.value,
-                onChange: (SelectionModel<DateTime> model) {
-                  if (model.selectedDatum.elementAt(0).datum.object is UserSet) {
-                    controller.selectedUserSet.value = model.selectedDatum.elementAt(0).datum.object;
-                  }
-                },
-              ),
-            );
-          }
+          // if (list.isEmpty) {
+          return const Text('Aucun élément à afficher');
+          // } else {
+          //   return const Text('Aucun élément à afficher');
+          // TODO A REMPLACER
+          // return Obx(
+          //   () => SimpleTimeSeriesChart(
+          //     list,
+          //     animate: true,
+          //     initialDateSelection: controller.dateSelected.value,
+          //     onChange: (SelectionModel<DateTime> model) {
+          //       if (model.selectedDatum.elementAt(0).datum.object is UserSet) {
+          //         controller.selectedUserSet.value = model.selectedDatum.elementAt(0).datum.object;
+          //       }
+          //     },
+          //   ),
+          // );
+          // }
         },
       ),
     );

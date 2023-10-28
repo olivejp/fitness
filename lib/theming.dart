@@ -44,17 +44,15 @@ class Theming {
       ),
       shadowColor: Colors.black54,
       iconTheme: const IconThemeData(color: Colors.white),
-      textTheme: Typography.material2014(platform: TargetPlatform.android)
-          .white
-          .copyWith(
-            bodyText1: GoogleFonts.nunito(),
-            bodyText2: GoogleFonts.nunito(),
-            headline3: GoogleFonts.anton(
+      textTheme: Typography.material2014(platform: TargetPlatform.android).white.copyWith(
+            bodyLarge: GoogleFonts.nunito(),
+            bodyMedium: GoogleFonts.nunito(),
+            displaySmall: GoogleFonts.anton(
               fontWeight: FontWeight.w900,
               fontSize: 55,
               color: Colors.amber,
             ),
-            headline6: GoogleFonts.anton(
+            titleLarge: GoogleFonts.anton(
               fontWeight: FontWeight.w900,
               fontSize: 55,
               color: Colors.amber,
@@ -76,21 +74,21 @@ class Theming {
 
   static TextTheme getTextTheme() {
     return TextTheme(
-      bodyText1: GoogleFonts.nunito(),
-      bodyText2: GoogleFonts.nunito(),
+      bodyLarge: GoogleFonts.nunito(),
+      bodyMedium: GoogleFonts.nunito(),
 
-      headline2: GoogleFonts.nunito(
+      displayMedium: GoogleFonts.nunito(
         fontWeight: FontWeight.normal,
         fontSize: 25,
       ),
 
-      headline3: GoogleFonts.anton(
+      displaySmall: GoogleFonts.anton(
         fontWeight: FontWeight.normal,
         fontSize: 30,
       ),
 
       /// headline 6 est réservé pour le titre de l'application, notamment sur la page de login
-      headline6: GoogleFonts.anton(
+      titleLarge: GoogleFonts.anton(
         fontWeight: FontWeight.w900,
         fontSize: 55,
         color: Colors.amber,

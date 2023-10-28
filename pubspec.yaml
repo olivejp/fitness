@@ -12,49 +12,51 @@ dependencies:
   flutter:
     sdk: flutter
 
-  audioplayers: ^0.20.1
-  stop_watch_timer: ^1.3.1
+  audioplayers: ^5.2.0
+  stop_watch_timer: ^3.0.2
   numberpicker: ^2.1.1
   flutter_time_picker_spinner: ^2.0.0
-  syncfusion_flutter_datepicker: ^19.3.43
-  connectivity_plus: ^1.2.0
+  syncfusion_flutter_datepicker: ^21.2.3
+  connectivity_plus: ^5.0.1
   oktoast: ^3.0.0
   cupertino_icons: ^1.0.2
   rxdart: ^0.27.1
-  firebase_auth: ^3.1.0
-  firebase_storage: ^10.0.3
-  firebase_core: ^1.6.0
-  firebase_crashlytics: ^2.2.1
-  cloud_functions: ^3.0.5
-  cloud_firestore: ^2.5.1
+  firebase_auth: ^4.12.0
+  firebase_storage: ^11.4.0
+  firebase_core: ^2.20.0
+  firebase_crashlytics: ^3.4.2
+  cloud_functions: ^4.5.2
+  cloud_firestore: ^4.12.1
   date_picker_timeline: ^1.2.3
   loading_animations: ^2.2.0
-  google_fonts: ^2.1.0
+  google_fonts: ^4.0.4
   cached_network_image: ^3.1.0
   fab_circular_menu: ^1.0.2
   get: ^4.3.8
-  badges: ^2.0.1
+  badges: ^3.1.2
   get_storage: ^2.0.3
-  cron: ^0.3.2
+  cron: ^0.5.1
   tuple: ^2.0.0
-  charts_flutter:
-    git:
-      url: git://github.com/google/charts.git
-      path: charts_flutter
+#  charts_flutter:
+#    git:
+#      url: git://github.com/google/charts.git
+#      path: charts_flutter
   firebase:
-    path: ../fitnc_trainer/packages/firebase
+    path: ../fitnc-trainer/packages/firebase
   fitness_domain:
-    path: ../fitnc_trainer/packages/fitness_domain
-  intl: ^0.17.0
-  camera: ^0.9.4+3
+    path: ../fitnc-trainer/packages/fitness_domain
+  intl: ^0.18.1
+  camera: ^0.10.5+5
+  get_it: ^7.6.4
+  provider: ^6.0.5
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: ^0.9.2
+  flutter_launcher_icons: ^0.13.1
   build_runner: ^2.0.5
-  json_serializable: ^4.1.3
-  lint: ^1.0.0
-  flutter_lints: ^1.0.0
+  json_serializable: ^6.7.1
+  lint: ^2.1.2
+  flutter_lints: ^3.0.0
 
 flutter:
   uses-material-design: true

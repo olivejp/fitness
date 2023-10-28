@@ -12,15 +12,13 @@ import 'package:loading_animations/loading_animations.dart';
 import 'add_user_set.controller.dart';
 
 class OpenUserSetInstance extends StatelessWidget {
-  const OpenUserSetInstance({Key? key, required this.userSet})
-      : super(key: key);
+  const OpenUserSetInstance({Key? key, required this.userSet}) : super(key: key);
 
   final UserSet userSet;
 
   @override
   Widget build(BuildContext context) {
-    final UserSetController controller =
-        Get.put(UserSetController(), tag: userSet.uid);
+    final UserSetController controller = Get.put(UserSetController(), tag: userSet.uid);
     controller.init(userSet);
     return UserSetUpdate(userSet: userSet);
   }
@@ -174,8 +172,7 @@ class UserSetUpdate extends StatelessWidget {
                     child: Center(
                       child: Obx(
                         () {
-                          bool allIsChecked = controller.listLines
-                              .every((element) => element.checked);
+                          bool allIsChecked = controller.listLines.every((element) => element.checked);
                           return IconButton(
                             icon: const Icon(Icons.done_all_rounded),
                             color: allIsChecked ? Colors.green : Colors.grey,
@@ -199,11 +196,9 @@ class UserSetUpdate extends StatelessWidget {
                     final GlobalKey keyWeight = GlobalKey();
                     final GlobalKey keyTime = GlobalKey();
                     final GlobalKey keyDist = GlobalKey();
-                    final UserLine userLine =
-                        controller.listLines.elementAt(index);
+                    final UserLine userLine = controller.listLines.elementAt(index);
                     return Padding(
-                      padding: EdgeInsets.only(
-                          right: padding, left: padding, top: 5),
+                      padding: EdgeInsets.only(right: padding, left: padding, top: 5),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
@@ -242,8 +237,7 @@ class UserSetUpdate extends StatelessWidget {
                   onPressed: () {
                     showDialog(
                       context: context,
-                      builder: (context) =>
-                          AddCommentAlertDialog(controller: controller),
+                      builder: (context) => AddCommentAlertDialog(controller: controller),
                     );
                   },
                   label: Text('comment'.tr),
@@ -287,12 +281,10 @@ class TextInputWidget extends StatelessWidget {
           ],
           decoration: InputDecoration(
               constraints: const BoxConstraints(maxHeight: 36),
-              border: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(5))),
+              border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
               focusedBorder: OutlineInputBorder(
                   borderRadius: const BorderRadius.all(Radius.circular(5)),
-                  borderSide: BorderSide(
-                      width: 1, color: Theme.of(context).primaryColor)),
+                  borderSide: BorderSide(width: 1, color: Theme.of(context).primaryColor)),
               hintStyle: const TextStyle(fontSize: 14),
               hintText: '0'),
           onChanged: (value) => callback(index, value),
@@ -318,6 +310,7 @@ class RowExerciseDetails extends StatelessWidget {
       children: [
         if (controller.userSet.value.imageUrlExercice != null)
           SizedBox.square(
+            dimension: 100,
             child: Card(
               clipBehavior: Clip.antiAlias,
               shape: RoundedRectangleBorder(
@@ -332,10 +325,10 @@ class RowExerciseDetails extends StatelessWidget {
                 ),
               ),
             ),
-            dimension: 100,
           ),
         if (controller.userSet.value.imageUrlExercice == null)
           SizedBox.square(
+            dimension: 100,
             child: Card(
               clipBehavior: Clip.antiAlias,
               shape: RoundedRectangleBorder(
@@ -345,7 +338,6 @@ class RowExerciseDetails extends StatelessWidget {
                 color: Theme.of(context).primaryColor,
               ),
             ),
-            dimension: 100,
           ),
         Flexible(
           child: Row(
@@ -358,15 +350,12 @@ class RowExerciseDetails extends StatelessWidget {
                   color: Colors.grey,
                 ),
                 onPressed: () {
-                  controller
-                      .getExercise(controller.userSet.value.uidExercice)
-                      .then(
+                  controller.getExercise(controller.userSet.value.uidExercice).then(
                     (Exercice? exercise) {
                       if (exercise != null) {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) =>
-                                StatExercicePage(exercice: exercise),
+                            builder: (context) => StatExercicePage(exercice: exercise),
                           ),
                         );
                       }
@@ -397,13 +386,12 @@ class AddCommentAlertDialog extends StatelessWidget {
     return AlertDialog(
       title: Text(
         'addComment'.tr,
-        style: Theme.of(context).textTheme.headline3,
+        style: Theme.of(context).textTheme.displaySmall,
       ),
       content: TextFormField(
         decoration: InputDecoration(
-          border: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(5))),
-          hintText: 'comment'.tr + '...',
+          border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
+          hintText: '${'comment'.tr}...',
         ),
         controller: TextEditingController(text: comment),
         key: commentKey,
@@ -453,8 +441,7 @@ class RowAddRemoveSet extends StatelessWidget {
                   return IconButton(
                     onPressed: () => controller.removeLastLine(),
                     iconSize: 40,
-                    icon: Icon(Icons.remove_circle_outline,
-                        color: Theme.of(context).primaryColor),
+                    icon: Icon(Icons.remove_circle_outline, color: Theme.of(context).primaryColor),
                   );
                 } else {
                   return IconButton(
@@ -471,8 +458,7 @@ class RowAddRemoveSet extends StatelessWidget {
               IconButton(
                 onPressed: () => controller.addLine(),
                 iconSize: 40,
-                icon: Icon(Icons.add_circle_outline,
-                    color: Theme.of(context).primaryColor),
+                icon: Icon(Icons.add_circle_outline, color: Theme.of(context).primaryColor),
               ),
             ],
           ),
@@ -505,9 +491,7 @@ class UserLineCheckWidget extends StatelessWidget {
       key: keyChecked,
       onPressed: () => onPress(index, !userLine.checked),
       icon: Icon(
-        (userLine.checked)
-            ? Icons.check_box_rounded
-            : Icons.check_box_outline_blank_rounded,
+        (userLine.checked) ? Icons.check_box_rounded : Icons.check_box_outline_blank_rounded,
         size: 30,
       ),
       color: (userLine.checked) ? Colors.green : Colors.grey,

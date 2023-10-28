@@ -2,27 +2,28 @@ import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
-import 'package:get/get.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:get_it/get_it.dart';
 
-class CalendarController extends GetxController {
-  final WorkoutInstanceService workoutInstanceService = Get.find();
-  final UserSetService userSetService = Get.find();
+class CalendarController extends ChangeNotifier {
+  final WorkoutInstanceService workoutInstanceService = GetIt.I.get();
+  final UserSetService userSetService = GetIt.I.get();
 
-  final Rx<DateTime> _selectedValue = DateTime.now().obs;
-  final Rx<DateTime> _initialDate = DateTime.now().obs;
+  DateTime _selectedValue = DateTime.now();
+  DateTime _initialDate = DateTime.now();
 
-  DateTime get selectedDate => _selectedValue.value;
+  DateTime get selectedDate => _selectedValue;
 
   set selectedDate(DateTime dateTime) {
-    _selectedValue.value = dateTime;
-    update();
+    _selectedValue = dateTime;
+    notifyListeners();
   }
 
-  DateTime get initialDate => _initialDate.value;
+  DateTime get initialDate => _initialDate;
 
   set initialDate(DateTime dateTime) {
-    _initialDate.value = dateTime;
-    update();
+    _initialDate = dateTime;
+    notifyListeners();
   }
 
   Stream<List<UserSet>> listenUserSet(WorkoutInstance workoutInstance) {
@@ -58,8 +59,7 @@ class CalendarController extends GetxController {
     return workoutInstanceService.update(instance);
   }
 
-
   Stream<bool> areAllChecked(String uidWorkout) {
-   return userSetService.areAllChecked(uidWorkout);
+    return userSetService.areAllChecked(uidWorkout);
   }
 }
