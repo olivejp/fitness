@@ -4,9 +4,9 @@ import 'package:fitnc_user/page/sign_up/sign-up.notifier.dart';
 import 'package:fitnc_user/page/sign_up/sign-up.page.dart';
 import 'package:fitnc_user/page/sign_up/sign-up.password-notifier.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 
 class SignUpForm extends StatelessWidget {
@@ -16,6 +16,7 @@ class SignUpForm extends StatelessWidget {
     this.accountTextColor = Colors.white,
     this.headlineColor = Colors.white,
   });
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final CallbackUserCredential? callback;
   final Color accountTextColor;
@@ -40,7 +41,7 @@ class SignUpForm extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'signUp'.tr,
+                'signUp'.i18n(),
                 style: Theme.of(context).textTheme.displaySmall?.copyWith(color: headlineColor),
               ),
               Padding(
@@ -51,7 +52,7 @@ class SignUpForm extends StatelessWidget {
                     fillColor: Colors.white,
                     filled: true,
                     suffixIcon: const Icon(Icons.email),
-                    labelText: 'mail'.tr,
+                    labelText: 'mail'.i18n(),
                     focusedBorder: defaultBorder,
                     border: defaultBorder,
                     enabledBorder: defaultBorder,
@@ -59,12 +60,12 @@ class SignUpForm extends StatelessWidget {
                   onChanged: signUpReadOnlyNotifier.setEmail,
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
-                      return 'pleaseFillEmail'.tr;
+                      return 'pleaseFillEmail'.i18n();
                     }
                     if (!RegExp(
                             r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
                         .hasMatch(value)) {
-                      return 'emailNotCorrect'.tr;
+                      return 'emailNotCorrect'.i18n();
                     }
                     return null;
                   },
@@ -81,12 +82,12 @@ class SignUpForm extends StatelessWidget {
                       focusedBorder: defaultBorder,
                       border: defaultBorder,
                       enabledBorder: defaultBorder,
-                      labelText: 'name'.tr,
+                      labelText: 'name'.i18n(),
                     ),
                     onChanged: signUpReadOnlyNotifier.setName,
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
-                        return 'pleaseFillYourName'.tr;
+                        return 'pleaseFillYourName'.i18n();
                       }
                       return null;
                     }),
@@ -98,7 +99,7 @@ class SignUpForm extends StatelessWidget {
                     decoration: InputDecoration(
                       fillColor: Colors.white,
                       filled: true,
-                      labelText: 'surname'.tr,
+                      labelText: 'surname'.i18n(),
                       focusedBorder: defaultBorder,
                       border: defaultBorder,
                       enabledBorder: defaultBorder,
@@ -106,7 +107,7 @@ class SignUpForm extends StatelessWidget {
                     onChanged: signUpReadOnlyNotifier.setPrenom,
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
-                        return 'pleaseFillYourFirstName'.tr;
+                        return 'pleaseFillYourFirstName'.i18n();
                       }
                       return null;
                     }),
@@ -120,7 +121,7 @@ class SignUpForm extends StatelessWidget {
                     fillColor: Colors.white,
                     filled: true,
                     suffixIcon: const Icon(Icons.phone_android),
-                    labelText: 'phone'.tr,
+                    labelText: 'phone'.i18n(),
                     focusedBorder: defaultBorder,
                     border: defaultBorder,
                     enabledBorder: defaultBorder,
@@ -137,12 +138,13 @@ class SignUpForm extends StatelessWidget {
                       decoration: InputDecoration(
                           fillColor: Colors.white,
                           filled: true,
-                          labelText: 'password'.tr,
+                          labelText: 'password'.i18n(),
                           focusedBorder: defaultBorder,
                           border: defaultBorder,
                           enabledBorder: defaultBorder,
                           suffixIcon: IconButton(
-                            tooltip: hidePasswordController.hidePassword1 ? 'showPassword'.tr : 'hidePassword'.tr,
+                            tooltip:
+                                hidePasswordController.hidePassword1 ? 'showPassword'.i18n() : 'hidePassword'.i18n(),
                             onPressed: hidePasswordController.switchPassword1,
                             icon: hidePasswordController.hidePassword1
                                 ? const Icon(Icons.visibility_outlined)
@@ -150,7 +152,7 @@ class SignUpForm extends StatelessWidget {
                           )),
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
-                          return 'noEmptyPassword'.tr;
+                          return 'noEmptyPassword'.i18n();
                         }
                         return null;
                       }),
@@ -169,19 +171,20 @@ class SignUpForm extends StatelessWidget {
                           focusedBorder: defaultBorder,
                           border: defaultBorder,
                           enabledBorder: defaultBorder,
-                          labelText: 'retypePassword'.tr,
+                          labelText: 'retypePassword'.i18n(),
                           suffixIcon: IconButton(
-                              tooltip: hidePasswordNotifier.hidePassword2 ? 'showPassword'.tr : 'hidePassword'.tr,
+                              tooltip:
+                                  hidePasswordNotifier.hidePassword2 ? 'showPassword'.i18n() : 'hidePassword'.i18n(),
                               onPressed: hidePasswordNotifier.switchPassword2,
                               icon: hidePasswordNotifier.hidePassword2
                                   ? const Icon(Icons.visibility_outlined)
                                   : const Icon(Icons.visibility_off_outlined))),
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
-                          return 'noEmptyPassword'.tr;
+                          return 'noEmptyPassword'.i18n();
                         }
                         if (signUpReadOnlyNotifier.password != signUpReadOnlyNotifier.passwordCheck) {
-                          return 'noIdenticalPassword'.tr;
+                          return 'noIdenticalPassword'.i18n();
                         }
                         return null;
                       }),
@@ -191,7 +194,7 @@ class SignUpForm extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 20),
                 child: ElevatedLoadingButton(
                   onPressed: () => signUpReadOnlyNotifier.validateSignUp(_formKey, callback),
-                  title: 'signUp'.tr,
+                  title: 'signUp'.i18n(),
                   isLoading: signUpReadOnlyNotifier.isLoading,
                 ),
               ),
@@ -201,13 +204,13 @@ class SignUpForm extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      'haveAnAccount'.tr,
+                      'haveAnAccount'.i18n(),
                       style: TextStyle(color: accountTextColor),
                     ),
                     TextButton(
-                      onPressed: () => context.go(FitncRouter.sign_in),
+                      onPressed: () => context.go(FitnessRouter.signIn),
                       child: Text(
-                        'signIn'.tr,
+                        'signIn'.i18n(),
                       ),
                     ),
                   ],

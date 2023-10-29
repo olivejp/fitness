@@ -6,6 +6,7 @@ import 'package:fitness_domain/domain/trainers.domain.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 
 class ProgramDetailPage extends StatelessWidget {
@@ -27,7 +28,7 @@ class ProgramDetailPage extends StatelessWidget {
                       elevation: 1,
                       onPressed: () => controller.register(controller.selectedProgramme.value!),
                       label: Text(
-                        'follow'.tr,
+                        'follow'.i18n(),
                         style: const TextStyle(color: Colors.white),
                       ),
                     );
@@ -106,7 +107,7 @@ class ProgramDetailPage extends StatelessWidget {
                                               tag: "${controller.selectedProgramme.value!.uid}-badge",
                                               child: badge.Badge(
                                                 badgeContent: Text(
-                                                  '$numberWeekInt ${'weeks'.tr}',
+                                                  '$numberWeekInt ${'weeks'.i18n()}',
                                                   style: GoogleFonts.comfortaa(color: Colors.white),
                                                 ),
                                               ),
@@ -168,6 +169,7 @@ class ProgramDetailPage extends StatelessWidget {
 
 class CreatorWidget extends StatelessWidget {
   const CreatorWidget({super.key, required this.trainers, this.addToFavorite, this.program});
+
   final Trainers trainers;
   final PublishedProgramme? program;
   final void Function(Trainers trainers)? addToFavorite;
@@ -200,7 +202,7 @@ class CreatorWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'trainer'.tr,
+                          'trainer'.i18n(),
                           style: GoogleFonts.comfortaa(fontSize: 12),
                         ),
                         Text(

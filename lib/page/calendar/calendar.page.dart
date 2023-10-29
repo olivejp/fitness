@@ -6,9 +6,9 @@ import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
 import 'package:fitness_domain/widget/generic_container.widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 
 import 'calendar.page.controller.dart';
@@ -121,7 +121,7 @@ class Timeline extends StatelessWidget {
                 notifierReadOnly.selectDateAndNotify(DateTime.now());
               },
               child: Text(
-                'today'.tr,
+                'today'.i18n(),
                 style: GoogleFonts.comfortaa(),
               ),
             ),
@@ -273,7 +273,7 @@ class WorkoutInstanceCard extends StatelessWidget {
                       ),
                       PopupMenuButton<int>(
                         iconSize: 24,
-                        tooltip: 'showMore'.tr,
+                        tooltip: 'showMore'.i18n(),
                         icon: const Icon(Icons.more_horiz, color: Colors.grey),
                         onSelected: (value) {
                           notifier.initialDate = notifier.selectedDate;
@@ -299,12 +299,12 @@ class WorkoutInstanceCard extends StatelessWidget {
                                           Navigator.of(context).pop();
                                         },
                                         icon: const Icon(Icons.check),
-                                        label: Text('validate'.tr),
+                                        label: Text('validate'.i18n()),
                                       ),
                                       TextButton.icon(
                                         onPressed: () => Navigator.of(context).pop(),
                                         icon: const Icon(Icons.clear),
-                                        label: Text('cancel'.tr),
+                                        label: Text('cancel'.i18n()),
                                       )
                                     ],
                                   );
@@ -322,7 +322,7 @@ class WorkoutInstanceCard extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text('updateDate'.tr),
+                                Text('updateDate'.i18n()),
                                 const Icon(
                                   Icons.calendar_today_outlined,
                                   color: Colors.grey,
@@ -335,7 +335,7 @@ class WorkoutInstanceCard extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text('delete'.tr),
+                                Text('delete'.i18n()),
                                 const Icon(
                                   Icons.delete,
                                   color: Colors.grey,
@@ -395,7 +395,7 @@ class WorkoutInstanceCard extends StatelessWidget {
                             Icons.add_circle_outline_outlined,
                           ),
                           label: Text(
-                            'addExercise'.tr,
+                            'addExercise'.i18n(),
                           ),
                         ),
                       ],

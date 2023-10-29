@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animations/loading_animations.dart';
+import 'package:localization/localization.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
@@ -219,14 +220,14 @@ class WorkoutPage extends StatelessWidget {
               actions: [
                 PopupMenuButton<dynamic>(
                   iconSize: 36,
-                  tooltip: 'showMore'.tr,
+                  tooltip: 'showMore'.i18n(),
                   icon: const Icon(Icons.more_vert, color: Colors.grey),
                   itemBuilder: (_) => <PopupMenuItem<dynamic>>[
                     PopupMenuItem<dynamic>(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text('options'.tr),
+                          Text('options'.i18n()),
                           const Icon(
                             Icons.more_vert,
                             color: Colors.grey,
@@ -290,7 +291,7 @@ class WorkoutPage extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               TextButton.icon(
-                                label: Text('addExercise'.tr),
+                                label: Text('addExercise'.i18n()),
                                 icon: const Icon(Icons.add_circle_outline),
                                 onPressed: () => Navigator.of(context).push(
                                   MaterialPageRoute(

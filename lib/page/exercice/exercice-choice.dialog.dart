@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:loading_animations/loading_animations.dart';
+import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 
 import 'add_exercice.page.dart';
@@ -134,7 +135,7 @@ class ExerciseChoiceDialog extends StatelessWidget {
       appBar: AppBar(
         elevation: 0,
         title: Text(
-          'exerciseChoice'.tr,
+          'exerciseChoice'.i18n(),
           style: Theme.of(context).textTheme.displaySmall?.copyWith(
                 color: Theme.of(context).primaryColor,
               ),
@@ -159,7 +160,7 @@ class ExerciseChoiceDialog extends StatelessWidget {
                   },
                   icon: const Icon(Icons.clear),
                 ),
-                hintText: 'searching'.tr,
+                hintText: 'searching'.i18n(),
               ),
             ),
           ),
@@ -176,7 +177,7 @@ class ExerciseChoiceDialog extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextButton.icon(
-                  label: Text('createExercise'.tr),
+                  label: Text('createExercise'.i18n()),
                   icon: const Icon(Icons.add_circle_outline_rounded),
                   onPressed: () {
                     if (popOnChoice) {
@@ -194,7 +195,7 @@ class ExerciseChoiceDialog extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: Text('cancel'.tr),
+                  child: Text('cancel'.i18n()),
                 ),
               ],
             ),
@@ -256,6 +257,7 @@ class ExerciseChoiceCard extends StatelessWidget {
     required this.exercise,
     required this.selected,
   });
+
   final Exercice exercise;
   final bool selected;
 

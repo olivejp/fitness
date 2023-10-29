@@ -249,7 +249,7 @@ class DayTimeline extends StatelessWidget {
       listDateTime.add(DateTime(year, month, i));
     }
 
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       double maxScroll = scrollController.position.maxScrollExtent;
       double offsetOfInitialDay = (maxScroll / lastDay.day) * initialDay;
       scrollController.jumpTo(offsetOfInitialDay);

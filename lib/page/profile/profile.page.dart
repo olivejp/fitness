@@ -7,8 +7,8 @@ import 'package:fitness_domain/widget/generic_container.widget.dart';
 import 'package:fitness_domain/widget/storage_image.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:localization/localization.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 
@@ -74,10 +74,10 @@ class ProfilePage extends StatelessWidget {
                                       inputBorder:
                                           const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
                                       onChanged: (String name) => controller.user?.name = name,
-                                      labelText: 'name'.tr,
+                                      labelText: 'name'.i18n(),
                                       validator: (String? value) {
                                         if (value == null || value.isEmpty) {
-                                          return 'pleaseFillYourName'.tr;
+                                          return 'pleaseFillYourName'.i18n();
                                         }
                                         return null;
                                       }),
@@ -89,10 +89,10 @@ class ProfilePage extends StatelessWidget {
                                       inputBorder:
                                           const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
                                       onChanged: (String firstName) => controller.user?.prenom = firstName,
-                                      labelText: 'surname'.tr,
+                                      labelText: 'surname'.i18n(),
                                       validator: (String? value) {
                                         if (value == null || value.isEmpty) {
-                                          return 'pleaseFillYourFirstName'.tr;
+                                          return 'pleaseFillYourFirstName'.i18n();
                                         }
                                         return null;
                                       }),
@@ -106,7 +106,7 @@ class ProfilePage extends StatelessWidget {
                                           Radius.circular(5),
                                         ),
                                       ),
-                                      labelText: 'sex'.tr,
+                                      labelText: 'sex'.i18n(),
                                       constraints:
                                           const BoxConstraints(maxHeight: FitnessMobileConstants.textFormFieldHeight),
                                       contentPadding: const EdgeInsets.symmetric(horizontal: 10),
@@ -130,7 +130,7 @@ class ProfilePage extends StatelessWidget {
                                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                                       onChanged: (String value) => controller.user?.telephone1 = value,
                                       decoration: InputDecoration(
-                                        labelText: 'phone'.tr,
+                                        labelText: 'phone'.i18n(),
                                         border: const OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
                                             Radius.circular(5),
@@ -145,7 +145,7 @@ class ProfilePage extends StatelessWidget {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text('darkMode'.tr),
+                                      Text('darkMode'.i18n()),
                                       Consumer<ApplicationSettingsNotifier>(
                                         builder: (context, notifier, child) =>
                                             Checkbox(value: notifier.dark, onChanged: (_) => notifier.switchDark()),
@@ -157,16 +157,16 @@ class ProfilePage extends StatelessWidget {
                                   onPressed: () {
                                     if (_formKey.currentState?.validate() == true) {
                                       controller.save().then((_) {
-                                        showToast('informationsUpdated'.tr, backgroundColor: Colors.green);
+                                        showToast('informationsUpdated'.i18n(), backgroundColor: Colors.green);
                                       }).catchError(
                                         (_) {
-                                          showToast('errorWhileSaving'.tr, backgroundColor: Colors.redAccent);
+                                          showToast('errorWhileSaving'.i18n(), backgroundColor: Colors.redAccent);
                                         },
                                       );
                                     }
                                   },
                                   child: Text(
-                                    'save'.tr,
+                                    'save'.i18n(),
                                     style: const TextStyle(color: Colors.white),
                                   ),
                                 ),
@@ -181,7 +181,7 @@ class ProfilePage extends StatelessWidget {
                                       );
                                     },
                                     child: Text(
-                                      'manageExercise'.tr,
+                                      'manageExercise'.i18n(),
                                       style: const TextStyle(color: Colors.white),
                                     ),
                                   ),
@@ -190,9 +190,9 @@ class ProfilePage extends StatelessWidget {
                                   padding: const EdgeInsets.only(top: 8, bottom: bottomPadding),
                                   child: ElevatedButton(
                                     onPressed: () =>
-                                        controller.signOut().then((value) => context.go(FitncRouter.sign_in)),
+                                        controller.signOut().then((value) => context.go(FitnessRouter.signIn)),
                                     child: Text(
-                                      'signOut'.tr,
+                                      'signOut'.i18n(),
                                       style: const TextStyle(color: Colors.red),
                                     ),
                                   ),

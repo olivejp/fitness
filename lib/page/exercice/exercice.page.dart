@@ -4,11 +4,12 @@ import 'package:fitnc_user/widget/network_image.widget.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/widget/generic_container.widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:localization/localization.dart';
 
 class ExercisePage extends StatelessWidget {
-  const ExercisePage({Key? key}) : super(key: key);
+  const ExercisePage({super.key});
+
   final double bottomAppBarHeight = 60;
 
   @override
@@ -55,9 +56,9 @@ class ExercisePage extends StatelessWidget {
 
 class ExerciseBottomAppBar extends StatelessWidget {
   const ExerciseBottomAppBar({
-    Key? key,
+    super.key,
     required this.bottomAppBarHeigth,
-  }) : super(key: key);
+  });
 
   final double bottomAppBarHeigth;
 
@@ -74,7 +75,7 @@ class ExerciseBottomAppBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TextButton.icon(
-                label: Text('createExercise'.tr),
+                label: Text('createExercise'.i18n()),
                 icon: const Icon(Icons.add_circle_outline_rounded),
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(
@@ -86,7 +87,7 @@ class ExerciseBottomAppBar extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: Text('back'.tr),
+                child: Text('back'.i18n()),
               ),
             ],
           ),
@@ -98,10 +99,10 @@ class ExerciseBottomAppBar extends StatelessWidget {
 
 class ExerciseCard extends StatelessWidget {
   const ExerciseCard({
-    Key? key,
+    super.key,
     required this.exercise,
     this.onTap,
-  }) : super(key: key);
+  });
 
   final Exercice exercise;
   final GestureTapCallback? onTap;
@@ -137,14 +138,14 @@ class ExerciseCard extends StatelessWidget {
               ),
               PopupMenuButton<dynamic>(
                 iconSize: iconSize,
-                tooltip: 'showMore'.tr,
+                tooltip: 'showMore'.i18n(),
                 icon: const Icon(Icons.more_vert, color: Colors.grey),
                 itemBuilder: (_) => <PopupMenuEntry<dynamic>>[
                   PopupMenuItem<dynamic>(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text('stats'.tr),
+                        Text('stats'.i18n()),
                         const Icon(
                           Icons.bar_chart_outlined,
                           color: Colors.grey,
@@ -158,7 +159,7 @@ class ExerciseCard extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text('delete'.tr),
+                        Text('delete'.i18n()),
                         const Icon(
                           Icons.delete,
                           color: Colors.grey,

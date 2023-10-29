@@ -7,6 +7,22 @@ class Theming {
   static ThemeData getLightTheme() {
     return ThemeData(
       primarySwatch: Colors.amber,
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        unselectedItemColor: FitnessNcColors.darkCardBackground,
+        selectedItemColor: FitnessNcColors.amber,
+        selectedLabelStyle: GoogleFonts.nunito(
+          color: FitnessNcColors.amber,
+          fontSize: 10,
+          fontWeight: FontWeight.w900,
+        ),
+        unselectedLabelStyle: GoogleFonts.nunito(
+          color: FitnessNcColors.darkCardBackground,
+          fontSize: 10,
+          fontWeight: FontWeight.w900,
+        ),
+      ),
       bottomAppBarTheme: const BottomAppBarTheme(
         color: FitnessNcColors.white50,
       ),
@@ -36,6 +52,23 @@ class Theming {
   static ThemeData getDarkTheme() {
     return ThemeData(
       primarySwatch: Colors.amber,
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        backgroundColor: FitnessNcColors.darkBottomAppBarBackground,
+        unselectedItemColor: Colors.white,
+        selectedItemColor: FitnessNcColors.amber,
+        selectedLabelStyle: GoogleFonts.nunito(
+          color: FitnessNcColors.amber,
+          fontSize: 10,
+          fontWeight: FontWeight.w900,
+        ),
+        unselectedLabelStyle: GoogleFonts.nunito(
+          color: Colors.white,
+          fontSize: 10,
+          fontWeight: FontWeight.w900,
+        ),
+      ),
       cardColor: Colors.grey[800],
       dividerColor: const Color(0x1FFFFFFF),
       canvasColor: Colors.grey[850],

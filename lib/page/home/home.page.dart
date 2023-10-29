@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnc_user/service/fitness-user.service.dart';
 import 'package:fitness_domain/domain/fitness-user.domain.dart';
+import 'package:fitness_domain/service/auth.service.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:localization/localization.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -11,6 +13,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final FitnessUserService fitnessUserService = GetIt.I.get();
+    final String? imageUrl = AuthService.getUserConnectedOrThrow().photoURL;
 
     return SafeArea(
       child: Scaffold(
@@ -23,15 +26,10 @@ class HomePage extends StatelessWidget {
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 20),
-              child: FutureBuilder<FitnessUser?>(
-                future: fitnessUserService.getConnectedUser(),
-                builder: (context, snapshot) => CircleAvatar(
-                  radius: 15,
-                  foregroundColor: Theme.of(context).primaryColor,
-                  foregroundImage: (snapshot.hasData && snapshot.data?.imageUrl != null)
-                      ? CachedNetworkImageProvider(snapshot.data!.imageUrl!)
-                      : null,
-                ),
+              child: CircleAvatar(
+                radius: 20,
+                foregroundColor: Theme.of(context).primaryColor,
+                foregroundImage: (imageUrl != null) ? CachedNetworkImageProvider(imageUrl) : null,
               ),
             )
           ],
@@ -43,7 +41,7 @@ class HomePage extends StatelessWidget {
                 name = snapshot.data!.prenom;
               }
               return Text(
-                'Bienvenue $name 👋',
+                '${'welcome'.i18n()} $name 👋',
                 style: GoogleFonts.nunito(
                   color: Colors.black,
                   fontSize: 18,
@@ -69,6 +67,7 @@ class HomePage extends StatelessWidget {
 
 class MyInfos extends StatelessWidget {
   const MyInfos({super.key});
+
   final double squareSize = 120;
 
   @override

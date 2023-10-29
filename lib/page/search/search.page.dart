@@ -7,10 +7,10 @@ import 'package:fitness_domain/domain/published_programme.domain.dart';
 import 'package:fitness_domain/domain/trainers.domain.dart';
 import 'package:fitness_domain/service/display.service.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animations/loading_animations.dart';
+import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 
 class SearchPage extends StatelessWidget {
@@ -54,6 +54,7 @@ class ListPublishedPrograms extends StatelessWidget {
   ListPublishedPrograms({
     super.key,
   });
+
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -299,6 +300,7 @@ class PublishedProgrammeCard extends StatelessWidget {
 
 class ListTrainers extends StatelessWidget {
   ListTrainers({super.key, this.height = 200, this.width = 100});
+
   final PublishedProgrammeService publishedProgrammeService = GetIt.I.get();
   final double height;
   final double width;
@@ -313,7 +315,7 @@ class ListTrainers extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
-            'trainer'.tr,
+            'trainer'.i18n(),
             style: Theme.of(context).textTheme.displayMedium?.copyWith(color: Colors.black),
           ),
         ),
@@ -355,6 +357,7 @@ class ListTrainers extends StatelessWidget {
 
 class TrainerCard extends StatelessWidget {
   const TrainerCard({super.key, required this.trainer, required this.height, required this.width});
+
   final double height;
   final double width;
   final Trainers trainer;

@@ -4,9 +4,9 @@ import 'package:fitnc_user/page/login/login.page.dart';
 import 'package:fitnc_user/widget/bottom.widget.dart';
 import 'package:fitness_domain/service/display.service.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loading_animations/loading_animations.dart';
+import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 
 import 'login.notifier.dart';
@@ -79,15 +79,15 @@ class LoginMobilePage extends StatelessWidget {
                                     return ElevatedLoadingButton(
                                       onPressed: () => notifier.authenticate(context, formKey),
                                       isLoading: notifier.isLoading,
-                                      title: 'continue'.tr,
+                                      title: 'continue'.i18n(),
                                     );
                                   }),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 15),
                                   child: TextButton(
-                                    onPressed: () => context.go(FitncRouter.sign_up),
-                                    child: Text('signUp'.tr),
+                                    onPressed: () => context.go(FitnessRouter.signUp),
+                                    child: Text('signUp'.i18n()),
                                   ),
                                 ),
                                 Consumer<LoginPageNotifier>(builder: (context, notifier, child) {
@@ -124,6 +124,7 @@ class ElevatedLoadingButton extends StatelessWidget {
     required this.isLoading,
     this.loadingWidget,
   });
+
   final VoidCallback? onPressed;
   final String title;
   final bool isLoading;

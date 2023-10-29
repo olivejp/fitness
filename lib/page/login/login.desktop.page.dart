@@ -4,6 +4,7 @@ import 'package:fitness_domain/constants.dart';
 import 'package:fitness_domain/service/display.service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 
 import '../../constants.dart';
@@ -84,7 +85,7 @@ class LoginDesktopPage extends StatelessWidget {
                                     child: Column(
                                       children: <Widget>[
                                         Text(
-                                          'connectToYourAccount'.tr,
+                                          'connectToYourAccount'.i18n(),
                                           style: Theme.of(context).textTheme.displaySmall,
                                         ),
                                         LoginForm(formKey: formKey),
@@ -94,7 +95,7 @@ class LoginDesktopPage extends StatelessWidget {
                                             return ElevatedLoadingButton(
                                               onPressed: () => notifier.authenticate(context, formKey),
                                               isLoading: notifier.isLoading,
-                                              title: 'continue'.tr,
+                                              title: 'continue'.i18n(),
                                             );
                                           }),
                                         ),
@@ -105,13 +106,13 @@ class LoginDesktopPage extends StatelessWidget {
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: <Widget>[
                                             Text(
-                                              'noAccount'.tr,
+                                              'noAccount'.i18n(),
                                               style: const TextStyle(color: Colors.grey),
                                             ),
                                             TextButton(
                                               onPressed: () => Get.offNamed(FitnessConstants.routeSignUp),
                                               child: Text(
-                                                'signUp'.tr,
+                                                'signUp'.i18n(),
                                               ),
                                             ),
                                           ],

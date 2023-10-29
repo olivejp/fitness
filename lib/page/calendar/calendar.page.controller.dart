@@ -13,7 +13,7 @@ class CalendarNotifier extends ChangeNotifier {
   final UserSetService userSetService = GetIt.I.get();
 
   DateTime _selectedValue = DateTime.now();
-  DateTime _initialDate = DateTime.now();
+  DateTime initialDate = DateTime.now();
 
   DateTime get selectedDate => _selectedValue;
 
@@ -28,14 +28,8 @@ class CalendarNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  DateTime get initialDate => _initialDate;
-
-  set initialDate(DateTime dateTime) {
-    _initialDate = dateTime;
-  }
-
   setInitialDateAndNotify(DateTime dateTime) {
-    _initialDate = dateTime;
+    initialDate = dateTime;
     notifyListeners();
   }
 

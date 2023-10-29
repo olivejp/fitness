@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fitnc_user/page/calendar/calendar.page.dart';
 import 'package:fitnc_user/page/exercice/exercice.page.dart';
+import 'package:fitnc_user/page/home/home.page.dart';
 import 'package:fitnc_user/page/login/login.page.dart';
 import 'package:fitnc_user/page/main/main.page.dart';
 import 'package:fitnc_user/page/my_programs/my_program.page.dart';
@@ -26,28 +27,35 @@ class NavigationTarget {
   NavigationTarget({required this.label, required this.icon, required this.selectedIcon, required this.direction});
 }
 
-class FitncRouter {
-  static String accueil = '/accueil';
-  static String exercices = '/exercices-list';
-  static String exercices_detail = '/exercices/:id';
-  static String exercices_new = '/exercices/new';
+class FitnessRouter {
+  static String home = '/home';
+  static String calendar = '/calendar';
+  static String exercises = '/exercises-list';
+  static String exercisesDetail = '/exercises/:id';
+  static String exercisesNew = '/exercises/new';
   static String profile = '/profile';
   static String programs = '/programs';
   static String settings = '/settings';
   static String seances = '/seances';
-  static String sign_in = '/sign-in';
-  static String sign_up = '/sign-up';
-  static String page_not_found = '/page-not-found';
+  static String signIn = '/sign-in';
+  static String signUp = '/sign-up';
+  static String pageNotFound = '/page-not-found';
   static String messages = '/messages';
   static String notifications = '/notifications';
 
   /// Possibles navigation targets list
   static List<NavigationTarget> targets = [
     NavigationTarget(
+      label: 'home',
+      icon: Icons.home_outlined,
+      selectedIcon: Icons.home,
+      direction: home,
+    ),
+    NavigationTarget(
       label: 'calendar',
       icon: Icons.calendar_month_outlined,
       selectedIcon: Icons.calendar_month,
-      direction: accueil,
+      direction: calendar,
     ),
     NavigationTarget(
       label: 'programs',
@@ -59,7 +67,7 @@ class FitncRouter {
       label: 'exercises',
       icon: Icons.add_chart_outlined,
       selectedIcon: Icons.add_chart,
-      direction: exercices,
+      direction: exercises,
     ),
     NavigationTarget(
       label: 'profile',
@@ -89,7 +97,7 @@ class FitncRouter {
   }
 
   ///
-  /// Fonction de redirection
+  /// Redirection Function
   ///
   static GoRouter getRouter() {
     FutureOr<String?> redirectFunction(BuildContext context, GoRouterState state) {
@@ -99,13 +107,13 @@ class FitncRouter {
       /// A chaque redirection (context.go()) on vérifie que l'utilisateur est bien connecté.
       /// Sinon on redirige vers la page /sign-in.
       if (!authService.isConnected()) {
-        return sign_in;
+        return signIn;
       }
       return null;
     }
 
     return GoRouter(
-      initialLocation: accueil,
+      initialLocation: home,
       redirect: redirectFunction,
       errorBuilder: (context, state) => const PageNotFound(),
       routes: [
@@ -115,7 +123,15 @@ class FitncRouter {
                 ),
             routes: [
               GoRoute(
-                path: accueil,
+                path: home,
+                pageBuilder: (context, state) => buildPageWithDefaultTransition(
+                  context: context,
+                  state: state,
+                  child: const HomePage(),
+                ),
+              ),
+              GoRoute(
+                path: calendar,
                 pageBuilder: (context, state) => buildPageWithDefaultTransition(
                   context: context,
                   state: state,
@@ -131,7 +147,7 @@ class FitncRouter {
                 ),
               ),
               GoRoute(
-                path: exercices,
+                path: exercises,
                 pageBuilder: (context, state) => buildPageWithDefaultTransition(
                   context: context,
                   state: state,
@@ -148,17 +164,17 @@ class FitncRouter {
               ),
             ]),
         GoRoute(
-          path: sign_in,
+          path: signIn,
           name: 'sign-in',
           builder: (context, state) => const LoginPage(),
         ),
         GoRoute(
-          path: sign_up,
+          path: signUp,
           name: 'sign-up',
           builder: (context, state) => const SignUpPage(),
         ),
         GoRoute(
-          path: page_not_found,
+          path: pageNotFound,
           name: 'page-not-found',
           builder: (context, state) => const PageNotFound(),
         ),

@@ -4,8 +4,8 @@ import 'package:fitnc_user/page/login/login.mobile.page.dart';
 import 'package:fitness_domain/service/display.service.dart';
 import 'package:fitness_domain/widget/layout-display.widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:localization/localization.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 
@@ -68,7 +68,7 @@ class LoginForm extends StatelessWidget {
                 suffixIcon: const Icon(Icons.email),
                 fillColor: Colors.white,
                 filled: true,
-                labelText: 'mail'.tr,
+                labelText: 'mail'.i18n(),
                 labelStyle: TextStyle(color: Theme.of(context).primaryColor),
                 hintStyle: GoogleFonts.roboto(fontSize: 15),
                 focusedBorder: OutlineInputBorder(
@@ -95,12 +95,12 @@ class LoginForm extends StatelessWidget {
               validator: (String? value) {
                 String? emailTrimmed = value?.trim();
                 if (emailTrimmed == null || emailTrimmed.isEmpty) {
-                  return 'pleaseFillEmail'.tr;
+                  return 'pleaseFillEmail'.i18n();
                 }
                 if (!RegExp(
                   r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
                 ).hasMatch(emailTrimmed)) {
-                  return 'emailNotCorrect'.tr;
+                  return 'emailNotCorrect'.i18n();
                 }
                 return null;
               },
@@ -122,7 +122,7 @@ class LoginForm extends StatelessWidget {
                     decoration: InputDecoration(
                       fillColor: Colors.white,
                       filled: true,
-                      labelText: 'password'.tr,
+                      labelText: 'password'.i18n(),
                       labelStyle: TextStyle(color: Theme.of(context).primaryColor),
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
@@ -144,7 +144,7 @@ class LoginForm extends StatelessWidget {
                       ),
                       hintStyle: GoogleFonts.roboto(fontSize: 15),
                       suffixIcon: IconButton(
-                        tooltip: notifier.hidePassword ? 'showPassword'.tr : 'hidePassword'.tr,
+                        tooltip: notifier.hidePassword ? 'showPassword'.i18n() : 'hidePassword'.i18n(),
                         onPressed: notifier.switchHidePassword,
                         icon: notifier.hidePassword
                             ? const Icon(Icons.visibility_outlined)
@@ -162,11 +162,11 @@ class LoginForm extends StatelessWidget {
                             (value) => showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
-                                title: Text('lostPassword'.tr),
-                                content: Text('descriptionLostPassword'.tr),
+                                title: Text('lostPasswordQuestion'.i18n()),
+                                content: Text('descriptionLostPassword'.i18n()),
                                 actions: [
                                   TextButton(
-                                    child: Text('iUnderstood'.tr),
+                                    child: Text('iUnderstood'.i18n()),
                                     onPressed: () => Navigator.of(context).pop(),
                                   ),
                                 ],
@@ -174,11 +174,11 @@ class LoginForm extends StatelessWidget {
                             ),
                           );
                     } else {
-                      showToast('pleaseFillEmail'.tr);
+                      showToast('pleaseFillEmail'.i18n());
                     }
                   },
                   child: Text(
-                    'lostPasswordQuestion'.tr,
+                    'lostPasswordQuestion'.i18n(),
                   ),
                 ),
               ],

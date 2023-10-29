@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:loading_animations/loading_animations.dart';
+import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 
 import 'add_user_set.controller.dart';
@@ -244,7 +245,7 @@ class UserSetUpdate extends StatelessWidget {
                       builder: (context) => AddCommentAlertDialog(controller: controller),
                     );
                   },
-                  label: Text('comment'.tr),
+                  label: Text('comment'.i18n()),
                   icon: const Icon(Icons.note_outlined),
                 )
               ],
@@ -389,13 +390,13 @@ class AddCommentAlertDialog extends StatelessWidget {
     String comment = controller.userSet.comment ?? '';
     return AlertDialog(
       title: Text(
-        'addComment'.tr,
+        'addComment'.i18n(),
         style: Theme.of(context).textTheme.displaySmall,
       ),
       content: TextFormField(
         decoration: InputDecoration(
           border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-          hintText: '${'comment'.tr}...',
+          hintText: '${'comment'.i18n()}...',
         ),
         controller: TextEditingController(text: comment),
         key: commentKey,
@@ -408,11 +409,11 @@ class AddCommentAlertDialog extends StatelessWidget {
             controller.addComment(comment);
             Navigator.of(context).pop();
           },
-          child: Text('save'.tr),
+          child: Text('save'.i18n()),
         ),
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text('cancel'.tr),
+          child: Text('cancel'.i18n()),
         ),
       ],
     );

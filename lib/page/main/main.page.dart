@@ -17,10 +17,16 @@ class MainPage extends StatelessWidget {
       child: Scaffold(
         bottomNavigationBar: Consumer<MainController>(builder: (context, notifier, child) {
           return BottomNavigationBar(
-              onTap: (index) => context.go(FitncRouter.getNavigationRouteFromIndex(index)),
+              onTap: (index) {
+                context.go(FitnessRouter.getNavigationRouteFromIndex(index));
+                notifier.setCurrentIndex(index);
+              },
               currentIndex: notifier.currentIndex,
-              items: FitncRouter.targets
-                  .map((e) => BottomNavigationBarItem(icon: Icon(e.icon), label: e.label.i18n()))
+              items: FitnessRouter.targets
+                  .map((e) => BottomNavigationBarItem(
+                        icon: Icon(e.icon),
+                        label: e.label.i18n(),
+                      ))
                   .toList());
         }),
         body: child,
@@ -51,21 +57,21 @@ class MainPage extends StatelessWidget {
 //           children: [
 //             Flexible(
 //               child: BottomIcon(
-//                 label: 'calendar'.tr,
+//                 label: 'calendar'.i18n(),
 //                 iconData: Icons.calendar_today,
 //                 indexPage: IndexPage.calendar,
 //               ),
 //             ),
 //             Flexible(
 //               child: BottomIcon(
-//                 label: 'search'.tr,
+//                 label: 'search'.i18n(),
 //                 iconData: Icons.school_outlined,
 //                 indexPage: IndexPage.search,
 //               ),
 //             ),
 //             Flexible(
 //               child: BottomIcon(
-//                 label: 'profile'.tr,
+//                 label: 'profile'.i18n(),
 //                 iconData: Icons.person,
 //                 indexPage: IndexPage.profile,
 //               ),
@@ -167,7 +173,7 @@ class MainPage extends StatelessWidget {
 //             currentIndex: controller.currentIndex.index,
 //             items: <BottomNavigationBarItem>[
 //               BottomNavigationBarItem(
-//                 label: 'calendar'.tr,
+//                 label: 'calendar'.i18n(),
 //                 activeIcon: const Icon(
 //                   Icons.calendar_today,
 //                 ),
@@ -184,7 +190,7 @@ class MainPage extends StatelessWidget {
 //                 ),
 //               ),
 //               BottomNavigationBarItem(
-//                 label: 'search'.tr,
+//                 label: 'search'.i18n(),
 //                 activeIcon: const Icon(
 //                   Icons.explore_rounded,
 //                 ),
@@ -201,7 +207,7 @@ class MainPage extends StatelessWidget {
 //                 ),
 //               ),
 //               BottomNavigationBarItem(
-//                 label: 'profile'.tr,
+//                 label: 'profile'.i18n(),
 //                 icon: SizedBox(
 //                   height: iconSizedBox,
 //                   width: iconSizedBox,

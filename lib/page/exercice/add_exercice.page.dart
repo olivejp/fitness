@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 
 ///
@@ -14,6 +15,7 @@ import 'package:provider/provider.dart';
 ///
 class AddExercisePage extends StatelessWidget {
   AddExercisePage({super.key, this.exercise});
+
   final ParamService paramService = GetIt.I.get();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final Exercice? exercise;
@@ -58,12 +60,12 @@ class AddExercisePage extends StatelessWidget {
                                             onChanged: (String name) => controller.exercise.value.name = name,
                                             validator: (String? value) {
                                               if (value == null || value.isEmpty) {
-                                                return 'pleaseFillExerciseName'.tr;
+                                                return 'pleaseFillExerciseName'.i18n();
                                               }
                                               return null;
                                             },
                                             decoration: InputDecoration(
-                                              labelText: 'name'.tr,
+                                              labelText: 'name'.i18n(),
                                               hintStyle: GoogleFonts.roboto(fontSize: 15),
                                               focusedBorder: OutlineInputBorder(
                                                 borderSide: BorderSide(
@@ -105,9 +107,9 @@ class AddExercisePage extends StatelessWidget {
                                 items: snapshot.data,
                                 itemHeight: 50,
                                 decoration: InputDecoration(
-                                  labelText: 'exerciseType'.tr,
+                                  labelText: 'exerciseType'.i18n(),
                                   border: const OutlineInputBorder(),
-                                  hintText: 'exerciseType'.tr,
+                                  hintText: 'exerciseType'.i18n(),
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(color: Theme.of(context).primaryColor),
                                   ),
@@ -125,8 +127,8 @@ class AddExercisePage extends StatelessWidget {
                                 maxLines: 20,
                                 onChanged: (String description) => controller.exercise.value.description = description,
                                 decoration: InputDecoration(
-                                  labelText: 'description'.tr,
-                                  helperText: 'optional'.tr,
+                                  labelText: 'description'.i18n(),
+                                  helperText: 'optional'.i18n(),
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
                                       width: 0.5,
@@ -155,7 +157,7 @@ class AddExercisePage extends StatelessWidget {
                               children: [
                                 TextButton.icon(
                                   icon: const Icon(Icons.bar_chart),
-                                  label: Text('displayStat'.tr),
+                                  label: Text('displayStat'.i18n()),
                                   onPressed: () => Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (context) => StatExercicePage(exercice: controller.exercise.value),
@@ -200,7 +202,7 @@ class AddExerciseBottomAppBar extends StatelessWidget {
             children: [
               TextButton.icon(
                 icon: const Icon(Icons.save),
-                label: Text('save'.tr),
+                label: Text('save'.i18n()),
                 onPressed: () {
                   if (formKey.currentState?.validate() == true) {
                     controller.save().then((_) => Navigator.of(context).pop());
@@ -208,7 +210,7 @@ class AddExerciseBottomAppBar extends StatelessWidget {
                 },
               ),
               TextButton(
-                child: Text('back'.tr),
+                child: Text('back'.i18n()),
                 onPressed: () => Navigator.of(context).pop(),
               )
             ],

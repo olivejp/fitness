@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 
 class NetworkImageExerciseChoice extends StatelessWidget {
   const NetworkImageExerciseChoice({
-    Key? key,
+    super.key,
     required this.imageUrl,
     this.radius = 25,
     this.height = 30,
     this.width = 30,
-  }) : super(key: key);
+  });
 
   final String? imageUrl;
   final double radius;
@@ -27,12 +27,9 @@ class NetworkImageExerciseChoice extends StatelessWidget {
             imageUrl!,
             fit: BoxFit.cover,
             loadingBuilder: (_, child, loadingProgress) {
-              return (loadingProgress != null)
-                  ? _getDefaultErrorImage(context)
-                  : child;
+              return (loadingProgress != null) ? _getDefaultErrorImage(context) : child;
             },
-            errorBuilder: (context, error, stackTrace) =>
-                _getDefaultErrorImage(context),
+            errorBuilder: (context, error, stackTrace) => _getDefaultErrorImage(context),
           )
         : _getDefaultErrorImage(context);
 
@@ -40,9 +37,7 @@ class NetworkImageExerciseChoice extends StatelessWidget {
       height: height,
       width: width,
       clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(radius),
-          color: Theme.of(context).primaryColor),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(radius), color: Theme.of(context).primaryColor),
       child: child,
     );
   }

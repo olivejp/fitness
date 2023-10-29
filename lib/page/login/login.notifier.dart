@@ -45,7 +45,7 @@ class LoginPageNotifier extends ChangeNotifier {
       authService.signInWithEmailPassword(emailTrimmed, _password!).then((value) {
         cleanPassword();
         setIsLoading(false);
-        context.go(FitncRouter.accueil);
+        context.go(FitnessRouter.home);
       }).catchError((onError) {
         cleanPassword();
         setIsLoading(false);

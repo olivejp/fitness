@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
               themeMode: settingsNotifier.dark ? ThemeMode.dark : ThemeMode.light,
               debugShowCheckedModeBanner: false,
               title: FitnessMobileConstants.appTitle,
-              routerConfig: FitncRouter.getRouter(),
+              routerConfig: FitnessRouter.getRouter(),
               theme: Theming.getLightTheme(),
               darkTheme: Theming.getDarkTheme(),
               locale: settingsNotifier.locale,
