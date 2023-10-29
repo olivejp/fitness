@@ -7,14 +7,14 @@ import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/user.line.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
 
 class UserSetController extends ChangeNotifier {
   final WorkoutInstanceService workoutInstanceService = GetIt.I.get();
   final UserSetService userSetService = GetIt.I.get();
   final ExerciceService exerciseService = GetIt.I.get();
-  final WorkoutPageController pageController = GetIt.I.get();
 
   final List<UserLine> listLines = <UserLine>[];
   final int debounceTime = 200;
@@ -29,15 +29,17 @@ class UserSetController extends ChangeNotifier {
     this.userSet = userSet;
   }
 
-  void initList(List<UserLine> lines) {
+  void initList(List<UserLine> lines, bool notify) {
     listLines.clear();
     listLines.addAll(lines);
-    notifyListeners();
+    if (notify) {
+      notifyListeners();
+    }
   }
 
   void addLine() {
     userSet.lines.add(UserLine());
-    initList(userSet.lines);
+    initList(userSet.lines, true);
   }
 
   void afterDebounce(void Function() callback) {
@@ -50,7 +52,7 @@ class UserSetController extends ChangeNotifier {
   void removeLastLine() {
     userSet.lines.removeAt(userSet.lines.length - 1);
     userSetService.save(userSet).then((value) {
-      initList(userSet.lines);
+      initList(userSet.lines, true);
     });
   }
 
@@ -68,12 +70,12 @@ class UserSetController extends ChangeNotifier {
     });
   }
 
-  void changeCheck(int index, bool checked) {
+  void changeCheck(BuildContext context, int index, bool checked) {
     userSet.lines[index].checked = checked;
     userSetService.save(userSet).then((value) => notifyListeners());
-    initList(userSet.lines);
+    initList(userSet.lines, true);
     if (checked) {
-      pageController.check();
+      Provider.of<WorkoutPageController>(context, listen: false).check();
     }
   }
 
@@ -96,7 +98,7 @@ class UserSetController extends ChangeNotifier {
       element.checked = true;
     }
     userSetService.save(userSet).then((value) => notifyListeners());
-    initList(userSet.lines);
+    initList(userSet.lines, true);
   }
 
   void addComment(String? comment) {

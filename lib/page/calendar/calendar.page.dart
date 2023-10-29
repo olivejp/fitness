@@ -13,10 +13,17 @@ import 'package:provider/provider.dart';
 
 import 'calendar.page.controller.dart';
 
+class TodayNotifier extends ChangeNotifier {
+  void onTodayClick() {
+    notifyListeners();
+  }
+}
+
 class CalendarPage extends StatelessWidget {
   const CalendarPage({super.key});
 
-  void goToExerciseChoice(BuildContext context, CalendarNotifier controller) {
+  void goToExerciseChoice(BuildContext context) {
+    final CalendarNotifier controller = Provider.of<CalendarNotifier>(context, listen: false);
     controller.initialDate = controller.selectedDate;
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -31,39 +38,43 @@ class CalendarPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider.value(
-        value: CalendarNotifier(),
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: CalendarNotifier()),
+          ChangeNotifierProvider.value(value: TodayNotifier()),
+        ],
         builder: (context, child) {
           final CalendarNotifier notifierReadOnly = Provider.of<CalendarNotifier>(context, listen: false);
           DebugPrinter.printLn('Building CalendarPage');
           notifierReadOnly.initialDate = DateTime.now();
           notifierReadOnly.selectedDate = DateTime.now();
-
-          return Consumer<CalendarNotifier>(builder: (context, notifier, child) {
-            DebugPrinter.printLn('Building Consumer');
-            return Scaffold(
-              floatingActionButton: FloatingActionButton(
-                onPressed: () => goToExerciseChoice(context, notifier),
-                child: const Icon(
-                  Icons.add,
-                  color: Colors.white,
-                ),
+          return Scaffold(
+            floatingActionButton: FloatingActionButton(
+              onPressed: () => goToExerciseChoice(context),
+              child: const Icon(
+                Icons.add,
+                color: Colors.white,
               ),
-              body: Column(
-                children: <Widget>[
-                  Material(
-                    elevation: 5,
-                    child: StreamBuilder<List<WorkoutInstance>>(
-                        stream: notifierReadOnly.workoutInstanceService.listenAll(),
-                        builder: (_, snapshot) {
-                          List<WorkoutInstance> list = snapshot.hasData ? snapshot.data! : [];
-                          return Timeline(list: list);
-                        }),
-                  ),
-                  Expanded(
-                    child: StreamList<WorkoutInstance>(
+            ),
+            body: Column(
+              children: <Widget>[
+                Material(
+                  elevation: 5,
+                  child: StreamBuilder<List<WorkoutInstance>>(
+                      stream: notifierReadOnly.workoutInstanceService.listenAll(),
+                      builder: (_, snapshot) {
+                        List<WorkoutInstance> list = snapshot.hasData ? snapshot.data! : [];
+                        return Timeline(list: list);
+                      }),
+                ),
+                Expanded(
+                  child: Consumer<CalendarNotifier>(builder: (context, notifier, child) {
+                    return StreamList<WorkoutInstance>(
                       stream: notifier.listenWorkoutInstanceByDate(notifier.selectedDate),
-                      builder: (BuildContext context, WorkoutInstance domain) => WorkoutInstanceCard(instance: domain),
+                      builder: (BuildContext context, WorkoutInstance domain) {
+                        DebugPrinter.printLn('Test');
+                        return WorkoutInstanceCard(instance: domain);
+                      },
                       padding: const EdgeInsets.only(top: 10),
                       separatorBuilder: (_, index) => const Divider(
                         height: 20,
@@ -80,12 +91,12 @@ class CalendarPage extends StatelessWidget {
                               style: TextStyle(fontWeight: FontWeight.w900)),
                         ],
                       ),
-                    ),
-                  )
-                ],
-              ),
-            );
-          });
+                    );
+                  }),
+                )
+              ],
+            ),
+          );
         });
   }
 }
@@ -102,46 +113,49 @@ class Timeline extends StatelessWidget {
   Widget build(BuildContext context) {
     DebugPrinter.printLn('Building TimeLine');
     final CalendarNotifier notifierReadOnly = Provider.of<CalendarNotifier>(context, listen: false);
-    return FitnessDatePicker(
-      heigthMonth: 48,
-      initialDate: notifierReadOnly.selectedDate,
-      onDateChange: (value) => notifierReadOnly.selectedDate = value,
-      selectedDayTextStyle: const TextStyle(
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-      ),
-      trailing: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: OutlinedButton(
-              onPressed: () {
-                notifierReadOnly.initialDate = DateTime.now();
-                notifierReadOnly.selectDateAndNotify(DateTime.now());
-              },
-              child: Text(
-                'today'.i18n(),
-                style: GoogleFonts.comfortaa(),
+    return Consumer<TodayNotifier>(
+      builder: (context, notifier, child) => FitnessDatePicker(
+        heigthMonth: 48,
+        initialDate: notifierReadOnly.selectedDate,
+        onDateChange: notifierReadOnly.selectDateAndNotify,
+        selectedDayTextStyle: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+        trailing: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: OutlinedButton(
+                onPressed: () {
+                  notifierReadOnly.initialDate = DateTime.now();
+                  notifierReadOnly.selectedDate = DateTime.now();
+                  Provider.of<TodayNotifier>(context, listen: false).onTodayClick();
+                },
+                child: Text(
+                  'today'.i18n(),
+                  style: GoogleFonts.nunito(),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
+        builder: (dateTime, selected) {
+          List<DateTime> listWorkoutForTheDay = list
+              .where((workout) => workout.date != null)
+              .map((workout) => workout.date)
+              .map((date) => DateTime(date!.year, date.month, date.day))
+              .where((date) => date.compareTo(dateTime) == 0)
+              .take(4)
+              .toList();
+          return CalendarDayCard(
+            dateTime: dateTime,
+            listWorkoutForTheDay: listWorkoutForTheDay,
+            selected: selected,
+          );
+        },
       ),
-      builder: (dateTime, selected) {
-        List<DateTime> listWorkoutForTheDay = list
-            .where((workout) => workout.date != null)
-            .map((workout) => workout.date)
-            .map((date) => DateTime(date!.year, date.month, date.day))
-            .where((date) => date.compareTo(dateTime) == 0)
-            .take(4)
-            .toList();
-        return CalendarDayCard(
-          dateTime: dateTime,
-          listWorkoutForTheDay: listWorkoutForTheDay,
-          selected: selected,
-        );
-      },
     );
   }
 }
@@ -172,19 +186,30 @@ class CalendarDayCard extends StatelessWidget {
             : null,
       ),
       child: SizedBox(
-        height: 30,
+        height: 55,
         width: 50,
         child: Column(
           children: [
             Expanded(
               flex: 2,
               child: Center(
-                child: Text(
-                  dateTime.day.toString(),
-                  style: GoogleFonts.comfortaa(
-                    color: selected ? Theme.of(context).primaryColor : null,
-                    fontSize: 18,
-                  ),
+                child: Column(
+                  children: [
+                    Text(
+                      DateFormat('EE').format(dateTime),
+                      style: GoogleFonts.nunito(
+                          color: selected ? Theme.of(context).primaryColor : null,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900),
+                    ),
+                    Text(
+                      dateTime.day.toString(),
+                      style: GoogleFonts.nunito(
+                        color: selected ? Theme.of(context).primaryColor : Colors.black54,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

@@ -1,10 +1,11 @@
 import 'package:fitnc_user/page/exercice/add_exercice.page.dart';
+import 'package:fitnc_user/page/exercice/exercice-choice.dialog.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/widget/network_image.widget.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
-import 'package:fitness_domain/widget/generic_container.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:loading_animations/loading_animations.dart';
 import 'package:localization/localization.dart';
 
 class ExercisePage extends StatelessWidget {
@@ -17,30 +18,75 @@ class ExercisePage extends StatelessWidget {
     final ExerciceService exerciceService = GetIt.I.get();
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          elevation: 5,
+          title: Text(
+            'exercises'.i18n(),
+            style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                  color: Theme.of(context).primaryColor,
+                ),
+          ),
+        ),
         body: Stack(
           fit: StackFit.expand,
           children: [
-            StreamList<Exercice>(
-              emptyWidget: const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text('Aucun exercice trouvé.'),
-                ],
-              ),
-              padding: EdgeInsets.only(bottom: bottomAppBarHeight, top: 8, left: 8, right: 8),
-              stream: exerciceService.listenAll(),
-              builder: (_, domain) => ExerciseCard(
-                exercise: domain,
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => AddExercisePage(
-                      exercise: domain,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            StreamBuilder<List<Exercice>>(
+                stream: exerciceService.listenAll(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Text(snapshot.error.toString());
+                  }
+                  if (snapshot.hasData) {
+                    final List<Exercice> listExercise = snapshot.data!;
+                    return ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: listExercise.length,
+                      itemBuilder: (context, index) {
+                        final Exercice exercice = listExercise.elementAt(index);
+                        return ExerciseChoiceCard(
+                          exercise: exercice,
+                          selected: false,
+                          showSelect: false,
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => AddExercisePage(
+                                exercise: exercice,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) => const Divider(
+                        height: 2.0,
+                        color: Colors.grey,
+                      ),
+                    );
+                  }
+                  return LoadingBouncingGrid.circle(
+                    backgroundColor: Theme.of(context).primaryColor,
+                  );
+                }),
+            // StreamList<Exercice>(
+            //   emptyWidget: const Column(
+            //     mainAxisAlignment: MainAxisAlignment.center,
+            //     crossAxisAlignment: CrossAxisAlignment.center,
+            //     children: [
+            //       Text('Aucun exercice trouvé.'),
+            //     ],
+            //   ),
+            //   padding: EdgeInsets.only(bottom: bottomAppBarHeight, top: 8, left: 8, right: 8),
+            //   stream: exerciceService.listenAll(),
+            //   builder: (_, domain) => ExerciseCard(
+            //     exercise: domain,
+            //     onTap: () => Navigator.of(context).push(
+            //       MaterialPageRoute(
+            //         builder: (context) => AddExercisePage(
+            //           exercise: domain,
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
             Positioned(
               bottom: 0,
               left: 0,
@@ -114,64 +160,61 @@ class ExerciseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ExerciceService service = GetIt.I.get();
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: SizedBox(
-          height: cardHeight,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: imagePadding, right: imagePadding),
-                    child: NetworkImageExerciseChoice(
-                      imageUrl: exercise.imageUrl,
-                      radius: 5,
-                    ),
+    return InkWell(
+      onTap: onTap,
+      child: SizedBox(
+        height: cardHeight,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: imagePadding, right: imagePadding),
+                  child: NetworkImageExerciseChoice(
+                    imageUrl: exercise.imageUrl,
+                    radius: 5,
                   ),
-                  Text(exercise.name),
-                ],
-              ),
-              PopupMenuButton<dynamic>(
-                iconSize: iconSize,
-                tooltip: 'showMore'.i18n(),
-                icon: const Icon(Icons.more_vert, color: Colors.grey),
-                itemBuilder: (_) => <PopupMenuEntry<dynamic>>[
-                  PopupMenuItem<dynamic>(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text('stats'.i18n()),
-                        const Icon(
-                          Icons.bar_chart_outlined,
-                          color: Colors.grey,
-                        ),
-                      ],
-                    ),
-                    onTap: () {},
+                ),
+                Text(exercise.name),
+              ],
+            ),
+            PopupMenuButton<dynamic>(
+              iconSize: iconSize,
+              tooltip: 'showMore'.i18n(),
+              icon: const Icon(Icons.more_vert, color: Colors.grey),
+              itemBuilder: (_) => <PopupMenuEntry<dynamic>>[
+                PopupMenuItem<dynamic>(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text('stats'.i18n()),
+                      const Icon(
+                        Icons.bar_chart_outlined,
+                        color: Colors.grey,
+                      ),
+                    ],
                   ),
-                  const PopupMenuDivider(),
-                  PopupMenuItem<dynamic>(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text('delete'.i18n()),
-                        const Icon(
-                          Icons.delete,
-                          color: Colors.grey,
-                        ),
-                      ],
-                    ),
-                    onTap: () => service.delete(exercise),
+                  onTap: () {},
+                ),
+                const PopupMenuDivider(),
+                PopupMenuItem<dynamic>(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text('delete'.i18n()),
+                      const Icon(
+                        Icons.delete,
+                        color: Colors.grey,
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ],
-          ),
+                  onTap: () => service.delete(exercise),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

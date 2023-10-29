@@ -3,7 +3,7 @@ import 'package:fitnc_user/widget/bottom.widget.dart';
 import 'package:fitness_domain/constants.dart';
 import 'package:fitness_domain/service/display.service.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 
@@ -110,7 +110,7 @@ class LoginDesktopPage extends StatelessWidget {
                                               style: const TextStyle(color: Colors.grey),
                                             ),
                                             TextButton(
-                                              onPressed: () => Get.offNamed(FitnessConstants.routeSignUp),
+                                              onPressed: () => context.go(FitnessConstants.routeSignUp),
                                               child: Text(
                                                 'signUp'.i18n(),
                                               ),

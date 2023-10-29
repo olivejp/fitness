@@ -4,7 +4,6 @@ import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/service/param.service.dart';
 import 'package:fitness_domain/widget/storage_image.widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:localization/localization.dart';
@@ -25,17 +24,17 @@ class AddExercisePage extends StatelessWidget {
     return ChangeNotifierProvider.value(
         value: AddExercisePageNotifier(),
         builder: (context, child) {
-          return Consumer<AddExercisePageNotifier>(builder: (context, controller, child) {
-            controller.init(exercise);
-            return SafeArea(
-              child: Scaffold(
-                bottomNavigationBar: AddExerciseBottomAppBar(formKey: formKey, controller: controller),
-                body: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Form(
-                    key: formKey,
-                    child: SingleChildScrollView(
-                      child: Column(
+          Provider.of<AddExercisePageNotifier>(context, listen: false).init(exercise);
+          return SafeArea(
+            child: Scaffold(
+              bottomNavigationBar: AddExerciseBottomAppBar(formKey: formKey),
+              body: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Form(
+                  key: formKey,
+                  child: SingleChildScrollView(
+                    child: Consumer<AddExercisePageNotifier>(builder: (context, controller, child) {
+                      return Column(
                         children: <Widget>[
                           Padding(
                             padding: const EdgeInsets.only(bottom: 20.0),
@@ -43,47 +42,43 @@ class AddExercisePage extends StatelessWidget {
                               children: <Widget>[
                                 Row(
                                   children: <Widget>[
-                                    Obx(
-                                      () => StorageImageWidget(
-                                        imageUrl: controller.exercise.value.imageUrl,
-                                        storageFile: controller.exercise.value.storageFile,
-                                        onSaved: controller.setStoragePair,
-                                        onDeleted: () => controller.setStoragePair(null),
-                                      ),
+                                    StorageImageWidget(
+                                      imageUrl: controller.exercise.imageUrl,
+                                      storageFile: controller.exercise.storageFile,
+                                      onSaved: controller.setStoragePair,
+                                      onDeleted: () => controller.setStoragePair(null),
                                     ),
                                     Expanded(
                                       child: Padding(
                                         padding: const EdgeInsets.only(left: 20),
-                                        child: Obx(
-                                          () => TextFormField(
-                                            controller: TextEditingController(text: controller.exercise.value.name),
-                                            onChanged: (String name) => controller.exercise.value.name = name,
-                                            validator: (String? value) {
-                                              if (value == null || value.isEmpty) {
-                                                return 'pleaseFillExerciseName'.i18n();
-                                              }
-                                              return null;
-                                            },
-                                            decoration: InputDecoration(
-                                              labelText: 'name'.i18n(),
-                                              hintStyle: GoogleFonts.roboto(fontSize: 15),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                  width: 0.5,
-                                                  color: Theme.of(context).primaryColor,
-                                                ),
+                                        child: TextFormField(
+                                          controller: TextEditingController(text: controller.exercise.name),
+                                          onChanged: (String name) => controller.exercise.name = name,
+                                          validator: (String? value) {
+                                            if (value == null || value.isEmpty) {
+                                              return 'pleaseFillExerciseName'.i18n();
+                                            }
+                                            return null;
+                                          },
+                                          decoration: InputDecoration(
+                                            labelText: 'name'.i18n(),
+                                            hintStyle: GoogleFonts.roboto(fontSize: 15),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                width: 0.5,
+                                                color: Theme.of(context).primaryColor,
                                               ),
-                                              border: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                  width: 0.5,
-                                                  color: Theme.of(context).primaryColor,
-                                                ),
+                                            ),
+                                            border: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                width: 0.5,
+                                                color: Theme.of(context).primaryColor,
                                               ),
-                                              enabledBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                  width: 0.5,
-                                                  color: Theme.of(context).primaryColor,
-                                                ),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                width: 0.5,
+                                                color: Theme.of(context).primaryColor,
                                               ),
                                             ),
                                           ),
@@ -102,8 +97,8 @@ class AddExercisePage extends StatelessWidget {
                               return DropdownButtonFormField<String?>(
                                 key: key,
                                 onChanged: (String? onChangedValue) =>
-                                    controller.exercise.value.typeExercice = onChangedValue,
-                                value: controller.exercise.value.typeExercice,
+                                    controller.exercise.typeExercice = onChangedValue,
+                                value: controller.exercise.typeExercice,
                                 items: snapshot.data,
                                 itemHeight: 50,
                                 decoration: InputDecoration(
@@ -119,39 +114,37 @@ class AddExercisePage extends StatelessWidget {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 20),
-                            child: Obx(
-                              () => TextFormField(
-                                controller: TextEditingController(text: controller.exercise.value.description),
-                                maxLength: 2000,
-                                minLines: 5,
-                                maxLines: 20,
-                                onChanged: (String description) => controller.exercise.value.description = description,
-                                decoration: InputDecoration(
-                                  labelText: 'description'.i18n(),
-                                  helperText: 'optional'.i18n(),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      width: 0.5,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
+                            child: TextFormField(
+                              controller: TextEditingController(text: controller.exercise.description),
+                              maxLength: 2000,
+                              minLines: 5,
+                              maxLines: 20,
+                              onChanged: (String description) => controller.exercise.description = description,
+                              decoration: InputDecoration(
+                                labelText: 'description'.i18n(),
+                                helperText: 'optional'.i18n(),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    width: 0.5,
+                                    color: Theme.of(context).primaryColor,
                                   ),
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      width: 0.5,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    width: 0.5,
+                                    color: Theme.of(context).primaryColor,
                                   ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      width: 0.5,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    width: 0.5,
+                                    color: Theme.of(context).primaryColor,
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                          if (controller.exercise.value.uid != null)
+                          if (controller.exercise.uid != null)
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -160,20 +153,20 @@ class AddExercisePage extends StatelessWidget {
                                   label: Text('displayStat'.i18n()),
                                   onPressed: () => Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (context) => StatExercicePage(exercice: controller.exercise.value),
+                                      builder: (context) => StatExercicePage(exercice: controller.exercise),
                                     ),
                                   ),
                                 ),
                               ],
                             ),
                         ],
-                      ),
-                    ),
+                      );
+                    }),
                   ),
                 ),
               ),
-            );
-          });
+            ),
+          );
         });
   }
 }
@@ -182,11 +175,9 @@ class AddExerciseBottomAppBar extends StatelessWidget {
   const AddExerciseBottomAppBar({
     super.key,
     required this.formKey,
-    required this.controller,
   });
 
   final GlobalKey<FormState> formKey;
-  final AddExercisePageNotifier controller;
 
   @override
   Widget build(BuildContext context) {
@@ -205,7 +196,9 @@ class AddExerciseBottomAppBar extends StatelessWidget {
                 label: Text('save'.i18n()),
                 onPressed: () {
                   if (formKey.currentState?.validate() == true) {
-                    controller.save().then((_) => Navigator.of(context).pop());
+                    Provider.of<AddExercisePageNotifier>(context, listen: false)
+                        .save()
+                        .then((_) => Navigator.of(context).pop());
                   }
                 },
               ),

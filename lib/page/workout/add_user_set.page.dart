@@ -6,7 +6,6 @@ import 'package:fitness_domain/domain/user.line.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
@@ -151,48 +150,43 @@ class UserSetUpdate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final UserSetController controller = Get.find(tag: userSet.uid);
-    controller.initList(userSet.lines);
-    return SingleChildScrollView(
-      controller: scrollController,
-      child: Form(
-        key: formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(right: padding, left: padding),
-              child: RowExerciseDetails(controller: controller),
-            ),
-            Padding(
-              padding: EdgeInsets.only(right: padding, left: padding),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  const Flexible(
-                    child: Center(child: Text('Sets')),
-                  ),
-                  ...getColumnsHeadersByType(),
-                  Flexible(
-                    child: Center(
-                      child: Obx(
-                        () {
-                          bool allIsChecked = controller.listLines.every((element) => element.checked);
-                          return IconButton(
-                            icon: const Icon(Icons.done_all_rounded),
-                            color: allIsChecked ? Colors.green : Colors.grey,
-                            iconSize: 30,
-                            onPressed: () => controller.checkAll(),
-                          );
-                        },
+    return Consumer<UserSetController>(builder: (context, controller, child) {
+      controller.initList(userSet.lines, false);
+      bool allIsChecked = controller.listLines.every((element) => element.checked);
+      return SingleChildScrollView(
+        controller: scrollController,
+        child: Form(
+          key: formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(right: padding, left: padding),
+                child: RowExerciseDetails(controller: controller),
+              ),
+              Padding(
+                padding: EdgeInsets.only(right: padding, left: padding),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    const Flexible(
+                      child: Center(child: Text('Sets')),
+                    ),
+                    ...getColumnsHeadersByType(),
+                    Flexible(
+                      child: Center(
+                        child: IconButton(
+                          icon: const Icon(Icons.done_all_rounded),
+                          color: allIsChecked ? Colors.green : Colors.grey,
+                          iconSize: 30,
+                          onPressed: () => controller.checkAll(),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Obx(
-              () => ListView.builder(
+              ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: controller.listLines.length,
@@ -225,7 +219,7 @@ class UserSetUpdate extends StatelessWidget {
                               child: UserLineCheckWidget(
                                 index: index,
                                 userLine: userLine,
-                                onPress: controller.changeCheck,
+                                onPress: (index, checked) => controller.changeCheck(context, index, checked),
                               ),
                             ),
                           ),
@@ -233,27 +227,27 @@ class UserSetUpdate extends StatelessWidget {
                       ),
                     );
                   }),
-            ),
-            RowAddRemoveSet(controller: controller),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton.icon(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AddCommentAlertDialog(controller: controller),
-                    );
-                  },
-                  label: Text('comment'.i18n()),
-                  icon: const Icon(Icons.note_outlined),
-                )
-              ],
-            )
-          ],
+              RowAddRemoveSet(controller: controller),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton.icon(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AddCommentAlertDialog(controller: controller),
+                      );
+                    },
+                    label: Text('comment'.i18n()),
+                    icon: const Icon(Icons.note_outlined),
+                  )
+                ],
+              )
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
 
@@ -441,7 +435,7 @@ class RowAddRemoveSet extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Obx(() {
+              Consumer<UserSetController>(builder: (context, controller, child) {
                 if (controller.userSet.lines.length > 1) {
                   return IconButton(
                     onPressed: () => controller.removeLastLine(),

@@ -28,7 +28,7 @@ class Theming {
       ),
       appBarTheme: const AppBarTheme(
         centerTitle: true,
-        color: FitnessNcColors.darkChipBackground,
+        color: Colors.white,
         titleTextStyle: TextStyle(
           color: FitnessNcColors.amber,
         ),
@@ -74,6 +74,13 @@ class Theming {
       canvasColor: Colors.grey[850],
       bottomAppBarTheme: BottomAppBarTheme(
         color: Colors.grey[850],
+      ),
+      appBarTheme: const AppBarTheme(
+        centerTitle: true,
+        color: FitnessNcColors.darkBottomAppBarBackground,
+        titleTextStyle: TextStyle(
+          color: FitnessNcColors.amber,
+        ),
       ),
       shadowColor: Colors.black54,
       iconTheme: const IconThemeData(color: Colors.white),
