@@ -6,44 +6,77 @@ import 'constants.dart';
 class Theming {
   static ThemeData getLightTheme() {
     return ThemeData(
-      primarySwatch: Colors.amber,
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        unselectedItemColor: FitnessNcColors.darkCardBackground,
-        selectedItemColor: FitnessNcColors.amber,
-        selectedLabelStyle: GoogleFonts.nunito(
-          color: FitnessNcColors.amber,
-          fontSize: 10,
-          fontWeight: FontWeight.w900,
+        useMaterial3: true,
+        primarySwatch: Colors.amber,
+        primaryColor: Colors.amber,
+        filledButtonTheme: FilledButtonThemeData(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(Colors.orangeAccent),
+            minimumSize: MaterialStateProperty.all(
+              const Size.fromHeight(60),
+            ),
+            shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+            ),
+          ),
         ),
-        unselectedLabelStyle: GoogleFonts.nunito(
-          color: FitnessNcColors.darkCardBackground,
-          fontSize: 10,
-          fontWeight: FontWeight.w900,
+        chipTheme: const ChipThemeData(selectedColor: Colors.amber),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Colors.amber,
         ),
-      ),
-      bottomAppBarTheme: const BottomAppBarTheme(
-        color: FitnessNcColors.white50,
-      ),
-      appBarTheme: const AppBarTheme(
-        centerTitle: true,
-        color: Colors.white,
-        titleTextStyle: TextStyle(
-          color: FitnessNcColors.amber,
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
+          unselectedItemColor: FitnessNcColors.darkCardBackground,
+          selectedItemColor: FitnessNcColors.amber,
+          selectedLabelStyle: GoogleFonts.nunito(
+            color: FitnessNcColors.amber,
+            fontSize: 10,
+            fontWeight: FontWeight.w900,
+          ),
+          unselectedLabelStyle: GoogleFonts.nunito(
+            color: FitnessNcColors.darkCardBackground,
+            fontSize: 10,
+            fontWeight: FontWeight.w900,
+          ),
         ),
-      ),
-      elevatedButtonTheme: getElevatedButtonTheme(),
-      textButtonTheme: getTextButtonThemeData(),
-      textTheme: getTextTheme(),
-    );
+        bottomAppBarTheme: const BottomAppBarTheme(
+          color: FitnessNcColors.white50,
+        ),
+        appBarTheme: const AppBarTheme(
+          centerTitle: true,
+          color: Colors.white,
+          titleTextStyle: TextStyle(
+            color: FitnessNcColors.amber,
+          ),
+        ),
+        elevatedButtonTheme: getElevatedButtonTheme(),
+        textButtonTheme: getTextButtonThemeData(),
+        textTheme: getTextTheme(),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: ButtonStyle(
+            foregroundColor: MaterialStateProperty.all(Colors.amber),
+            overlayColor: MaterialStateProperty.all(Colors.amber.shade50),
+            shape: MaterialStateProperty.all(
+              const StadiumBorder(
+                side: BorderSide(
+                  color: Colors.amber,
+                  width: 3.0,
+                ),
+              ),
+            ),
+          ),
+        ));
   }
 
   static TextButtonThemeData getTextButtonThemeData() {
     return TextButtonThemeData(
       style: ButtonStyle(
+        foregroundColor: MaterialStateProperty.all(Colors.amber),
         textStyle: MaterialStateProperty.all(
-          GoogleFonts.nunito(fontSize: 15),
+          GoogleFonts.nunito(fontSize: 16),
         ),
       ),
     );
@@ -51,7 +84,10 @@ class Theming {
 
   static ThemeData getDarkTheme() {
     return ThemeData(
+      useMaterial3: true,
       primarySwatch: Colors.amber,
+      primaryColor: Colors.amber,
+      chipTheme: const ChipThemeData(selectedColor: Colors.amber),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         showSelectedLabels: true,
         showUnselectedLabels: true,

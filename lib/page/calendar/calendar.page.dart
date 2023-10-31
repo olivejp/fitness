@@ -115,7 +115,7 @@ class Timeline extends StatelessWidget {
     final CalendarNotifier notifierReadOnly = Provider.of<CalendarNotifier>(context, listen: false);
     return Consumer<TodayNotifier>(
       builder: (context, notifier, child) => FitnessDatePicker(
-        heigthMonth: 48,
+        heigthMonth: 50,
         initialDate: notifierReadOnly.selectedDate,
         onDateChange: notifierReadOnly.selectDateAndNotify,
         selectedDayTextStyle: const TextStyle(
@@ -186,7 +186,7 @@ class CalendarDayCard extends StatelessWidget {
             : null,
       ),
       child: SizedBox(
-        height: 55,
+        height: 65,
         width: 50,
         child: Column(
           children: [
@@ -198,15 +198,17 @@ class CalendarDayCard extends StatelessWidget {
                     Text(
                       DateFormat('EE').format(dateTime),
                       style: GoogleFonts.nunito(
-                          color: selected ? Theme.of(context).primaryColor : null,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w900),
+                        color: selected ? Theme.of(context).primaryColor : null,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w900,
+                      ),
                     ),
                     Text(
                       dateTime.day.toString(),
                       style: GoogleFonts.nunito(
                         color: selected ? Theme.of(context).primaryColor : Colors.black54,
-                        fontSize: 16,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],

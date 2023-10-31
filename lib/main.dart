@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fitnc_user/dependencies_injector.dart';
@@ -10,6 +11,7 @@ import 'package:fitnc_user/service/config.service.dart';
 import 'package:fitnc_user/service/debug_printer.dart';
 import 'package:fitnc_user/theming.dart';
 import 'package:fitness_domain/service/display.service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
@@ -23,6 +25,12 @@ Future<void> main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  // Persist all data in local repository (Web only).
+  if (kIsWeb) {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    db.enablePersistence(const PersistenceSettings(synchronizeTabs: true));
+  }
+
   GetItDependenciesInjector.initialize();
 
   runApp(const MyApp());
@@ -33,6 +41,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    LocalJsonLocalization.delegate.directories = ['i18n'];
     return MultiProvider(
         providers: [
           ChangeNotifierProvider.value(value: ApplicationSettingsNotifier()),
@@ -68,57 +77,6 @@ class MyApp extends StatelessWidget {
               ],
             );
           });
-
-          // return OKToast(
-          //   child: DarkModeWidget(
-          //     builder: () {
-          //       return Consumer<DarkModeNotifier>(builder: (context, darkModeNotifier, child) {
-          //         return GetMaterialApp(
-          //           initialRoute: FitnessConstants.routeHome,
-          //           title: FitnessMobileConstants.appTitle,
-          //           debugShowCheckedModeBanner: false,
-          //           themeMode: darkModeNotifier.isDark ? ThemeMode.dark : ThemeMode.light,
-          //           darkTheme: Theming.getDarkTheme(),
-          //           theme: Theming.getLightTheme(),
-          //           locale: Get.deviceLocale,
-          //           fallbackLocale: const Locale('en', 'US'),
-          //           getPages: getPages(),
-          //           translations: FitnessTranslations(),
-          //         );
-          //       });
-          //     },
-          //   ),
-          // );
         });
   }
-
-  ///
-  /// Routing de l'application
-  ///
-// List<GetPage<dynamic>> getPages() {
-//   return <GetPage<dynamic>>[
-//     GetPage<MainPage>(
-//       name: FitnessConstants.routeHome,
-//       middlewares: <GetMiddleware>[
-//         IsConnectedMiddleware(),
-//         LayoutNotifierMiddleware(),
-//       ],
-//       page: () => const MainPage(),
-//     ),
-//     GetPage<SignUpPage>(
-//       transition: Transition.rightToLeft,
-//       name: FitnessConstants.routeSignUp,
-//       middlewares: <GetMiddleware>[LayoutNotifierMiddleware()],
-//       page: () => SignUpPage(
-//         callback: (userCredential) => Get.offNamed(FitnessConstants.routeHome),
-//       ),
-//     ),
-//     GetPage<LoginPage>(
-//       transition: Transition.rightToLeft,
-//       name: FitnessConstants.routeLogin,
-//       middlewares: <GetMiddleware>[LayoutNotifierMiddleware()],
-//       page: () => const LoginPage(),
-//     ),
-//   ];
-// }
 }

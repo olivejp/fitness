@@ -8,6 +8,7 @@ class BottomCu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
+      color: Colors.transparent,
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxHeight: 50, minHeight: 50),
         child: Row(
@@ -17,13 +18,13 @@ class BottomCu extends StatelessWidget {
                 onPressed: () => print('hello'),
                 child: const Text(
                   'Copyrigth @Deveo.nc',
-                  style: TextStyle(color: Colors.grey),
+                  style: TextStyle(color: Colors.white),
                 )),
             TextButton(
                 onPressed: () => print('hello'),
                 child: const Text(
                   'Conditions d\'utilisation',
-                  style: TextStyle(color: Colors.grey),
+                  style: TextStyle(color: Colors.white),
                 )),
           ],
         ),

@@ -67,7 +67,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/lib/i18n/
+    - i18n/
     - images/fitness_login_page/
     - assets/notification.wav
 

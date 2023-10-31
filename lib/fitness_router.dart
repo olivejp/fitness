@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fitnc_user/page/calendar/calendar.page.dart';
+import 'package:fitnc_user/page/exercice/add_exercice.page.dart';
 import 'package:fitnc_user/page/exercice/exercice.page.dart';
 import 'package:fitnc_user/page/home/home.page.dart';
 import 'package:fitnc_user/page/login/login.page.dart';
@@ -65,8 +66,8 @@ class FitnessRouter {
     ),
     NavigationTarget(
       label: 'exercises',
-      icon: Icons.add_chart_outlined,
-      selectedIcon: Icons.add_chart,
+      icon: Icons.accessibility_outlined,
+      selectedIcon: Icons.accessibility,
       direction: exercises,
     ),
     NavigationTarget(
@@ -152,6 +153,14 @@ class FitnessRouter {
                   context: context,
                   state: state,
                   child: const ExercisePage(),
+                ),
+              ),
+              GoRoute(
+                path: exercisesNew,
+                pageBuilder: (context, state) => buildPageWithDefaultTransition(
+                  context: context,
+                  state: state,
+                  child: AddExercisePage(),
                 ),
               ),
               GoRoute(

@@ -35,9 +35,15 @@ class LoginMobilePage extends StatelessWidget {
                     : (type == DisplayType.tablet)
                         ? 'M'
                         : 'L';
-                return Image.asset(
-                  '${FitnessMobileConstants.imageLogin}-$size${FitnessMobileConstants.imageLoginExtension}',
-                  fit: BoxFit.cover,
+                return ColorFiltered(
+                  colorFilter: const ColorFilter.mode(
+                    Colors.black54,
+                    BlendMode.hardLight,
+                  ),
+                  child: Image.asset(
+                    '${FitnessMobileConstants.imageLogin}-$size${FitnessMobileConstants.imageLoginExtension}',
+                    fit: BoxFit.cover,
+                  ),
                 );
               }),
             ),
@@ -146,7 +152,17 @@ class ElevatedLoadingButton extends StatelessWidget {
       widget = Container();
     }
 
-    return ElevatedButton(
+    return FilledButton(
+      style: ButtonStyle(
+        minimumSize: MaterialStateProperty.all(
+          const Size.fromHeight(60),
+        ),
+        shape: MaterialStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+        ),
+      ),
       onPressed: onPressed,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,

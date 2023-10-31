@@ -112,6 +112,32 @@ class AddExercisePage extends StatelessWidget {
                               );
                             },
                           ),
+                          TextFormField(
+                            controller: TextEditingController(text: controller.exercise.group),
+                            onChanged: (String group) => controller.exercise.group = group,
+                            decoration: InputDecoration(
+                              labelText: 'group'.i18n(),
+                              hintStyle: GoogleFonts.roboto(fontSize: 15),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  width: 0.5,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  width: 0.5,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  width: 0.5,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                            ),
+                          ),
                           Padding(
                             padding: const EdgeInsets.only(top: 20),
                             child: TextFormField(

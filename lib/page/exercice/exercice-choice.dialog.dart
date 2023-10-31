@@ -16,8 +16,6 @@ import 'package:loading_animations/loading_animations.dart';
 import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 
-import 'add_exercice.page.dart';
-
 class ExerciseChoiceDialogController extends ChangeNotifier with SearchMixin<Exercice> {
   final ExerciceService service = GetIt.I.get();
   final UserSetService userSetService = GetIt.I.get();
@@ -173,42 +171,42 @@ class ExerciseChoiceDialog extends StatelessWidget {
                 ),
               ),
             ),
-            bottomNavigationBar: BottomAppBar(
-              elevation: 5,
-              color: Colors.white,
-              child: SizedBox(
-                height: 60,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 5, right: 5),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextButton.icon(
-                        label: Text('createExercise'.i18n()),
-                        icon: const Icon(Icons.add_circle_outline_rounded),
-                        onPressed: () {
-                          if (popOnChoice) {
-                            Navigator.of(context).pop();
-                          } else {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => AddExercisePage(
-                                  exercise: null,
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: Text('cancel'.i18n()),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            // bottomNavigationBar: BottomAppBar(
+            //   elevation: 5,
+            //   color: Colors.white,
+            //   child: SizedBox(
+            //     height: 60,
+            //     child: Padding(
+            //       padding: const EdgeInsets.only(left: 5, right: 5),
+            //       child: Row(
+            //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //         children: [
+            //           TextButton.icon(
+            //             label: Text('createExercise'.i18n()),
+            //             icon: const Icon(Icons.add_circle_outline_rounded),
+            //             onPressed: () {
+            //               if (popOnChoice) {
+            //                 Navigator.of(context).pop();
+            //               } else {
+            //                 Navigator.of(context).push(
+            //                   MaterialPageRoute(
+            //                     builder: (_) => AddExercisePage(
+            //                       exercise: null,
+            //                     ),
+            //                   ),
+            //                 );
+            //               }
+            //             },
+            //           ),
+            //           TextButton(
+            //             onPressed: () => Navigator.of(context).pop(),
+            //             child: Text('cancel'.i18n()),
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //   ),
+            // ),
             body: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
