@@ -25,4 +25,9 @@ class AddExercisePageNotifier extends ChangeNotifier {
     exercise.storageFile = storageFile;
     notifyListeners();
   }
+
+  void setGroup(String? value) {
+    exercise.group = value;
+    notifyListeners();
+  }
 }

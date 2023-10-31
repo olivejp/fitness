@@ -5,6 +5,7 @@ import 'package:fitnc_user/constants.dart';
 import 'package:fitnc_user/service/published_programme.service.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/fitness-user.domain.dart';
+import 'package:fitness_domain/domain/group_exercice.domain.dart';
 import 'package:fitness_domain/domain/published_programme.domain.dart';
 import 'package:fitness_domain/domain/trainers.domain.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
@@ -20,6 +21,7 @@ class FitnessUserService extends AbstractFitnessStorageService<FitnessUser> {
   final String collectionMyPrograms = 'programme';
   final String collectionMyProgramsWorkouts = 'workouts';
   final String collectionMyExercices = 'exercices';
+  final String collectionMyGroupExercices = 'group_exercices';
   final String collectionMyWorkoutInstance = 'workoutInstance';
 
   @override
@@ -79,6 +81,11 @@ class FitnessUserService extends AbstractFitnessStorageService<FitnessUser> {
     return getCollectionReference().doc(user.uid).collection(collectionMyExercices);
   }
 
+  CollectionReference<Map<String, dynamic>> getMyGroupExerciceReference() {
+    User user = AuthService.getUserConnectedOrThrow();
+    return getCollectionReference().doc(user.uid).collection(collectionMyGroupExercices);
+  }
+
   CollectionReference<Map<String, dynamic>> getMyWorkoutInstanceReference() {
     User user = AuthService.getUserConnectedOrThrow();
     return getCollectionReference().doc(user.uid).collection(collectionMyWorkoutInstance);
@@ -93,6 +100,11 @@ class FitnessUserService extends AbstractFitnessStorageService<FitnessUser> {
   Stream<List<Exercice>> listenMyExercices() async* {
     CollectionReference<Map<String, dynamic>> colRef = getMyExerciceReference();
     yield* colRef.snapshots().map((event) => event.docs.map((e) => Exercice.fromJson(e.data())).toList());
+  }
+
+  Stream<List<GroupExercice>> listenMyGroupExercices() async* {
+    CollectionReference<Map<String, dynamic>> colRef = getMyGroupExerciceReference();
+    yield* colRef.snapshots().map((event) => event.docs.map((e) => GroupExercice.fromJson(e.data())).toList());
   }
 
   Stream<List<WorkoutInstance>> listenMyWorkoutInstance() async* {

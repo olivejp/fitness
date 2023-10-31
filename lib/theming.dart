@@ -25,6 +25,7 @@ class Theming {
         chipTheme: const ChipThemeData(selectedColor: Colors.amber),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
           backgroundColor: Colors.amber,
+          extendedTextStyle: TextStyle(color: Colors.white),
         ),
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
           showSelectedLabels: true,

@@ -1,36 +1,61 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitnc_user/fitness_router.dart';
 import 'package:fitnc_user/page/exercice/add_exercice.page.dart';
 import 'package:fitnc_user/page/exercice/exercice-choice.dialog.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
+import 'package:fitnc_user/service/group_exercice.service.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
+import 'package:fitness_domain/domain/group_exercice.domain.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:loading_animations/loading_animations.dart';
 import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 
-class ExerciseFilterNotifier extends ChangeNotifier {
+class ExerciseListNotifier extends ChangeNotifier {
   final ExerciceService service = GetIt.I.get();
-  final StreamController<List<Exercice>> streamController = StreamController();
+  StreamSubscription<List<Exercice>>? strSubExercice;
+
+  List<Exercice> localListExercice = [];
+
+  loadData() {
+    strSubExercice?.cancel();
+
+    strSubExercice = service.listenAll().listen((listExercice) {
+      localListExercice = listExercice;
+      notifyListeners();
+    });
+  }
+
+  searchByGroup(List<String>? groupSelected) {
+    strSubExercice?.cancel();
+    if (groupSelected != null && groupSelected.isNotEmpty) {
+      strSubExercice = service.whereListen('group', whereIn: groupSelected).listen((listExercice) {
+        localListExercice = listExercice;
+        notifyListeners();
+      });
+    } else {
+      strSubExercice = service.listenAll().listen((listExercice) {
+        localListExercice = listExercice;
+        notifyListeners();
+      });
+    }
+  }
+}
+
+class ExerciseFilterNotifier extends ChangeNotifier {
+  final GroupExerciceService typeExerciceService = GetIt.I.get();
+  StreamSubscription<List<GroupExercice>>? strSubTypeExercice;
 
   List<String> groupFilters = [];
   List<String> groupSelected = [];
 
-  get listenExercise => streamController.stream;
+  loadData() {
+    strSubTypeExercice?.cancel();
 
-  ExerciseFilterNotifier() {
-    init();
-  }
-
-  init() {
-    service.getAll().then((listExercise) {
-      streamController.sink.add(listExercise);
-      groupFilters =
-          listExercise.map((e) => e.group).where((element) => element != null).map((e) => e as String).toSet().toList();
+    strSubTypeExercice = typeExerciceService.listenAll().listen((listTypeExercice) {
+      groupFilters = listTypeExercice.map((e) => e.name).toSet().toList();
       notifyListeners();
     });
   }
@@ -47,25 +72,6 @@ class ExerciseFilterNotifier extends ChangeNotifier {
     } else {
       groupSelected.add(group);
     }
-
-    if (groupSelected.isNotEmpty) {
-      Query query = FirebaseFirestore.instance.collection(service.getCollectionReference().path).where(
-            'group',
-            whereIn: groupSelected,
-          );
-
-      service.getFromQuery(query).then((value) {
-        streamController.sink.add(value);
-        notifyListeners();
-      });
-    } else {
-      service.getAll().then((listExercise) {
-        streamController.sink.add(listExercise);
-        notifyListeners();
-      });
-    }
-
-    notifyListeners();
   }
 }
 
@@ -76,91 +82,89 @@ class ExercisePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider.value(
-        value: ExerciseFilterNotifier(),
-        builder: (context, child) {
-          Provider.of<ExerciseFilterNotifier>(context, listen: false).init();
-          return SafeArea(
-            child: Scaffold(
-              floatingActionButton: FloatingActionButton(
-                onPressed: () => context.push(FitnessRouter.exercisesNew),
-                child: const Icon(
-                  Icons.add,
-                  color: Colors.white,
-                ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: ExerciseListNotifier()),
+        ChangeNotifierProvider.value(value: ExerciseFilterNotifier()),
+      ],
+      builder: (context, child) {
+        Provider.of<ExerciseListNotifier>(context, listen: false).loadData();
+        Provider.of<ExerciseFilterNotifier>(context, listen: false).loadData();
+        return SafeArea(
+          child: Scaffold(
+            floatingActionButton: FloatingActionButton(
+              onPressed: () => context.push(FitnessRouter.exercisesNew),
+              child: const Icon(
+                Icons.add,
+                color: Colors.white,
               ),
-              appBar: AppBar(
-                elevation: 5,
-                title: Text(
-                  'exercises'.i18n(),
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                        color: Theme.of(context).primaryColor,
-                      ),
-                ),
-                bottom: PreferredSize(
-                  preferredSize: const Size.fromHeight(40),
-                  child: SizedBox(
-                    height: 40,
-                    child: Consumer<ExerciseFilterNotifier>(builder: (context, notifier, child) {
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        itemCount: notifier.groupFilters.length,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(2.0),
-                            child: ChoiceChip(
-                              label: Text(notifier.groupFilters.elementAt(index)),
-                              selected: notifier.isSelected(index),
-                              onSelected: (bool selected) => notifier.setSelected(index),
-                            ),
-                          );
-                        },
-                      );
-                    }),
-                  ),
-                ),
+            ),
+            appBar: AppBar(
+              elevation: 5,
+              title: Text(
+                'exercises'.i18n(),
+                style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                      color: Theme.of(context).primaryColor,
+                    ),
               ),
-              body: StreamBuilder<List<Exercice>>(
-                  stream: Provider.of<ExerciseFilterNotifier>(context, listen: false).listenExercise,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return Text(snapshot.error.toString());
-                    }
-                    if (snapshot.hasData) {
-                      final List<Exercice> listExercise = snapshot.data!;
-                      return ListView.separated(
-                        shrinkWrap: true,
-                        itemCount: listExercise.length,
-                        itemBuilder: (context, index) {
-                          final Exercice exercice = listExercise.elementAt(index);
-                          return ExerciseChoiceCard(
-                            exercise: exercice,
-                            selected: false,
-                            showSelect: false,
-                            onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => AddExercisePage(
-                                  exercise: exercice,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                        separatorBuilder: (BuildContext context, int index) => const Divider(
-                          height: 2.0,
-                          color: Colors.grey,
-                        ),
-                      );
-                    }
-                    return LoadingBouncingGrid.circle(
-                      backgroundColor: Theme.of(context).primaryColor,
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(40),
+                child: SizedBox(
+                  height: 40,
+                  child: Consumer<ExerciseFilterNotifier>(builder: (context, notifier, child) {
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      itemCount: notifier.groupFilters.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: ChoiceChip(
+                            label: Text(notifier.groupFilters.elementAt(index)),
+                            selected: notifier.isSelected(index),
+                            onSelected: (bool selected) {
+                              notifier.setSelected(index);
+                              Provider.of<ExerciseListNotifier>(context, listen: false)
+                                  .searchByGroup(notifier.groupSelected);
+                            },
+                          ),
+                        );
+                      },
                     );
                   }),
+                ),
+              ),
             ),
-          );
-        });
+            body: Consumer<ExerciseListNotifier>(builder: (context, notifier, child) {
+              final List<Exercice> listExercise = notifier.localListExercice;
+              return ListView.separated(
+                shrinkWrap: true,
+                itemCount: listExercise.length,
+                itemBuilder: (context, index) {
+                  final Exercice exercice = listExercise.elementAt(index);
+                  return ExerciseChoiceCard(
+                    exercise: exercice,
+                    showSelect: false,
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => AddExercisePage(
+                          exercise: exercice,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index) => const Divider(
+                  height: 2.0,
+                  color: Colors.grey,
+                ),
+              );
+            }),
+          ),
+        );
+      },
+    );
   }
 }
 

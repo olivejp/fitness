@@ -260,7 +260,7 @@ class ExerciseChoiceCard extends StatelessWidget {
   const ExerciseChoiceCard({
     super.key,
     required this.exercise,
-    required this.selected,
+    this.selected = false,
     this.showSelect = false,
     required this.onTap,
   });

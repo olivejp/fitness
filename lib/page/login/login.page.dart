@@ -20,17 +20,19 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutNotifier(
-      child: Scaffold(
-        backgroundColor: FitnessNcColors.blue50,
-        body: ChangeNotifierProvider.value(
-          value: LoginPageNotifier(),
-          builder: (context, child) {
-            return Consumer<DisplayTypeNotifier>(builder: (context, notifier, child) {
-              return (<DisplayType>[DisplayType.mobile, DisplayType.tablet].contains(notifier.displayType))
-                  ? LoginMobilePage()
-                  : LoginDesktopPage();
-            });
-          },
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: FitnessNcColors.blue50,
+          body: ChangeNotifierProvider.value(
+            value: LoginPageNotifier(),
+            builder: (context, child) {
+              return Consumer<DisplayTypeNotifier>(builder: (context, notifier, child) {
+                return (<DisplayType>[DisplayType.mobile, DisplayType.tablet].contains(notifier.displayType))
+                    ? LoginMobilePage()
+                    : LoginDesktopPage();
+              });
+            },
+          ),
         ),
       ),
     );

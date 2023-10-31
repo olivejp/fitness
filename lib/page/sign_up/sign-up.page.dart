@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnc_user/page/sign_up/sign-up.form.dart';
 import 'package:fitnc_user/page/sign_up/sign-up.notifier.dart';
-import 'package:fitnc_user/widget/bottom.widget.dart';
+import 'package:fitnc_user/widget/bottom_cu.widget.dart';
 import 'package:fitness_domain/constants.dart';
 import 'package:fitness_domain/service/display.service.dart';
 import 'package:flutter/material.dart';

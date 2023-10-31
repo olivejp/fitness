@@ -1,11 +1,15 @@
 import 'package:fitnc_user/page/exercice/add_exercice.notifier.dart';
 import 'package:fitnc_user/page/exercice/stat-exercice.page.dart';
+import 'package:fitnc_user/page/exercice/type_exercice_card.dart';
+import 'package:fitnc_user/service/group_exercice.service.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
+import 'package:fitness_domain/domain/group_exercice.domain.dart';
 import 'package:fitness_domain/service/param.service.dart';
 import 'package:fitness_domain/widget/storage_image.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_animations/loading_animations.dart';
 import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 
@@ -27,6 +31,18 @@ class AddExercisePage extends StatelessWidget {
           Provider.of<AddExercisePageNotifier>(context, listen: false).init(exercise);
           return SafeArea(
             child: Scaffold(
+              floatingActionButton: FloatingActionButton.extended(
+                onPressed: () {
+                  if (formKey.currentState?.validate() == true) {
+                    Provider.of<AddExercisePageNotifier>(context, listen: false)
+                        .save()
+                        .then((_) => Navigator.of(context).pop());
+                  }
+                },
+                label: Text(
+                  'save'.i18n(),
+                ),
+              ),
               bottomNavigationBar: AddExerciseBottomAppBar(formKey: formKey),
               body: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -89,6 +105,34 @@ class AddExercisePage extends StatelessWidget {
                                 ),
                               ],
                             ),
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Flexible(
+                                child: TypeExerciseCard(
+                                  title: const Text('Type'),
+                                  child: const Icon(Icons.create),
+                                  onTap: () {},
+                                ),
+                              ),
+                              Flexible(
+                                child: TypeExerciseCard(
+                                  title: const Text('Groupe'),
+                                  child: controller.exercise.group != null && controller.exercise.group!.isNotEmpty
+                                      ? Text(controller.exercise.group!)
+                                      : const Icon(Icons.create),
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => GroupExerciceChoice(
+                                        onChoose: controller.setGroup,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                           FutureBuilder<List<DropdownMenuItem<String?>>>(
                             initialData: const [],
@@ -194,6 +238,112 @@ class AddExercisePage extends StatelessWidget {
             ),
           );
         });
+  }
+}
+
+class GroupExerciceChoice extends StatelessWidget {
+  GroupExerciceChoice({
+    super.key,
+    required this.onChoose,
+  });
+
+  final void Function(String? value) onChoose;
+  final GlobalKey<State<StatefulWidget>> commentKey = GlobalKey();
+  final GroupExerciceService groupExerciceService = GetIt.I.get();
+  final TextEditingController textController = TextEditingController();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Type exercice'),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            StreamBuilder<List<GroupExercice>>(
+              stream: groupExerciceService.listenAll(),
+              builder: (BuildContext context, AsyncSnapshot<List<GroupExercice>> snapshot) {
+                if (snapshot.hasData) {
+                  final List<GroupExercice> listTypeExercice = snapshot.data!;
+                  if (listTypeExercice.isNotEmpty) {
+                    return ListView.separated(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) => InkWell(
+                        onTap: () {
+                          onChoose(listTypeExercice.elementAt(index).name);
+                          Navigator.of(context).pop();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12.0),
+                          child: Text(
+                            listTypeExercice.elementAt(index).name,
+                            style: GoogleFonts.nunito(fontSize: 16),
+                          ),
+                        ),
+                      ),
+                      separatorBuilder: (BuildContext context, int index) => const Divider(
+                        height: 2,
+                        color: Colors.grey,
+                      ),
+                      itemCount: listTypeExercice.length,
+                    );
+                  } else {
+                    return const Center(
+                      child: Text("Aucun type d'exercice"),
+                    );
+                  }
+                } else {
+                  return Center(child: LoadingBouncingGrid.square());
+                }
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 15),
+              child: Form(
+                key: formKey,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: textController,
+                        decoration: const InputDecoration(hintText: 'Nouveau groupe'),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Le nom est obligatoire';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    OutlinedButton(
+                      onPressed: () {
+                        if (formKey.currentState?.validate() == true) {
+                          groupExerciceService
+                              .create(GroupExercice.fromJson({'name': textController.text}))
+                              .then((value) {
+                            textController.clear();
+                          });
+                        }
+                      },
+                      child: Text('add'.i18n()),
+                    )
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+      actions: [
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text('cancel'.i18n()),
+        ),
+      ],
+    );
   }
 }
 
