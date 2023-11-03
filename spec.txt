@@ -4,4 +4,5 @@ Plusieurs solutions pour mettre les pictos :
 - Les mettre sur l'application. Dans ce cas, elles sont accessibles directement sans téléchargement.
   Mais l'application pèse plus lourd et chaque nouvel ajout d'un picto demande une nouvelle version
   de l'application.
--
+- Deuxièmement, nous pourrions mettre les pictos dans le Storage. Créer une collection qui les référence
+  dans Firestore.
