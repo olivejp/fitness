@@ -4,7 +4,7 @@ import 'package:fitness_domain/domain/storage-file.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-class AddExercisePageNotifier extends ChangeNotifier {
+class ExerciseDetailPageNotifier extends ChangeNotifier {
   final ExerciceService exerciseService = GetIt.I.get();
 
   Exercice exercise = Exercice();

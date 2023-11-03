@@ -26,7 +26,6 @@ class StatExercicePage extends StatelessWidget {
             return Scaffold(
               appBar: AppBar(
                 backgroundColor: Colors.transparent,
-                elevation: 0,
                 title: Text(
                   'Stats : ${exercice.name}',
                   style: GoogleFonts.comfortaa(fontSize: 18),

@@ -138,15 +138,22 @@ class ExerciseChoiceDialog extends StatelessWidget {
               ),
             ),
             appBar: AppBar(
-              elevation: 0,
               title: Text(
                 'exerciseChoice'.i18n(),
                 style: Theme.of(context).textTheme.displaySmall?.copyWith(
                       color: Theme.of(context).primaryColor,
                     ),
               ),
-              foregroundColor: Colors.transparent,
-              backgroundColor: Colors.transparent,
+              leading: IconButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.amber,
+                  size: 36,
+                ),
+              ),
               bottom: PreferredSize(
                 preferredSize: const Size(double.infinity, 50),
                 child: Padding(

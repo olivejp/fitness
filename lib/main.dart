@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:localization/localization.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 
 import 'constants.dart';
@@ -42,41 +43,43 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     LocalJsonLocalization.delegate.directories = ['i18n'];
-    return MultiProvider(
-        providers: [
-          ChangeNotifierProvider.value(value: ApplicationSettingsNotifier()),
-          ChangeNotifierProvider.value(value: DisplayTypeNotifier()),
-          ChangeNotifierProvider.value(value: MainController()),
-          ChangeNotifierProvider.value(value: UserNotifier()),
-        ],
-        builder: (context, child) {
-          final ConfigService configService = GetIt.I.get();
+    return OKToast(
+      child: MultiProvider(
+          providers: [
+            ChangeNotifierProvider.value(value: ApplicationSettingsNotifier()),
+            ChangeNotifierProvider.value(value: DisplayTypeNotifier()),
+            ChangeNotifierProvider.value(value: MainController()),
+            ChangeNotifierProvider.value(value: UserNotifier()),
+          ],
+          builder: (context, child) {
+            final ConfigService configService = GetIt.I.get();
 
-          // Pour les tests sur Cloud Functions
-          if (configService.get(FitnessMobileConstants.profileCommandLineArgument) == 'DEV') {
-            DebugPrinter.printLn(
-                '[WARNING] Application launched with profile DEV : Firebase Function emulators will be used.');
-            FirebaseFunctions.instanceFor(region: FitnessMobileConstants.firebaseRegion)
-                .useFunctionsEmulator('localhost', 5001);
-          }
-          return Consumer<ApplicationSettingsNotifier>(builder: (_, settingsNotifier, __) {
-            return MaterialApp.router(
-              themeMode: settingsNotifier.dark ? ThemeMode.dark : ThemeMode.light,
-              debugShowCheckedModeBanner: false,
-              title: FitnessMobileConstants.appTitle,
-              routerConfig: FitnessRouter.getRouter(),
-              theme: Theming.getLightTheme(),
-              darkTheme: Theming.getDarkTheme(),
-              locale: settingsNotifier.locale,
-              supportedLocales: settingsNotifier.getSupportedLocales(),
-              localizationsDelegates: [
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-                LocalJsonLocalization.delegate,
-              ],
-            );
-          });
-        });
+            // Pour les tests sur Cloud Functions
+            if (configService.get(FitnessMobileConstants.profileCommandLineArgument) == 'DEV') {
+              DebugPrinter.printLn(
+                  '[WARNING] Application launched with profile DEV : Firebase Function emulators will be used.');
+              FirebaseFunctions.instanceFor(region: FitnessMobileConstants.firebaseRegion)
+                  .useFunctionsEmulator('localhost', 5001);
+            }
+            return Consumer<ApplicationSettingsNotifier>(builder: (_, settingsNotifier, __) {
+              return MaterialApp.router(
+                themeMode: settingsNotifier.dark ? ThemeMode.dark : ThemeMode.light,
+                debugShowCheckedModeBanner: false,
+                title: FitnessMobileConstants.appTitle,
+                routerConfig: FitnessRouter.getRouter(),
+                theme: Theming.getLightTheme(),
+                darkTheme: Theming.getDarkTheme(),
+                locale: settingsNotifier.locale,
+                supportedLocales: settingsNotifier.getSupportedLocales(),
+                localizationsDelegates: [
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                  LocalJsonLocalization.delegate,
+                ],
+              );
+            });
+          }),
+    );
   }
 }

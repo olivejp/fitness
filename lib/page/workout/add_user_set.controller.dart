@@ -109,4 +109,12 @@ class UserSetController extends ChangeNotifier {
   Future<Exercice?> getExercise(String uidExercise) {
     return exerciseService.read(uidExercise);
   }
+
+  Future<String> getExerciceImageUrl() async {
+    final Exercice? exercice = await getExercise(userSet.uidExercice);
+    if (exercice != null && exercice.imageUrl != null) {
+      return exercice.imageUrl!;
+    }
+    return '';
+  }
 }

@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnc_user/fitness_router.dart';
 import 'package:fitnc_user/page/sign_up/sign-up.form.dart';
 import 'package:fitnc_user/page/sign_up/sign-up.notifier.dart';
 import 'package:fitnc_user/widget/bottom_cu.widget.dart';
 import 'package:fitness_domain/constants.dart';
 import 'package:fitness_domain/service/display.service.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../constants.dart';
@@ -16,9 +18,7 @@ const double maxWidth = 600;
 const double padding = 30;
 
 class SignUpPage extends StatelessWidget {
-  const SignUpPage({super.key, this.callback});
-
-  final CallbackUserCredential? callback;
+  const SignUpPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,11 +37,11 @@ class SignUpPage extends StatelessWidget {
 
             if (displayTypeService.displayType == DisplayType.desktop) {
               widget = SignUpDesktopPage(
-                callback: callback,
+                callback: (userCredential) => context.go(FitnessRouter.home),
               );
             } else {
               widget = SignUpMobilePage(
-                callback: callback,
+                callback: (userCredential) => context.go(FitnessRouter.home),
               );
             }
 
@@ -58,9 +58,15 @@ class SignUpPage extends StatelessWidget {
                       left: 0,
                       child: Hero(
                         tag: 'IMAGE_ASSET',
-                        child: Image.asset(
-                          '${FitnessMobileConstants.imageLogin}-$size${FitnessMobileConstants.imageLoginExtension}',
-                          fit: BoxFit.cover,
+                        child: ColorFiltered(
+                          colorFilter: const ColorFilter.mode(
+                            Colors.black54,
+                            BlendMode.hardLight,
+                          ),
+                          child: Image.asset(
+                            '${FitnessMobileConstants.imageLogin}-$size${FitnessMobileConstants.imageLoginExtension}',
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                     ),

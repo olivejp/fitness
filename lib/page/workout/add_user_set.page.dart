@@ -6,6 +6,7 @@ import 'package:fitness_domain/domain/user.line.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
@@ -307,42 +308,59 @@ class RowExerciseDetails extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        if (controller.userSet.imageUrlExercice != null)
-          SizedBox.square(
-            dimension: 100,
-            child: Card(
-              clipBehavior: Clip.antiAlias,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: CachedNetworkImage(
-                imageUrl: controller.userSet.imageUrlExercice!,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => LoadingBouncingGrid.circle(),
-                errorWidget: (context, url, error) => Container(
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-            ),
-          ),
-        if (controller.userSet.imageUrlExercice == null)
-          SizedBox.square(
-            dimension: 100,
-            child: Card(
-              clipBehavior: Clip.antiAlias,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Container(
-                color: Theme.of(context).primaryColor,
-              ),
-            ),
-          ),
+        FutureBuilder<String>(
+          future: controller.getExerciceImageUrl(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final String imageUrl = snapshot.data!;
+              if (imageUrl.isNotEmpty) {
+                return SizedBox.square(
+                  dimension: 100,
+                  child: Card(
+                    clipBehavior: Clip.antiAlias,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => LoadingBouncingGrid.circle(),
+                      errorWidget: (context, url, error) => Container(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  ),
+                );
+              } else {
+                return SizedBox.square(
+                  dimension: 100,
+                  child: Card(
+                    clipBehavior: Clip.antiAlias,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Container(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                );
+              }
+            } else {
+              return LoadingBouncingGrid.square();
+            }
+          },
+        ),
         Flexible(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(controller.userSet.nameExercice!),
+              Text(
+                controller.userSet.nameExercice!,
+                style: GoogleFonts.nunito(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
               IconButton(
                 icon: const Icon(
                   Icons.insert_chart_outlined_rounded,

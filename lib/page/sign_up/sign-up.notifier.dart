@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnc_user/service/debug_printer.dart';
 import 'package:fitnc_user/service/fitness-user.service.dart';
 import 'package:fitness_domain/domain/fitness-user.domain.dart';
 import 'package:fitness_domain/service/auth.service.dart';
@@ -103,6 +104,8 @@ class SignUpNotifier extends ChangeNotifier {
   }
 
   void validateSignUp(GlobalKey<FormState> formKey, CallbackUserCredential? callback) {
+    DebugPrinter.printLn('validateSignUp');
+
     cleanError();
     if (formKey.currentState?.validate() == true) {
       setIsLoading(true);

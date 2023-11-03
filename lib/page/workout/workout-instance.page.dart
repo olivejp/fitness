@@ -199,7 +199,6 @@ class WorkoutPage extends StatelessWidget {
             appBar: AppBar(
               backgroundColor: Colors.transparent,
               toolbarHeight: 70,
-              elevation: 0,
               title: Padding(
                 padding: const EdgeInsets.only(top: 0),
                 child: Text(

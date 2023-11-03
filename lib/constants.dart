@@ -9,6 +9,29 @@ class FitnessMobileConstants {
   static const String firebaseRegion = 'australia-southeast1';
   static const String profileCommandLineArgument = 'PROFILE';
   static const String imageLogin = 'images/fitness_login_page/AmaniGymReversed';
+  static const String pAbdoBottom = 'images/picto/abdo_bottom.svg';
+  static const String pabdoFull = 'images/picto/abdo_full.svg';
+  static const String pAbdoLat = 'images/picto/abdo_lat.svg';
+  static const String pAbducteur = 'images/picto/abducteur.svg';
+  static const String pAbducteurRear = 'images/picto/abducteur_rear.svg';
+  static const String pAdducteur = 'images/picto/adducteur.svg';
+  static const String pBiceps = 'images/picto/biceps.svg';
+  static const String pDeltoid = 'images/picto/deltoid.svg';
+  static const String pDeltoidRear = 'images/picto/deltoid_rear.svg';
+  static const String pDroitAnterieur = 'images/picto/droit_anterieur.svg';
+  static const String pFessier = 'images/picto/fessier.svg';
+  static const String pForearmsFront = 'images/picto/forearms_front.svg';
+  static const String pForearmsRear = 'images/picto/forearms_rear.svg';
+  static const String pIscio = 'images/picto/iscio.svg';
+  static const String pLat = 'images/picto/lat.svg';
+  static const String pLombaire = 'images/picto/lombaire.svg';
+  static const String pMollet = 'images/picto/mollet.svg';
+  static const String pMolletFront = 'images/picto/mollet_front.svg';
+  static const String pNeck = 'images/picto/neck.svg';
+  static const String pPecs = 'images/picto/pecs.svg';
+  static const String pTrapeze = 'images/picto/trapeze.svg';
+  static const String pTriceps = 'images/picto/triceps.svg';
+  static const String pVasteInterne = 'images/picto/vaste_interne.svg';
   static const String imageLoginExtension = '.jpg';
 }
 

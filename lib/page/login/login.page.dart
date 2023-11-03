@@ -60,7 +60,12 @@ class LoginForm extends StatelessWidget {
       key: formKey,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          Text(
+            'signIn'.i18n(),
+            style: Theme.of(context).textTheme.displaySmall?.copyWith(color: Colors.white),
+          ),
           Padding(
             padding: EdgeInsets.only(top: paddingTop),
             child: TextFormField(
@@ -73,24 +78,6 @@ class LoginForm extends StatelessWidget {
                 labelText: 'mail'.i18n(),
                 labelStyle: TextStyle(color: Theme.of(context).primaryColor),
                 hintStyle: GoogleFonts.roboto(fontSize: 15),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    width: 0.5,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    width: 0.5,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    width: 0.5,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
               ),
               onChanged: notifierReadOnly.setEmail,
               onFieldSubmitted: (String value) => notifierReadOnly.authenticate(context, formKey),
@@ -126,24 +113,6 @@ class LoginForm extends StatelessWidget {
                       filled: true,
                       labelText: 'password'.i18n(),
                       labelStyle: TextStyle(color: Theme.of(context).primaryColor),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          width: 0.5,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          width: 0.5,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          width: 0.5,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
                       hintStyle: GoogleFonts.roboto(fontSize: 15),
                       suffixIcon: IconButton(
                         tooltip: notifier.hidePassword ? 'showPassword'.i18n() : 'hidePassword'.i18n(),
@@ -160,7 +129,9 @@ class LoginForm extends StatelessWidget {
                 TextButton(
                   onPressed: () {
                     if (notifierReadOnly.email != null && notifierReadOnly.email!.isNotEmpty) {
-                      notifierReadOnly.sendPasswordResetEmail().then(
+                      notifierReadOnly
+                          .sendPasswordResetEmail()
+                          .then(
                             (value) => showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
@@ -174,7 +145,8 @@ class LoginForm extends StatelessWidget {
                                 ],
                               ),
                             ),
-                          );
+                          )
+                          .onError((error, stackTrace) => notifierReadOnly.setLoginMsgError(error.toString()));
                     } else {
                       showToast('pleaseFillEmail'.i18n());
                     }

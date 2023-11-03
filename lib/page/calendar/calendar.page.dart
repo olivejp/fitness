@@ -1,3 +1,4 @@
+import 'package:fitnc_user/constants.dart';
 import 'package:fitnc_user/page/exercice/exercice-choice.dialog.dart';
 import 'package:fitnc_user/page/workout/workout-instance.page.dart';
 import 'package:fitnc_user/service/debug_printer.dart';
@@ -49,25 +50,25 @@ class CalendarPage extends StatelessWidget {
           notifierReadOnly.initialDate = DateTime.now();
           notifierReadOnly.selectedDate = DateTime.now();
           return Scaffold(
+            appBar: AppBar(
+              toolbarHeight: 120,
+              title: StreamBuilder<List<WorkoutInstance>>(
+                  stream: notifierReadOnly.workoutInstanceService.listenAll(),
+                  builder: (_, snapshot) {
+                    List<WorkoutInstance> list = snapshot.hasData ? snapshot.data! : [];
+                    return Timeline(list: list);
+                  }),
+            ),
             floatingActionButton: FloatingActionButton(
               onPressed: () => goToExerciseChoice(context),
               child: const Icon(
                 Icons.add,
-                color: Colors.white,
               ),
             ),
-            body: Column(
-              children: <Widget>[
-                Material(
-                  elevation: 5,
-                  child: StreamBuilder<List<WorkoutInstance>>(
-                      stream: notifierReadOnly.workoutInstanceService.listenAll(),
-                      builder: (_, snapshot) {
-                        List<WorkoutInstance> list = snapshot.hasData ? snapshot.data! : [];
-                        return Timeline(list: list);
-                      }),
-                ),
-                Expanded(
+            body: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
                   child: Consumer<CalendarNotifier>(builder: (context, notifier, child) {
                     return StreamList<WorkoutInstance>(
                       stream: notifier.listenWorkoutInstanceByDate(notifier.selectedDate),
@@ -82,6 +83,7 @@ class CalendarPage extends StatelessWidget {
                       ),
                       emptyWidget: const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
                             'Aucun entrainement !',
@@ -93,7 +95,7 @@ class CalendarPage extends StatelessWidget {
                       ),
                     );
                   }),
-                )
+                ),
               ],
             ),
           );
@@ -198,16 +200,16 @@ class CalendarDayCard extends StatelessWidget {
                     Text(
                       DateFormat('EE').format(dateTime),
                       style: GoogleFonts.nunito(
-                        color: selected ? Theme.of(context).primaryColor : null,
-                        fontSize: 12,
+                        color: selected ? FitnessNcColors.amber : FitnessNcColors.black800,
+                        fontSize: 15,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
                     Text(
                       dateTime.day.toString(),
                       style: GoogleFonts.nunito(
-                        color: selected ? Theme.of(context).primaryColor : Colors.black54,
-                        fontSize: 18,
+                        color: selected ? FitnessNcColors.amber : FitnessNcColors.black800,
+                        fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

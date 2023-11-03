@@ -24,6 +24,7 @@ class Theming {
         ),
         chipTheme: const ChipThemeData(selectedColor: Colors.amber),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          foregroundColor: Colors.white,
           backgroundColor: Colors.amber,
           extendedTextStyle: TextStyle(color: Colors.white),
         ),
@@ -47,8 +48,8 @@ class Theming {
           color: FitnessNcColors.white50,
         ),
         appBarTheme: const AppBarTheme(
+          elevation: 5,
           centerTitle: true,
-          color: Colors.white,
           titleTextStyle: TextStyle(
             color: FitnessNcColors.amber,
           ),

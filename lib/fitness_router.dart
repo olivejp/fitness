@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:fitnc_user/page/calendar/calendar.page.dart';
-import 'package:fitnc_user/page/exercice/add_exercice.page.dart';
+import 'package:fitnc_user/page/exercice/exercice-detail.page.dart';
 import 'package:fitnc_user/page/exercice/exercice.page.dart';
 import 'package:fitnc_user/page/home/home.page.dart';
 import 'package:fitnc_user/page/login/login.page.dart';
@@ -107,7 +107,7 @@ class FitnessRouter {
 
       /// A chaque redirection (context.go()) on vérifie que l'utilisateur est bien connecté.
       /// Sinon on redirige vers la page /sign-in.
-      if (!authService.isConnected()) {
+      if (![signUp, signIn].contains(state.fullPath) && !authService.isConnected()) {
         return signIn;
       }
       return null;
@@ -160,7 +160,7 @@ class FitnessRouter {
                 pageBuilder: (context, state) => buildPageWithDefaultTransition(
                   context: context,
                   state: state,
-                  child: AddExercisePage(),
+                  child: ExerciseDetailPage(),
                 ),
               ),
               GoRoute(

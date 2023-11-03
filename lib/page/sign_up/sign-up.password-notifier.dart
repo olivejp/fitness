@@ -7,9 +7,11 @@ class HidePasswordNotifier extends ChangeNotifier {
 
   void switchPassword1() {
     hidePassword1 = !hidePassword1;
+    notifyListeners();
   }
 
   void switchPassword2() {
     hidePassword2 = !hidePassword2;
+    notifyListeners();
   }
 }

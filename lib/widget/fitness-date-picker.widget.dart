@@ -1,5 +1,7 @@
+import 'package:fitnc_user/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class DateChangePicker extends StatelessWidget {
@@ -174,14 +176,14 @@ class MonthDropDown extends StatelessWidget {
             child: RichText(
               text: TextSpan(
                 text: monthList.elementAt(i),
-                style: TextStyle(
-                  color: Theme.of(context).primaryColor,
+                style: GoogleFonts.nunito(
+                  color: FitnessNcColors.black800,
                   fontSize: 18,
                 ),
                 children: [
                   TextSpan(
                     text: year.toString().substring(2, 4),
-                    style: const TextStyle(
+                    style: GoogleFonts.nunito(
                       fontSize: 19,
                       fontWeight: FontWeight.bold,
                     ),

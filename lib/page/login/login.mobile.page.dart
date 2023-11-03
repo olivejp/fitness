@@ -96,7 +96,12 @@ class LoginMobilePage extends StatelessWidget {
                                 ),
                               ),
                               Consumer<LoginPageNotifier>(builder: (context, notifier, child) {
-                                return Text(notifier.loginMsgError);
+                                return Text(
+                                  notifier.loginMsgError,
+                                  style: const TextStyle(
+                                    color: Colors.red,
+                                  ),
+                                );
                               })
                             ],
                           ),
@@ -136,7 +141,7 @@ class ElevatedLoadingButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    VoidCallback? localOnPressed = isLoading ? onPressed : null;
+    VoidCallback? localOnPressed = isLoading ? null : onPressed;
 
     Widget? widget;
     if (isLoading && loadingWidget != null) {

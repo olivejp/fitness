@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:fitnc_user/fitness_router.dart';
-import 'package:fitnc_user/page/exercice/add_exercice.page.dart';
 import 'package:fitnc_user/page/exercice/exercice-choice.dialog.dart';
+import 'package:fitnc_user/page/exercice/exercice-detail.page.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/service/group_exercice.service.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
@@ -56,6 +56,7 @@ class ExerciseFilterNotifier extends ChangeNotifier {
 
     strSubTypeExercice = typeExerciceService.listenAll().listen((listTypeExercice) {
       groupFilters = listTypeExercice.map((e) => e.name).toSet().toList();
+      groupFilters.sort((a, b) => a.compareTo(b));
       notifyListeners();
     });
   }
@@ -72,6 +73,7 @@ class ExerciseFilterNotifier extends ChangeNotifier {
     } else {
       groupSelected.add(group);
     }
+    notifyListeners();
   }
 }
 
@@ -96,11 +98,9 @@ class ExercisePage extends StatelessWidget {
               onPressed: () => context.push(FitnessRouter.exercisesNew),
               child: const Icon(
                 Icons.add,
-                color: Colors.white,
               ),
             ),
             appBar: AppBar(
-              elevation: 5,
               title: Text(
                 'exercises'.i18n(),
                 style: Theme.of(context).textTheme.displaySmall?.copyWith(
@@ -148,7 +148,7 @@ class ExercisePage extends StatelessWidget {
                     showSelect: false,
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => AddExercisePage(
+                        builder: (context) => ExerciseDetailPage(
                           exercise: exercice,
                         ),
                       ),
@@ -193,7 +193,7 @@ class ExerciseBottomAppBar extends StatelessWidget {
                 icon: const Icon(Icons.add_circle_outline_rounded),
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => AddExercisePage(
+                    builder: (context) => ExerciseDetailPage(
                       exercise: Exercice(),
                     ),
                   ),

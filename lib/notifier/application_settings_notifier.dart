@@ -15,7 +15,11 @@ class ApplicationSettingsNotifier extends ChangeNotifier {
   ApplicationSettingsNotifier() {
     locale = localeFr;
 
-    dark = box.read(isDarkModeKey) ?? false;
+    if (box.hasData(isDarkModeKey)) {
+      dark = box.read(isDarkModeKey);
+    } else {
+      dark = false;
+    }
     notifyListeners();
 
     box.listenKey(isDarkModeKey, (value) {

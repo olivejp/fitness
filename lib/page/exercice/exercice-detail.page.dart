@@ -1,4 +1,4 @@
-import 'package:fitnc_user/page/exercice/add_exercice.notifier.dart';
+import 'package:fitnc_user/page/exercice/exercice-detail.notifier.dart';
 import 'package:fitnc_user/page/exercice/stat-exercice.page.dart';
 import 'package:fitnc_user/page/exercice/type_exercice_card.dart';
 import 'package:fitnc_user/service/group_exercice.service.dart';
@@ -16,8 +16,8 @@ import 'package:provider/provider.dart';
 ///
 /// Widget page to add a new exercise.
 ///
-class AddExercisePage extends StatelessWidget {
-  AddExercisePage({super.key, this.exercise});
+class ExerciseDetailPage extends StatelessWidget {
+  ExerciseDetailPage({super.key, this.exercise});
 
   final ParamService paramService = GetIt.I.get();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -26,30 +26,48 @@ class AddExercisePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
-        value: AddExercisePageNotifier(),
+        value: ExerciseDetailPageNotifier(),
         builder: (context, child) {
-          Provider.of<AddExercisePageNotifier>(context, listen: false).init(exercise);
+          Provider.of<ExerciseDetailPageNotifier>(context, listen: false).init(exercise);
           return SafeArea(
             child: Scaffold(
-              floatingActionButton: FloatingActionButton.extended(
+              appBar: AppBar(
+                toolbarHeight: 70,
+                title: Padding(
+                  padding: const EdgeInsets.only(top: 0),
+                  child: Text(
+                    exercise != null ? 'update'.i18n() : 'createExercise'.i18n(),
+                    style: Theme.of(context).textTheme.displaySmall?.copyWith(color: Theme.of(context).primaryColor),
+                  ),
+                ),
+                leading: IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.amber,
+                    size: 36,
+                  ),
+                ),
+              ),
+              floatingActionButton: FloatingActionButton(
                 onPressed: () {
                   if (formKey.currentState?.validate() == true) {
-                    Provider.of<AddExercisePageNotifier>(context, listen: false)
+                    Provider.of<ExerciseDetailPageNotifier>(context, listen: false)
                         .save()
                         .then((_) => Navigator.of(context).pop());
                   }
                 },
-                label: Text(
-                  'save'.i18n(),
-                ),
+                child: const Icon(Icons.check),
               ),
-              bottomNavigationBar: AddExerciseBottomAppBar(formKey: formKey),
+              // bottomNavigationBar: AddExerciseBottomAppBar(formKey: formKey),
               body: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Form(
                   key: formKey,
                   child: SingleChildScrollView(
-                    child: Consumer<AddExercisePageNotifier>(builder: (context, controller, child) {
+                    child: Consumer<ExerciseDetailPageNotifier>(builder: (context, controller, child) {
                       return Column(
                         children: <Widget>[
                           Padding(
@@ -262,43 +280,49 @@ class GroupExerciceChoice extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            StreamBuilder<List<GroupExercice>>(
-              stream: groupExerciceService.listenAll(),
-              builder: (BuildContext context, AsyncSnapshot<List<GroupExercice>> snapshot) {
-                if (snapshot.hasData) {
-                  final List<GroupExercice> listTypeExercice = snapshot.data!;
-                  if (listTypeExercice.isNotEmpty) {
-                    return ListView.separated(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) => InkWell(
-                        onTap: () {
-                          onChoose(listTypeExercice.elementAt(index).name);
-                          Navigator.of(context).pop();
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12.0),
-                          child: Text(
-                            listTypeExercice.elementAt(index).name,
-                            style: GoogleFonts.nunito(fontSize: 16),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5.0),
+                color: Colors.white30,
+              ),
+              child: StreamBuilder<List<GroupExercice>>(
+                stream: groupExerciceService.listenAll(),
+                builder: (BuildContext context, AsyncSnapshot<List<GroupExercice>> snapshot) {
+                  if (snapshot.hasData) {
+                    final List<GroupExercice> listTypeExercice = snapshot.data!;
+                    if (listTypeExercice.isNotEmpty) {
+                      return ListView.separated(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) => InkWell(
+                          onTap: () {
+                            onChoose(listTypeExercice.elementAt(index).name);
+                            Navigator.of(context).pop();
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 12.0),
+                            child: Text(
+                              listTypeExercice.elementAt(index).name,
+                              style: GoogleFonts.nunito(fontSize: 16),
+                            ),
                           ),
                         ),
-                      ),
-                      separatorBuilder: (BuildContext context, int index) => const Divider(
-                        height: 2,
-                        color: Colors.grey,
-                      ),
-                      itemCount: listTypeExercice.length,
-                    );
+                        separatorBuilder: (BuildContext context, int index) => const Divider(
+                          height: 2,
+                          color: Colors.grey,
+                        ),
+                        itemCount: listTypeExercice.length,
+                      );
+                    } else {
+                      return const Center(
+                        child: Text("Aucun type d'exercice"),
+                      );
+                    }
                   } else {
-                    return const Center(
-                      child: Text("Aucun type d'exercice"),
-                    );
+                    return Center(child: LoadingBouncingGrid.square());
                   }
-                } else {
-                  return Center(child: LoadingBouncingGrid.square());
-                }
-              },
+                },
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 15),
@@ -372,7 +396,7 @@ class AddExerciseBottomAppBar extends StatelessWidget {
                 label: Text('save'.i18n()),
                 onPressed: () {
                   if (formKey.currentState?.validate() == true) {
-                    Provider.of<AddExercisePageNotifier>(context, listen: false)
+                    Provider.of<ExerciseDetailPageNotifier>(context, listen: false)
                         .save()
                         .then((_) => Navigator.of(context).pop());
                   }
