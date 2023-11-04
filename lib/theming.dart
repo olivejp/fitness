@@ -6,71 +6,80 @@ import 'constants.dart';
 class Theming {
   static ThemeData getLightTheme() {
     return ThemeData(
-        useMaterial3: true,
-        primarySwatch: Colors.amber,
-        primaryColor: Colors.amber,
-        filledButtonTheme: FilledButtonThemeData(
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(Colors.orangeAccent),
-            minimumSize: MaterialStateProperty.all(
-              const Size.fromHeight(60),
+      useMaterial3: true,
+      primarySwatch: Colors.amber,
+      primaryColor: Colors.amber,
+      filledButtonTheme: FilledButtonThemeData(
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(Colors.orangeAccent),
+          minimumSize: MaterialStateProperty.all(
+            const Size.fromHeight(60),
+          ),
+          shape: MaterialStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5.0),
             ),
-            shape: MaterialStateProperty.all(
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.0),
+          ),
+        ),
+      ),
+      chipTheme: const ChipThemeData(selectedColor: Colors.amber),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.amber,
+        extendedTextStyle: TextStyle(color: Colors.white),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        unselectedItemColor: FitnessNcColors.darkCardBackground,
+        selectedItemColor: FitnessNcColors.amber,
+        selectedLabelStyle: GoogleFonts.nunito(
+          color: FitnessNcColors.amber,
+          fontSize: 10,
+          fontWeight: FontWeight.w900,
+        ),
+        unselectedLabelStyle: GoogleFonts.nunito(
+          color: FitnessNcColors.darkCardBackground,
+          fontSize: 10,
+          fontWeight: FontWeight.w900,
+        ),
+      ),
+      bottomAppBarTheme: const BottomAppBarTheme(
+        color: FitnessNcColors.white50,
+      ),
+      appBarTheme: const AppBarTheme(
+        elevation: 5,
+        centerTitle: true,
+        titleTextStyle: TextStyle(
+          color: FitnessNcColors.amber,
+        ),
+      ),
+      elevatedButtonTheme: getElevatedButtonTheme(),
+      textButtonTheme: getTextButtonThemeData(),
+      textTheme: getTextTheme(),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: ButtonStyle(
+          foregroundColor: MaterialStateProperty.all(Colors.amber),
+          overlayColor: MaterialStateProperty.all(Colors.amber.shade50),
+          shape: MaterialStateProperty.all(
+            const StadiumBorder(
+              side: BorderSide(
+                color: Colors.amber,
+                width: 3.0,
               ),
             ),
           ),
         ),
-        chipTheme: const ChipThemeData(selectedColor: Colors.amber),
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          foregroundColor: Colors.white,
-          backgroundColor: Colors.amber,
-          extendedTextStyle: TextStyle(color: Colors.white),
-        ),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          unselectedItemColor: FitnessNcColors.darkCardBackground,
-          selectedItemColor: FitnessNcColors.amber,
-          selectedLabelStyle: GoogleFonts.nunito(
-            color: FitnessNcColors.amber,
-            fontSize: 10,
-            fontWeight: FontWeight.w900,
-          ),
-          unselectedLabelStyle: GoogleFonts.nunito(
-            color: FitnessNcColors.darkCardBackground,
-            fontSize: 10,
-            fontWeight: FontWeight.w900,
-          ),
-        ),
-        bottomAppBarTheme: const BottomAppBarTheme(
-          color: FitnessNcColors.white50,
-        ),
-        appBarTheme: const AppBarTheme(
-          elevation: 5,
-          centerTitle: true,
-          titleTextStyle: TextStyle(
-            color: FitnessNcColors.amber,
-          ),
-        ),
-        elevatedButtonTheme: getElevatedButtonTheme(),
-        textButtonTheme: getTextButtonThemeData(),
-        textTheme: getTextTheme(),
-        outlinedButtonTheme: OutlinedButtonThemeData(
-          style: ButtonStyle(
-            foregroundColor: MaterialStateProperty.all(Colors.amber),
-            overlayColor: MaterialStateProperty.all(Colors.amber.shade50),
-            shape: MaterialStateProperty.all(
-              const StadiumBorder(
-                side: BorderSide(
-                  color: Colors.amber,
-                  width: 3.0,
-                ),
-              ),
-            ),
-          ),
-        ));
+      ),
+      checkboxTheme: CheckboxThemeData(
+        fillColor: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) {
+            return Colors.amber;
+          }
+          return null;
+        }),
+      ),
+    );
   }
 
   static TextButtonThemeData getTextButtonThemeData() {
@@ -136,6 +145,14 @@ class Theming {
               color: Colors.amber,
             ),
           ),
+      checkboxTheme: CheckboxThemeData(
+        fillColor: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) {
+            return Colors.amber;
+          }
+          return null;
+        }),
+      ),
     );
   }
 

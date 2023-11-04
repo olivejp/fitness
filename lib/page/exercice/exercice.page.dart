@@ -3,15 +3,24 @@ import 'dart:async';
 import 'package:fitnc_user/fitness_router.dart';
 import 'package:fitnc_user/page/exercice/exercice-choice.dialog.dart';
 import 'package:fitnc_user/page/exercice/exercice-detail.page.dart';
+import 'package:fitnc_user/service/debug_printer.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/service/group_exercice.service.dart';
+import 'package:fitnc_user/service/muscular_group.service.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
-import 'package:fitness_domain/domain/group_exercice.domain.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
+
+class Picto {
+  final String name;
+  final String label;
+  final MuscularPart part;
+
+  Picto(this.name, this.label, this.part);
+}
 
 class ExerciseListNotifier extends ChangeNotifier {
   final ExerciceService service = GetIt.I.get();
@@ -28,10 +37,12 @@ class ExerciseListNotifier extends ChangeNotifier {
     });
   }
 
-  searchByGroup(List<String>? groupSelected) {
+  searchByGroup(List<Picto>? groupSelected) {
     strSubExercice?.cancel();
     if (groupSelected != null && groupSelected.isNotEmpty) {
-      strSubExercice = service.whereListen('group', whereIn: groupSelected).listen((listExercice) {
+      strSubExercice = service
+          .whereListen('group', arrayContainsAny: groupSelected.map((e) => e.name).toList())
+          .listen((listExercice) {
         localListExercice = listExercice;
         notifyListeners();
       });
@@ -46,32 +57,31 @@ class ExerciseListNotifier extends ChangeNotifier {
 
 class ExerciseFilterNotifier extends ChangeNotifier {
   final GroupExerciceService typeExerciceService = GetIt.I.get();
-  StreamSubscription<List<GroupExercice>>? strSubTypeExercice;
+  final MuscularGroupService muscularGroupService = GetIt.I.get();
 
-  List<String> groupFilters = [];
-  List<String> groupSelected = [];
+  List<Picto> groupFilters = [];
+  List<Picto> groupSelected = [];
 
   loadData() {
-    strSubTypeExercice?.cancel();
+    groupFilters.addAll(
+        MuscularGroupService.getListFront().map((e) => Picto(e.name, e.name.toLowerCase().i18n(), e.part)).toList());
+    groupFilters.addAll(
+        MuscularGroupService.getListBack().map((e) => Picto(e.name, e.name.toLowerCase().i18n(), e.part)).toList());
 
-    strSubTypeExercice = typeExerciceService.listenAll().listen((listTypeExercice) {
-      groupFilters = listTypeExercice.map((e) => e.name).toSet().toList();
-      groupFilters.sort((a, b) => a.compareTo(b));
-      notifyListeners();
-    });
+    DebugPrinter.printLn(groupFilters.toString());
   }
 
   bool isSelected(int index) {
-    String group = groupFilters.elementAt(index);
-    return groupSelected.contains(group);
+    final Picto picto = groupFilters.elementAt(index);
+    return groupSelected.contains(picto);
   }
 
   setSelected(int index) {
-    String group = groupFilters.elementAt(index);
-    if (groupSelected.contains(group)) {
-      groupSelected.removeWhere((element) => element == group);
+    final Picto picto = groupFilters.elementAt(index);
+    if (groupSelected.contains(picto)) {
+      groupSelected.removeWhere((element) => element == picto);
     } else {
-      groupSelected.add(group);
+      groupSelected.add(picto);
     }
     notifyListeners();
   }
@@ -121,7 +131,7 @@ class ExercisePage extends StatelessWidget {
                         return Padding(
                           padding: const EdgeInsets.all(2.0),
                           child: ChoiceChip(
-                            label: Text(notifier.groupFilters.elementAt(index)),
+                            label: Text(notifier.groupFilters.elementAt(index).label),
                             selected: notifier.isSelected(index),
                             onSelected: (bool selected) {
                               notifier.setSelected(index);
@@ -201,7 +211,7 @@ class ExerciseBottomAppBar extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: Text('back'.i18n()),
+                child: Text('return'.i18n()),
               ),
             ],
           ),

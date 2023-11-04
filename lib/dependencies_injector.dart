@@ -3,6 +3,7 @@ import 'package:fitnc_user/service/connectivity.service.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/service/fitness-user.service.dart';
 import 'package:fitnc_user/service/group_exercice.service.dart';
+import 'package:fitnc_user/service/muscular_group.service.dart';
 import 'package:fitnc_user/service/published_programme.service.dart';
 import 'package:fitnc_user/service/trainers.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
@@ -14,6 +15,7 @@ import 'package:get_it/get_it.dart';
 
 class GetItDependenciesInjector {
   static initialize() {
+    GetIt.I.registerSingleton(MuscularGroupService());
     GetIt.I.registerSingleton(ConfigService());
     GetIt.I.registerSingleton(ParamService.getInstance());
     GetIt.I.registerSingleton(ConnectivityService());

@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnc_user/service/fitness-user.service.dart';
-import 'package:fitnc_user/widget/picto.widget.dart';
 import 'package:fitness_domain/domain/fitness-user.domain.dart';
 import 'package:fitness_domain/service/auth.service.dart';
 import 'package:flutter/material.dart';
@@ -57,14 +56,6 @@ class HomePage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               MyInfos(),
-              PictoAssetWidget(
-                height: 200,
-                listFront: [
-                  MuscularFrontGroup.PECS,
-                  MuscularFrontGroup.DELTOID,
-                ],
-                listBack: [MuscularBackGroup.TRICEPS, MuscularBackGroup.DELTOID_REAR, MuscularBackGroup.GRAND_ROND],
-              ),
             ],
           ),
         ),

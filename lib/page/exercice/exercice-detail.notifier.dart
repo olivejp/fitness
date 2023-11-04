@@ -26,7 +26,7 @@ class ExerciseDetailPageNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setGroup(String? value) {
+  void setGroup(List<String> value) {
     exercise.group = value;
     notifyListeners();
   }

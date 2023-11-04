@@ -2,6 +2,7 @@ import 'package:fitnc_user/page/exercice/exercice-detail.notifier.dart';
 import 'package:fitnc_user/page/exercice/stat-exercice.page.dart';
 import 'package:fitnc_user/page/exercice/type_exercice_card.dart';
 import 'package:fitnc_user/service/group_exercice.service.dart';
+import 'package:fitnc_user/widget/picto.widget.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/group_exercice.domain.dart';
 import 'package:fitness_domain/service/param.service.dart';
@@ -134,22 +135,22 @@ class ExerciseDetailPage extends StatelessWidget {
                                   onTap: () {},
                                 ),
                               ),
-                              Flexible(
-                                child: TypeExerciseCard(
-                                  title: const Text('Groupe'),
-                                  child: controller.exercise.group != null && controller.exercise.group!.isNotEmpty
-                                      ? Text(controller.exercise.group!)
-                                      : const Icon(Icons.create),
-                                  onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => GroupExerciceChoice(
-                                        onChoose: controller.setGroup,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
+                              // Flexible(
+                              //   child: TypeExerciseCard(
+                              //     title: const Text('Groupe'),
+                              //     child: controller.exercise.group != null && controller.exercise.group!.isNotEmpty
+                              //         ? Text(controller.exercise.group!)
+                              //         : const Icon(Icons.create),
+                              //     onTap: () {
+                              //       showDialog(
+                              //         context: context,
+                              //         builder: (context) => GroupExerciceChoice(
+                              //           onChoose: controller.setGroup,
+                              //         ),
+                              //       );
+                              //     },
+                              //   ),
+                              // ),
                             ],
                           ),
                           FutureBuilder<List<DropdownMenuItem<String?>>>(
@@ -174,32 +175,32 @@ class ExerciseDetailPage extends StatelessWidget {
                               );
                             },
                           ),
-                          TextFormField(
-                            controller: TextEditingController(text: controller.exercise.group),
-                            onChanged: (String group) => controller.exercise.group = group,
-                            decoration: InputDecoration(
-                              labelText: 'group'.i18n(),
-                              hintStyle: GoogleFonts.roboto(fontSize: 15),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  width: 0.5,
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                              ),
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  width: 0.5,
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  width: 0.5,
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                              ),
-                            ),
-                          ),
+                          // TextFormField(
+                          //   controller: TextEditingController(text: controller.exercise.group),
+                          //   onChanged: (String group) => controller.exercise.group = group,
+                          //   decoration: InputDecoration(
+                          //     labelText: 'group'.i18n(),
+                          //     hintStyle: GoogleFonts.roboto(fontSize: 15),
+                          //     focusedBorder: OutlineInputBorder(
+                          //       borderSide: BorderSide(
+                          //         width: 0.5,
+                          //         color: Theme.of(context).primaryColor,
+                          //       ),
+                          //     ),
+                          //     border: OutlineInputBorder(
+                          //       borderSide: BorderSide(
+                          //         width: 0.5,
+                          //         color: Theme.of(context).primaryColor,
+                          //       ),
+                          //     ),
+                          //     enabledBorder: OutlineInputBorder(
+                          //       borderSide: BorderSide(
+                          //         width: 0.5,
+                          //         color: Theme.of(context).primaryColor,
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
                           Padding(
                             padding: const EdgeInsets.only(top: 20),
                             child: TextFormField(
@@ -231,6 +232,35 @@ class ExerciseDetailPage extends StatelessWidget {
                                 ),
                               ),
                             ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Muscles ciblés',
+                                style: GoogleFonts.nunito(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                              PictoAssetWidget(
+                                group: controller.exercise.group,
+                                height: 300,
+                              ),
+                              if (controller.exercise.group != null)
+                                Wrap(
+                                  spacing: 5,
+                                  runSpacing: 5,
+                                  children: controller.exercise.group!
+                                      .map(
+                                        (e) => Chip(
+                                          label: Text(e),
+                                          labelPadding: EdgeInsets.all(2),
+                                        ),
+                                      )
+                                      .toList(),
+                                )
+                            ],
                           ),
                           if (controller.exercise.uid != null)
                             Row(
@@ -403,7 +433,7 @@ class AddExerciseBottomAppBar extends StatelessWidget {
                 },
               ),
               TextButton(
-                child: Text('back'.i18n()),
+                child: Text('return'.i18n()),
                 onPressed: () => Navigator.of(context).pop(),
               )
             ],
