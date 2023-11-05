@@ -2,9 +2,9 @@ import 'package:fitnc_user/service/config.service.dart';
 import 'package:fitnc_user/service/connectivity.service.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/service/fitness-user.service.dart';
-import 'package:fitnc_user/service/group_exercice.service.dart';
 import 'package:fitnc_user/service/muscular_group.service.dart';
 import 'package:fitnc_user/service/published_programme.service.dart';
+import 'package:fitnc_user/service/ref-exercice.service.dart';
 import 'package:fitnc_user/service/trainers.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
@@ -24,8 +24,8 @@ class GetItDependenciesInjector {
     GetIt.I.registerLazySingleton(() => PublishedProgrammeService());
     GetIt.I.registerLazySingleton(() => TrainersService());
     GetIt.I.registerLazySingleton(() => FirebaseStorageService());
+    GetIt.I.registerLazySingleton(() => RefExerciceService());
     GetIt.I.registerLazySingleton(() => ExerciceService());
-    GetIt.I.registerLazySingleton(() => GroupExerciceService());
     GetIt.I.registerLazySingleton(() => WorkoutInstanceService());
     GetIt.I.registerLazySingleton(() => UserSetService());
   }

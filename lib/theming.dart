@@ -28,6 +28,11 @@ class Theming {
         backgroundColor: Colors.amber,
         extendedTextStyle: TextStyle(color: Colors.white),
       ),
+      bottomSheetTheme: BottomSheetThemeData(
+        shadowColor: Colors.red,
+        elevation: 20,
+        modalElevation: 20,
+      ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         showSelectedLabels: true,
         showUnselectedLabels: true,

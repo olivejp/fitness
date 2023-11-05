@@ -3,7 +3,6 @@ import 'package:fitnc_user/page/login/login.mobile.page.dart';
 import 'package:fitnc_user/page/sign_up/sign-up.notifier.dart';
 import 'package:fitnc_user/page/sign_up/sign-up.page.dart';
 import 'package:fitnc_user/page/sign_up/sign-up.password-notifier.dart';
-import 'package:fitnc_user/service/debug_printer.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -195,7 +194,6 @@ class SignUpForm extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 20),
                 child: ElevatedLoadingButton(
                   onPressed: () {
-                    DebugPrinter.printLn('Je suis là');
                     signUpReadOnlyNotifier.validateSignUp(_formKey, callback);
                   },
                   title: 'signUp'.i18n(),

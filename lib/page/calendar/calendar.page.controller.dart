@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:fitnc_user/service/debug_printer.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
@@ -18,12 +17,10 @@ class CalendarNotifier extends ChangeNotifier {
   DateTime get selectedDate => _selectedValue;
 
   set selectedDate(DateTime dateTime) {
-    DebugPrinter.printLn('selectedDate $dateTime');
     _selectedValue = dateTime;
   }
 
   selectDateAndNotify(DateTime dateTime) {
-    DebugPrinter.printLn('Selected date : $dateTime');
     _selectedValue = dateTime;
     notifyListeners();
   }

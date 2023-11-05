@@ -6,20 +6,20 @@ import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 
 class ChoiceMuscularNotifier extends ChangeNotifier {
-  final List<MuscularFrontGroup> _listFront = [];
-  final List<MuscularBackGroup> _listBack = [];
+  final List<MuscularGroup> _listFront = [];
+  final List<MuscularGroup> _listBack = [];
 
-  List<MuscularFrontGroup> getListFront() {
+  List<MuscularGroup> getListFront() {
     _listFront.sort((a, b) => a.order.compareTo(b.order));
     return _listFront;
   }
 
-  List<MuscularBackGroup> getListBack() {
+  List<MuscularGroup> getListBack() {
     _listBack.sort((a, b) => a.order.compareTo(b.order));
     return _listBack;
   }
 
-  void changeFrontGroup(MuscularFrontGroup frontGroup, bool? isSelected) {
+  void changeFrontGroup(MuscularGroup frontGroup, bool? isSelected) {
     if (isSelected == true) {
       addFrontGroup(frontGroup);
     } else {
@@ -27,7 +27,7 @@ class ChoiceMuscularNotifier extends ChangeNotifier {
     }
   }
 
-  void changeBackGroup(MuscularBackGroup backGroup, bool? isSelected) {
+  void changeBackGroup(MuscularGroup backGroup, bool? isSelected) {
     if (isSelected == true) {
       addBackGroup(backGroup);
     } else {
@@ -35,39 +35,39 @@ class ChoiceMuscularNotifier extends ChangeNotifier {
     }
   }
 
-  void addFrontGroup(MuscularFrontGroup frontGroup) {
+  void addFrontGroup(MuscularGroup frontGroup) {
     if (!_listFront.contains(frontGroup)) {
       _listFront.add(frontGroup);
       notifyListeners();
     }
   }
 
-  void removeFrontGroup(MuscularFrontGroup frontGroup) {
+  void removeFrontGroup(MuscularGroup frontGroup) {
     if (_listFront.contains(frontGroup)) {
       _listFront.remove(frontGroup);
       notifyListeners();
     }
   }
 
-  void addBackGroup(MuscularBackGroup backGroup) {
+  void addBackGroup(MuscularGroup backGroup) {
     if (!_listBack.contains(backGroup)) {
       _listBack.add(backGroup);
       notifyListeners();
     }
   }
 
-  void removeBackGroup(MuscularBackGroup backGroup) {
+  void removeBackGroup(MuscularGroup backGroup) {
     if (_listBack.contains(backGroup)) {
       _listBack.remove(backGroup);
       notifyListeners();
     }
   }
 
-  bool isFrontSelected(MuscularFrontGroup frontGroup) {
+  bool isFrontSelected(MuscularGroup frontGroup) {
     return _listFront.contains(frontGroup);
   }
 
-  bool isBackSelected(MuscularBackGroup backGroup) {
+  bool isBackSelected(MuscularGroup backGroup) {
     return _listBack.contains(backGroup);
   }
 }
@@ -82,7 +82,7 @@ class ChoiceMuscularGroup extends StatelessWidget {
         children: [
           Text(MuscularPart.FRONT.name.i18n()),
           Column(
-            children: MuscularFrontGroup.values
+            children: MuscularGroup.values
                 .map((e) => Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -97,7 +97,7 @@ class ChoiceMuscularGroup extends StatelessWidget {
           ),
           Text(MuscularPart.BACK.name.i18n()),
           Column(
-            children: MuscularBackGroup.values
+            children: MuscularGroup.values
                 .map((e) => Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -130,18 +130,18 @@ class PictoAssetWidget extends StatelessWidget {
     return getAssetPath(part.name);
   }
 
-  String getFrontAssetPath(MuscularFrontGroup part) {
+  String getFrontAssetPath(MuscularGroup part) {
     return getAssetPath(part.name);
   }
 
-  String getBackAssetPath(MuscularBackGroup part) {
+  String getBackAssetPath(MuscularGroup part) {
     return getAssetPath(part.name);
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<MuscularFrontGroup> listFront = [];
-    final List<MuscularBackGroup> listBack = [];
+    final List<MuscularGroup> listFront = [];
+    final List<MuscularGroup> listBack = [];
 
     group?.forEach((element) {
       MuscularGroupService.getListFront().forEach((muscularGroup) {

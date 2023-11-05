@@ -37,6 +37,20 @@ class CalendarPage extends StatelessWidget {
     );
   }
 
+  void goToTypeWorkoutChoice(BuildContext context) {
+    final CalendarNotifier controller = Provider.of<CalendarNotifier>(context, listen: false);
+    controller.initialDate = controller.selectedDate;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ExerciseChoiceDialog(
+          isCreation: true,
+          date: controller.selectedDate,
+          workoutInstance: null,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -72,10 +86,7 @@ class CalendarPage extends StatelessWidget {
                   child: Consumer<CalendarNotifier>(builder: (context, notifier, child) {
                     return StreamList<WorkoutInstance>(
                       stream: notifier.listenWorkoutInstanceByDate(notifier.selectedDate),
-                      builder: (BuildContext context, WorkoutInstance domain) {
-                        DebugPrinter.printLn('Test');
-                        return WorkoutInstanceCard(instance: domain);
-                      },
+                      builder: (BuildContext context, WorkoutInstance domain) => WorkoutInstanceCard(instance: domain),
                       padding: const EdgeInsets.only(top: 10),
                       separatorBuilder: (_, index) => const Divider(
                         height: 20,
@@ -133,7 +144,8 @@ class Timeline extends StatelessWidget {
                 onPressed: () {
                   notifierReadOnly.initialDate = DateTime.now();
                   notifierReadOnly.selectedDate = DateTime.now();
-                  Provider.of<TodayNotifier>(context, listen: false).onTodayClick();
+                  notifierReadOnly.selectDateAndNotify(notifierReadOnly.initialDate);
+                  notifier.onTodayClick();
                 },
                 child: Text(
                   'today'.i18n(),
