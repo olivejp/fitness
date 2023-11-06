@@ -6,7 +6,6 @@ import 'package:fitnc_user/page/exercice/exercice.page.dart';
 import 'package:fitnc_user/page/home/home.page.dart';
 import 'package:fitnc_user/page/login/login.page.dart';
 import 'package:fitnc_user/page/main/main.page.dart';
-import 'package:fitnc_user/page/my_programs/my_program.page.dart';
 import 'package:fitnc_user/page/profile/profile.page.dart';
 import 'package:fitnc_user/page/sign_up/sign-up.page.dart';
 import 'package:fitness_domain/service/auth.service.dart';
@@ -57,12 +56,6 @@ class FitnessRouter {
       icon: Icons.calendar_month_outlined,
       selectedIcon: Icons.calendar_month,
       direction: calendar,
-    ),
-    NavigationTarget(
-      label: 'programs',
-      icon: Icons.shop_outlined,
-      selectedIcon: Icons.shop,
-      direction: programs,
     ),
     NavigationTarget(
       label: 'exercises',
@@ -137,14 +130,6 @@ class FitnessRouter {
                   context: context,
                   state: state,
                   child: const CalendarPage(),
-                ),
-              ),
-              GoRoute(
-                path: programs,
-                pageBuilder: (context, state) => buildPageWithDefaultTransition(
-                  context: context,
-                  state: state,
-                  child: MyProgramsPage(),
                 ),
               ),
               GoRoute(
