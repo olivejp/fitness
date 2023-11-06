@@ -31,7 +31,7 @@ class StatExercicePageNotifier extends ChangeNotifier {
   Future<WorkoutInstance?> getWorkoutInstance(String uidWorkout) {
     return workoutInstanceService.read(uidWorkout);
   }
-
+  //
   // List<charts.Series<TimeSeries, DateTime>> toChartSeries(String exerciceUid, List<TimeSeries> data) {
   //   data.sort((a, b) => a.time.compareTo(b.time));
   //   return [

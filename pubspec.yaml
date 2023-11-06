@@ -42,10 +42,6 @@ dependencies:
   get_storage: ^2.0.3
   cron: ^0.5.1
   tuple: ^2.0.0
-#  charts_flutter:
-#    git:
-#      url: git://github.com/google/charts.git
-#      path: charts_flutter
   firebase:
     path: ../fitnc-trainer/packages/firebase
   fitness_domain:
@@ -56,6 +52,7 @@ dependencies:
   provider: ^6.0.5
   go_router: ^12.0.1
   flutter_svg: ^2.0.9
+  fl_chart: ^0.64.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

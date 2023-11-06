@@ -153,22 +153,24 @@ class ExercisePage extends StatelessWidget {
                                             Flexible(
                                               child:
                                                   Consumer<ExerciseFilterNotifier>(builder: (_, notifierFilter, child) {
-                                                return Wrap(
-                                                    children: notifierFilter.groupFilters.map((e) {
-                                                  return Padding(
-                                                    padding: const EdgeInsets.all(2.0),
-                                                    child: ChoiceChip(
-                                                      label: Text(e.label),
-                                                      selected: notifierFilter.isSelected(e),
-                                                      onSelected: (bool selected) {
-                                                        notifierFilter.setSelected(e);
-                                                        Provider.of<ExerciseListNotifier>(scaffoldContext,
-                                                                listen: false)
-                                                            .searchByGroup(notifierFilter.groupSelected);
-                                                      },
-                                                    ),
-                                                  );
-                                                }).toList());
+                                                return SingleChildScrollView(
+                                                  child: Wrap(
+                                                      children: notifierFilter.groupFilters.map((e) {
+                                                    return Padding(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                                                      child: ChoiceChip(
+                                                        label: Text(e.label),
+                                                        selected: notifierFilter.isSelected(e),
+                                                        onSelected: (bool selected) {
+                                                          notifierFilter.setSelected(e);
+                                                          Provider.of<ExerciseListNotifier>(scaffoldContext,
+                                                                  listen: false)
+                                                              .searchByGroup(notifierFilter.groupSelected);
+                                                        },
+                                                      ),
+                                                    );
+                                                  }).toList()),
+                                                );
                                               }),
                                             ),
                                           ],
@@ -201,7 +203,7 @@ class ExercisePage extends StatelessWidget {
                     itemCount: listExercise.length,
                     itemBuilder: (context, index) {
                       final Exercice exercice = listExercise.elementAt(index);
-                      return ExerciseChoiceCard(
+                      return ExerciseCard(
                         exercise: exercice,
                         showSelect: false,
                         onTap: () => Navigator.of(context).push(

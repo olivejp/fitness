@@ -18,16 +18,23 @@ class ExerciseDetailPageNotifier extends ChangeNotifier {
   }
 
   Future<void> save() {
-    return exerciseService.save(exercise);
+    if (exercise.origin == null || exercise.origin != 'REF') {
+      return exerciseService.save(exercise);
+    }
+    return Future.value();
   }
 
   void setStoragePair(StorageFile? storageFile) {
-    exercise.storageFile = storageFile;
-    notifyListeners();
+    if (exercise.origin == null || exercise.origin != 'REF') {
+      exercise.storageFile = storageFile;
+      notifyListeners();
+    }
   }
 
   void setGroup(List<String> value) {
-    exercise.group = value;
-    notifyListeners();
+    if (exercise.origin == null || exercise.origin != 'REF') {
+      exercise.group = value;
+      notifyListeners();
+    }
   }
 }

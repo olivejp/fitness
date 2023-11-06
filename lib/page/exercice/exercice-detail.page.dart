@@ -22,6 +22,13 @@ class ExerciseDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isReadOnly = exercise?.origin == 'REF';
+    final String title = isReadOnly
+        ? 'visualize'.i18n()
+        : exercise != null
+            ? 'update'.i18n()
+            : 'createExercise'.i18n();
+
     return ChangeNotifierProvider.value(
         value: ExerciseDetailPageNotifier(),
         builder: (context, child) {
@@ -33,7 +40,7 @@ class ExerciseDetailPage extends StatelessWidget {
                 title: Padding(
                   padding: const EdgeInsets.only(top: 0),
                   child: Text(
-                    exercise != null ? 'update'.i18n() : 'createExercise'.i18n(),
+                    title,
                     style: Theme.of(context).textTheme.displaySmall?.copyWith(color: Theme.of(context).primaryColor),
                   ),
                 ),
@@ -48,16 +55,18 @@ class ExerciseDetailPage extends StatelessWidget {
                   ),
                 ),
               ),
-              floatingActionButton: FloatingActionButton(
-                onPressed: () {
-                  if (formKey.currentState?.validate() == true) {
-                    Provider.of<ExerciseDetailPageNotifier>(context, listen: false)
-                        .save()
-                        .then((_) => Navigator.of(context).pop());
-                  }
-                },
-                child: const Icon(Icons.check),
-              ),
+              floatingActionButton: isReadOnly
+                  ? null
+                  : FloatingActionButton(
+                      onPressed: () {
+                        if (formKey.currentState?.validate() == true) {
+                          Provider.of<ExerciseDetailPageNotifier>(context, listen: false)
+                              .save()
+                              .then((_) => Navigator.of(context).pop());
+                        }
+                      },
+                      child: const Icon(Icons.check),
+                    ),
               // bottomNavigationBar: AddExerciseBottomAppBar(formKey: formKey),
               body: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -74,6 +83,7 @@ class ExerciseDetailPage extends StatelessWidget {
                                 Row(
                                   children: <Widget>[
                                     StorageImageWidget(
+                                      readOnly: isReadOnly,
                                       imageUrl: controller.exercise.imageUrl,
                                       storageFile: controller.exercise.storageFile,
                                       onSaved: controller.setStoragePair,
@@ -83,6 +93,7 @@ class ExerciseDetailPage extends StatelessWidget {
                                       child: Padding(
                                         padding: const EdgeInsets.only(left: 20),
                                         child: TextFormField(
+                                          readOnly: isReadOnly,
                                           controller: TextEditingController(text: controller.exercise.name),
                                           onChanged: (String name) => controller.exercise.name = name,
                                           validator: (String? value) {
@@ -121,42 +132,15 @@ class ExerciseDetailPage extends StatelessWidget {
                               ],
                             ),
                           ),
-                          // Row(
-                          //   crossAxisAlignment: CrossAxisAlignment.end,
-                          //   children: [
-                          //     // Flexible(
-                          //     //   child: TypeExerciseCard(
-                          //     //     title: const Text('Type'),
-                          //     //     child: const Icon(Icons.create),
-                          //     //     onTap: () {},
-                          //     //   ),
-                          //     // ),
-                          //     // Flexible(
-                          //     //   child: TypeExerciseCard(
-                          //     //     title: const Text('Groupe'),
-                          //     //     child: controller.exercise.group != null && controller.exercise.group!.isNotEmpty
-                          //     //         ? Text(controller.exercise.group!)
-                          //     //         : const Icon(Icons.create),
-                          //     //     onTap: () {
-                          //     //       showDialog(
-                          //     //         context: context,
-                          //     //         builder: (context) => GroupExerciceChoice(
-                          //     //           onChoose: controller.setGroup,
-                          //     //         ),
-                          //     //       );
-                          //     //     },
-                          //     //   ),
-                          //     // ),
-                          //   ],
-                          // ),
                           FutureBuilder<List<DropdownMenuItem<String?>>>(
                             initialData: const [],
                             future: paramService.getFutureParamAsDropdown('type_exercice', onlyName: true),
                             builder: (_, snapshot) {
                               return DropdownButtonFormField<String?>(
                                 key: key,
-                                onChanged: (String? onChangedValue) =>
-                                    controller.exercise.typeExercice = onChangedValue,
+                                onChanged: isReadOnly
+                                    ? null
+                                    : (String? onChangedValue) => controller.exercise.typeExercice = onChangedValue,
                                 value: controller.exercise.typeExercice,
                                 items: snapshot.data,
                                 itemHeight: 50,
@@ -171,35 +155,10 @@ class ExerciseDetailPage extends StatelessWidget {
                               );
                             },
                           ),
-                          // TextFormField(
-                          //   controller: TextEditingController(text: controller.exercise.group),
-                          //   onChanged: (String group) => controller.exercise.group = group,
-                          //   decoration: InputDecoration(
-                          //     labelText: 'group'.i18n(),
-                          //     hintStyle: GoogleFonts.roboto(fontSize: 15),
-                          //     focusedBorder: OutlineInputBorder(
-                          //       borderSide: BorderSide(
-                          //         width: 0.5,
-                          //         color: Theme.of(context).primaryColor,
-                          //       ),
-                          //     ),
-                          //     border: OutlineInputBorder(
-                          //       borderSide: BorderSide(
-                          //         width: 0.5,
-                          //         color: Theme.of(context).primaryColor,
-                          //       ),
-                          //     ),
-                          //     enabledBorder: OutlineInputBorder(
-                          //       borderSide: BorderSide(
-                          //         width: 0.5,
-                          //         color: Theme.of(context).primaryColor,
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
                           Padding(
                             padding: const EdgeInsets.only(top: 20),
                             child: TextFormField(
+                              readOnly: isReadOnly,
                               controller: TextEditingController(text: controller.exercise.description),
                               maxLength: 2000,
                               minLines: 5,
@@ -251,7 +210,7 @@ class ExerciseDetailPage extends StatelessWidget {
                                       .map(
                                         (e) => Chip(
                                           label: Text(e),
-                                          labelPadding: EdgeInsets.all(2),
+                                          labelPadding: const EdgeInsets.all(2),
                                         ),
                                       )
                                       .toList(),

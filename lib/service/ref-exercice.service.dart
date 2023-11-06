@@ -11,6 +11,35 @@ class RefExerciceService extends AbstractFitnessCrudService<Exercice> {
   }
 
   @override
+  Stream<List<Exercice>> whereListen(Object field,
+      {Object? isEqualTo,
+      Object? isNotEqualTo,
+      Object? isLessThan,
+      Object? isLessThanOrEqualTo,
+      Object? isGreaterThan,
+      Object? isGreaterThanOrEqualTo,
+      Object? arrayContains,
+      List<Object?>? arrayContainsAny,
+      List<Object?>? whereIn,
+      List<Object?>? whereNotIn,
+      bool? isNull}) {
+    return super
+        .whereListen(field,
+            isEqualTo: isEqualTo,
+            isNotEqualTo: isNotEqualTo,
+            isLessThan: isLessThan,
+            isLessThanOrEqualTo: isLessThanOrEqualTo,
+            isGreaterThan: isGreaterThan,
+            isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+            arrayContains: arrayContains,
+            arrayContainsAny: arrayContainsAny,
+            whereIn: whereIn,
+            whereNotIn: whereNotIn,
+            isNull: isNull)
+        .map((event) => event.map((e) => e..origin = 'REF').toList());
+  }
+
+  @override
   Stream<List<Exercice>> listenAll() async* {
     yield* getCollectionReference()
         .snapshots()

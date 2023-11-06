@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// TODO peut être supprimer ce widget s'il sert plus à rien.
 class TypeExerciseCard extends StatelessWidget {
   const TypeExerciseCard({super.key, required this.child, required this.onTap, this.title});
 

@@ -14,6 +14,7 @@
   "welcome": "Bienvenue",
   "birth_date": "Date de naissance",
   "update": "Modifier",
+  "visualize": "Consulter",
   "save": "Enregistrer",
   "cancel": "Annuler",
   "delete": "Supprimer",
@@ -126,5 +127,9 @@
   "trapeze": "Trapèze",
   "triceps": "Triceps",
   "vaste_externe": "Vaste externe",
-  "vaste_interne": "Vaste interne"
+  "vaste_interne": "Vaste interne",
+  "reps_only": "Répétition",
+  "time": "Temps",
+  "reps_weight": "Reps Poids",
+  "distance": "Distance"
 }

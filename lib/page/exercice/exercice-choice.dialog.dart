@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:badges/badges.dart' as badges;
 import 'package:fitnc_user/page/exercice/exercice.page.dart';
 import 'package:fitnc_user/page/workout/workout-instance.page.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
@@ -233,22 +234,24 @@ class ExerciseChoiceDialog extends StatelessWidget {
                                       Flexible(
                                         child:
                                             Consumer<ExerciseChoiceFilterNotifier>(builder: (_, notifierFilter, child) {
-                                          return Wrap(
-                                              children: notifierFilter.groupFilters.map((e) {
-                                            return Padding(
-                                              padding: const EdgeInsets.all(2.0),
-                                              child: ChoiceChip(
-                                                label: Text(e.label),
-                                                selected: notifierFilter.isSelected(e),
-                                                onSelected: (bool selected) {
-                                                  notifierFilter.setSelected(e);
-                                                  Provider.of<ExerciseChoiceDialogController>(scaffoldContext,
-                                                          listen: false)
-                                                      .searchByGroup(notifierFilter.groupSelected);
-                                                },
-                                              ),
-                                            );
-                                          }).toList());
+                                          return SingleChildScrollView(
+                                            child: Wrap(
+                                                children: notifierFilter.groupFilters.map((e) {
+                                              return Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                                                child: ChoiceChip(
+                                                  label: Text(e.label),
+                                                  selected: notifierFilter.isSelected(e),
+                                                  onSelected: (bool selected) {
+                                                    notifierFilter.setSelected(e);
+                                                    Provider.of<ExerciseChoiceDialogController>(scaffoldContext,
+                                                            listen: false)
+                                                        .searchByGroup(notifierFilter.groupSelected);
+                                                  },
+                                                ),
+                                              );
+                                            }).toList()),
+                                          );
                                         }),
                                       ),
                                     ],
@@ -298,7 +301,7 @@ class ExerciseChoiceDialog extends StatelessWidget {
                         itemBuilder: (context, index) {
                           final Exercice exercice = listExercise.elementAt(index);
                           return Consumer<ExerciseChoiceDialogController>(builder: (context, notifier, child) {
-                            return ExerciseChoiceCard(
+                            return ExerciseCard(
                               exercise: exercice,
                               showSelect: true,
                               onTap: () => notifier.toggle(exercice),
@@ -324,8 +327,8 @@ class ExerciseChoiceDialog extends StatelessWidget {
   }
 }
 
-class ExerciseChoiceCard extends StatelessWidget {
-  const ExerciseChoiceCard({
+class ExerciseCard extends StatelessWidget {
+  const ExerciseCard({
     super.key,
     required this.exercise,
     this.selected = false,
@@ -363,26 +366,51 @@ class ExerciseChoiceCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Flexible(
-                            child: Text(
-                              exercise.name,
-                              textAlign: TextAlign.start,
-                              style: GoogleFonts.nunito(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w900,
+                            child: (exercise.origin != null && exercise.origin!.isNotEmpty)
+                                ? badges.Badge(
+                                    child: Text(
+                                      exercise.name,
+                                      textAlign: TextAlign.start,
+                                      style: GoogleFonts.nunito(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                  )
+                                : Text(
+                                    exercise.name,
+                                    textAlign: TextAlign.start,
+                                    style: GoogleFonts.nunito(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                  ),
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.amber,
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(3.0),
+                              child: Text(
+                                exercise.typeExercice?.toLowerCase().i18n() ?? '',
+                                style: GoogleFonts.nunito(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w900,
+                                ),
                               ),
                             ),
-                          ),
-                          Text(
-                            exercise.typeExercice ?? '',
-                            style: GoogleFonts.nunito(fontSize: 10),
                           ),
                         ],
                       ),
                       if (exercise.description.isNotEmpty)
-                        Text(
-                          exercise.description,
-                          textAlign: TextAlign.start,
-                          style: GoogleFonts.nunito(fontSize: 12),
+                        Flexible(
+                          child: Text(
+                            exercise.description,
+                            textAlign: TextAlign.start,
+                            style: GoogleFonts.nunito(fontSize: 12),
+                          ),
                         ),
                     ],
                   ),

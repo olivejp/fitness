@@ -8,12 +8,14 @@ import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/service/abstract.service.dart';
 import 'package:fitness_domain/service/auth.service.dart';
 import 'package:get_it/get_it.dart';
-import 'package:rxdart/rxdart.dart';
 
 class ExerciceService extends AbstractFitnessStorageService<Exercice> {
   final FitnessUserService fitnessUserService = GetIt.I.get();
   final AuthService authService = GetIt.I.get();
   final RefExerciceService refExerciceService = GetIt.I.get();
+  final List<Exercice> _listExercice = [];
+  StreamSubscription? str1;
+  StreamSubscription? str2;
 
   @override
   Exercice fromJson(Map<String, dynamic> map) {
@@ -36,16 +38,28 @@ class ExerciceService extends AbstractFitnessStorageService<Exercice> {
   }
 
   Stream<List<Exercice>> listenAllAndRef() {
-    return ZipStream(
-      [
-        refExerciceService.listenAll(),
-        fitnessUserService.listenMyExercices(),
-      ],
-      (values) => values.reduce((value, element) {
-        value.addAll(element);
-        return value;
-      }),
-    );
+    final StreamController<List<Exercice>> streamController = StreamController();
+
+    streamController.onCancel = () {
+      str1?.cancel();
+      str2?.cancel();
+    };
+
+    str1 = refExerciceService.listenAll().listen((listRefExercice) {
+      _listExercice.removeWhere((element) => element.origin == 'REF');
+      _listExercice.addAll(listRefExercice);
+      _listExercice.sort((a, b) => a.name.compareTo(b.name));
+      streamController.sink.add(_listExercice);
+    });
+
+    str2 = fitnessUserService.listenMyExercices().listen((listExercice) {
+      _listExercice.removeWhere((element) => element.origin != 'REF');
+      _listExercice.addAll(listExercice);
+      _listExercice.sort((a, b) => a.name.compareTo(b.name));
+      streamController.sink.add(_listExercice);
+    });
+
+    return streamController.stream;
   }
 
   String getExerciceStoragePath(Exercice exercice) {
