@@ -1,4 +1,5 @@
 import 'package:fitnc_user/service/exercice.service.dart';
+import 'package:fitnc_user/service/muscular_group.service.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/storage-file.dart';
 import 'package:flutter/material.dart';
@@ -9,12 +10,17 @@ class ExerciseDetailPageNotifier extends ChangeNotifier {
 
   Exercice exercise = Exercice();
 
-  void init(Exercice? exercise) {
+  void init(Exercice? exercise, Stream<List<MuscularGroup>> stream) {
     if (exercise == null) {
       this.exercise = Exercice();
     } else {
       this.exercise = exercise;
     }
+
+    stream.listen((event) {
+      this.exercise.group = event.map((e) => e.name).toList();
+      notifyListeners();
+    });
   }
 
   Future<void> save() {

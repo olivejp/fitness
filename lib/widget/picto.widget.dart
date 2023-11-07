@@ -1,74 +1,66 @@
+import 'dart:async';
+
 import 'package:fitnc_user/service/muscular_group.service.dart';
 import 'package:fitness_domain/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 
 class ChoiceMuscularNotifier extends ChangeNotifier {
-  final List<MuscularGroup> _listFront = [];
-  final List<MuscularGroup> _listBack = [];
+  final List<MuscularGroup> _list = [];
+  final StreamController<List<MuscularGroup>> _str = StreamController();
 
-  List<MuscularGroup> getListFront() {
-    _listFront.sort((a, b) => a.order.compareTo(b.order));
-    return _listFront;
+  List<MuscularGroup> get listFront =>
+      MuscularGroup.values.where((element) => element.part == MuscularPart.FRONT).toList();
+
+  List<MuscularGroup> get listBack =>
+      MuscularGroup.values.where((element) => element.part == MuscularPart.BACK).toList();
+
+  Stream<List<MuscularGroup>> get listStream => _str.stream;
+
+  void initList(List<dynamic>? list) {
+    if (list == null) {
+      return;
+    }
+
+    for (var element in list) {
+      for (var muscularGroup in MuscularGroup.values) {
+        if (muscularGroup.name.trim().toUpperCase() == element.toString().trim().toUpperCase()) {
+          _list.add(muscularGroup);
+          break;
+        }
+      }
+    }
   }
 
-  List<MuscularGroup> getListBack() {
-    _listBack.sort((a, b) => a.order.compareTo(b.order));
-    return _listBack;
-  }
-
-  void changeFrontGroup(MuscularGroup frontGroup, bool? isSelected) {
+  void changeGroup(MuscularGroup group, bool? isSelected) {
     if (isSelected == true) {
-      addFrontGroup(frontGroup);
+      addGroup(group);
     } else {
-      removeFrontGroup(frontGroup);
+      removeGroup(group);
     }
   }
 
-  void changeBackGroup(MuscularGroup backGroup, bool? isSelected) {
-    if (isSelected == true) {
-      addBackGroup(backGroup);
-    } else {
-      removeBackGroup(backGroup);
-    }
-  }
-
-  void addFrontGroup(MuscularGroup frontGroup) {
-    if (!_listFront.contains(frontGroup)) {
-      _listFront.add(frontGroup);
+  void addGroup(MuscularGroup group) {
+    if (!_list.contains(group)) {
+      _list.add(group);
+      _str.sink.add(_list);
       notifyListeners();
     }
   }
 
-  void removeFrontGroup(MuscularGroup frontGroup) {
-    if (_listFront.contains(frontGroup)) {
-      _listFront.remove(frontGroup);
+  void removeGroup(MuscularGroup group) {
+    if (_list.contains(group)) {
+      _list.remove(group);
+      _str.sink.add(_list);
       notifyListeners();
     }
   }
 
-  void addBackGroup(MuscularGroup backGroup) {
-    if (!_listBack.contains(backGroup)) {
-      _listBack.add(backGroup);
-      notifyListeners();
-    }
-  }
-
-  void removeBackGroup(MuscularGroup backGroup) {
-    if (_listBack.contains(backGroup)) {
-      _listBack.remove(backGroup);
-      notifyListeners();
-    }
-  }
-
-  bool isFrontSelected(MuscularGroup frontGroup) {
-    return _listFront.contains(frontGroup);
-  }
-
-  bool isBackSelected(MuscularGroup backGroup) {
-    return _listBack.contains(backGroup);
+  bool isSelected(MuscularGroup group) {
+    return _list.contains(group);
   }
 }
 
@@ -78,39 +70,54 @@ class ChoiceMuscularGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<ChoiceMuscularNotifier>(builder: (context, notifier, child) {
-      return Column(
-        children: [
-          Text(MuscularPart.FRONT.name.i18n()),
-          Column(
-            children: MuscularGroup.values
-                .map((e) => Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(e.name),
-                        Checkbox(
-                          value: notifier.isFrontSelected(e),
-                          onChanged: (isSelected) => notifier.changeFrontGroup(e, isSelected),
-                        ),
-                      ],
-                    ))
-                .toList(),
-          ),
-          Text(MuscularPart.BACK.name.i18n()),
-          Column(
-            children: MuscularGroup.values
-                .map((e) => Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(e.name),
-                        Checkbox(
-                          value: notifier.isBackSelected(e),
-                          onChanged: (isSelected) => notifier.changeBackGroup(e, isSelected),
-                        ),
-                      ],
-                    ))
-                .toList(),
-          )
-        ],
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              MuscularPart.FRONT.name.i18n(),
+              style: GoogleFonts.anton(
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            Wrap(
+                runSpacing: 5.0,
+                children: notifier.listFront.map((e) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                    child: ChoiceChip(
+                      label: Text(e.name.i18n()),
+                      selected: notifier.isSelected(e),
+                      onSelected: (bool selected) => notifier.changeGroup(e, selected),
+                    ),
+                  );
+                }).toList()),
+            const SizedBox(
+              height: 10.0,
+            ),
+            Text(
+              MuscularPart.BACK.name.i18n(),
+              style: GoogleFonts.anton(
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            Wrap(
+                runSpacing: 5.0,
+                children: notifier.listBack.map((e) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                    child: ChoiceChip(
+                      label: Text(e.name.i18n()),
+                      selected: notifier.isSelected(e),
+                      onSelected: (bool selected) => notifier.changeGroup(e, selected),
+                    ),
+                  );
+                }).toList()),
+          ],
+        ),
       );
     });
   }

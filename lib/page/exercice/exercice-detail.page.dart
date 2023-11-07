@@ -29,25 +29,35 @@ class ExerciseDetailPage extends StatelessWidget {
             ? 'update'.i18n()
             : 'createExercise'.i18n();
 
-    return ChangeNotifierProvider.value(
-        value: ExerciseDetailPageNotifier(),
-        builder: (context, child) {
-          Provider.of<ExerciseDetailPageNotifier>(context, listen: false).init(exercise);
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: ExerciseDetailPageNotifier()),
+          ChangeNotifierProvider.value(value: ChoiceMuscularNotifier()),
+        ],
+        builder: (providerContext, child) {
+          final ChoiceMuscularNotifier choiceMuscularNotifier =
+              Provider.of<ChoiceMuscularNotifier>(providerContext, listen: false);
+          final ExerciseDetailPageNotifier exerciseDetailPageNotifier =
+              Provider.of<ExerciseDetailPageNotifier>(providerContext, listen: false);
+
+          exerciseDetailPageNotifier.init(exercise, choiceMuscularNotifier.listStream);
+          choiceMuscularNotifier.initList(exercise?.group);
+
           return SafeArea(
             child: Scaffold(
               appBar: AppBar(
-                toolbarHeight: 70,
                 title: Padding(
                   padding: const EdgeInsets.only(top: 0),
                   child: Text(
                     title,
-                    style: Theme.of(context).textTheme.displaySmall?.copyWith(color: Theme.of(context).primaryColor),
+                    style: Theme.of(providerContext)
+                        .textTheme
+                        .displaySmall
+                        ?.copyWith(color: Theme.of(providerContext).primaryColor),
                   ),
                 ),
                 leading: IconButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
+                  onPressed: () => Navigator.of(providerContext).pop(),
                   icon: const Icon(
                     Icons.arrow_back,
                     color: Colors.amber,
@@ -57,15 +67,20 @@ class ExerciseDetailPage extends StatelessWidget {
               ),
               floatingActionButton: isReadOnly
                   ? null
-                  : FloatingActionButton(
+                  : FloatingActionButton.extended(
                       onPressed: () {
                         if (formKey.currentState?.validate() == true) {
-                          Provider.of<ExerciseDetailPageNotifier>(context, listen: false)
+                          Provider.of<ExerciseDetailPageNotifier>(providerContext, listen: false)
                               .save()
-                              .then((_) => Navigator.of(context).pop());
+                              .then((_) => Navigator.of(providerContext).pop());
                         }
                       },
-                      child: const Icon(Icons.check),
+                      label: Row(
+                        children: [
+                          Text('save'.i18n()),
+                          const Icon(Icons.save_alt),
+                        ],
+                      ),
                     ),
               // bottomNavigationBar: AddExerciseBottomAppBar(formKey: formKey),
               body: Padding(
@@ -90,41 +105,59 @@ class ExerciseDetailPage extends StatelessWidget {
                                       onDeleted: () => controller.setStoragePair(null),
                                     ),
                                     Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(left: 20),
-                                        child: TextFormField(
-                                          readOnly: isReadOnly,
-                                          controller: TextEditingController(text: controller.exercise.name),
-                                          onChanged: (String name) => controller.exercise.name = name,
-                                          validator: (String? value) {
-                                            if (value == null || value.isEmpty) {
-                                              return 'pleaseFillExerciseName'.i18n();
-                                            }
-                                            return null;
-                                          },
-                                          decoration: InputDecoration(
-                                            labelText: 'name'.i18n(),
-                                            hintStyle: GoogleFonts.roboto(fontSize: 15),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(
-                                                width: 0.5,
-                                                color: Theme.of(context).primaryColor,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: [
+                                          if (controller.exercise.uid != null)
+                                            TextButton.icon(
+                                              icon: const Icon(Icons.show_chart),
+                                              label: Text(
+                                                'displayStat'.i18n(),
+                                                style: GoogleFonts.nunito(fontSize: 12),
+                                              ),
+                                              onPressed: () => Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) => StatExercicePage(exercice: controller.exercise),
+                                                ),
                                               ),
                                             ),
-                                            border: OutlineInputBorder(
-                                              borderSide: BorderSide(
-                                                width: 0.5,
-                                                color: Theme.of(context).primaryColor,
-                                              ),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(
-                                                width: 0.5,
-                                                color: Theme.of(context).primaryColor,
+                                          Padding(
+                                            padding: const EdgeInsets.only(left: 20),
+                                            child: TextFormField(
+                                              readOnly: isReadOnly,
+                                              controller: TextEditingController(text: controller.exercise.name),
+                                              onChanged: (String name) => controller.exercise.name = name,
+                                              validator: (String? value) {
+                                                if (value == null || value.isEmpty) {
+                                                  return 'pleaseFillExerciseName'.i18n();
+                                                }
+                                                return null;
+                                              },
+                                              decoration: InputDecoration(
+                                                labelText: 'name'.i18n(),
+                                                hintStyle: GoogleFonts.roboto(fontSize: 15),
+                                                focusedBorder: OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    width: 0.5,
+                                                    color: Theme.of(context).primaryColor,
+                                                  ),
+                                                ),
+                                                border: OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    width: 0.5,
+                                                    color: Theme.of(context).primaryColor,
+                                                  ),
+                                                ),
+                                                enabledBorder: OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    width: 0.5,
+                                                    color: Theme.of(context).primaryColor,
+                                                  ),
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
+                                        ],
                                       ),
                                     ),
                                   ],
@@ -188,50 +221,85 @@ class ExerciseDetailPage extends StatelessWidget {
                               ),
                             ),
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Muscles ciblés',
-                                style: GoogleFonts.nunito(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w900,
+                          Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5.0),
+                                border: Border.all(
+                                  color: Colors.amber,
+                                  style: BorderStyle.solid,
+                                  width: 1.0,
                                 ),
                               ),
-                              PictoAssetWidget(
-                                group: controller.exercise.group,
-                                height: 300,
-                              ),
-                              if (controller.exercise.group != null)
-                                Wrap(
-                                  spacing: 5,
-                                  runSpacing: 5,
-                                  children: controller.exercise.group!
-                                      .map(
-                                        (e) => Chip(
-                                          label: Text(e),
-                                          labelPadding: const EdgeInsets.all(2),
-                                        ),
-                                      )
-                                      .toList(),
-                                )
-                            ],
-                          ),
-                          if (controller.exercise.uid != null)
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                TextButton.icon(
-                                  icon: const Icon(Icons.bar_chart),
-                                  label: Text('displayStat'.i18n()),
-                                  onPressed: () => Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => StatExercicePage(exercice: controller.exercise),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  TextButton.icon(
+                                    onPressed: () {
+                                      showModalBottomSheet(
+                                        context: providerContext,
+                                        builder: (modalContext) {
+                                          final ChoiceMuscularNotifier choiceMuscularNotifier =
+                                              Provider.of<ChoiceMuscularNotifier>(providerContext, listen: false);
+                                          return ChangeNotifierProvider.value(
+                                            value: choiceMuscularNotifier,
+                                            builder: (context, child) {
+                                              return Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Column(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: [
+                                                    Row(
+                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                      children: [
+                                                        Container(),
+                                                        Text(
+                                                          'choose'.i18n(),
+                                                          style: Theme.of(providerContext)
+                                                              .textTheme
+                                                              .displaySmall
+                                                              ?.copyWith(
+                                                                color: Theme.of(providerContext).primaryColor,
+                                                              ),
+                                                        ),
+                                                        IconButton(
+                                                          onPressed: () => Navigator.of(context).pop(),
+                                                          icon: const Icon(Icons.close),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const Flexible(
+                                                      child: SingleChildScrollView(
+                                                        child: ChoiceMuscularGroup(),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        },
+                                      );
+                                    },
+                                    icon: const Icon(Icons.add_circle_outline),
+                                    label: Text(
+                                      'choose'.i18n(),
+                                      style: GoogleFonts.nunito(fontSize: 12),
                                     ),
                                   ),
-                                ),
-                              ],
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: PictoAssetWidget(
+                                      group: controller.exercise.group,
+                                      height: 300,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
+                          ),
                         ],
                       );
                     }),

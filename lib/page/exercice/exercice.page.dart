@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:badges/badges.dart' as badges;
 import 'package:fitnc_user/fitness_router.dart';
 import 'package:fitnc_user/page/exercice/exercice-choice.dialog.dart';
 import 'package:fitnc_user/page/exercice/exercice-detail.page.dart';
@@ -70,10 +71,8 @@ class ExerciseFilterNotifier extends ChangeNotifier {
   List<Picto> groupSelected = [];
 
   loadData() {
-    groupFilters.addAll(
-        MuscularGroupService.getListFront().map((e) => Picto(e.name, e.name.toLowerCase().i18n(), e.part)).toList());
-    groupFilters.addAll(
-        MuscularGroupService.getListBack().map((e) => Picto(e.name, e.name.toLowerCase().i18n(), e.part)).toList());
+    groupFilters.addAll(MuscularGroupService.getListFront().map((e) => Picto(e.name, e.name.i18n(), e.part)).toList());
+    groupFilters.addAll(MuscularGroupService.getListBack().map((e) => Picto(e.name, e.name.i18n(), e.part)).toList());
   }
 
   bool isSelected(Picto picto) {
@@ -117,83 +116,101 @@ class ExercisePage extends StatelessWidget {
                         ),
                   ),
                   actions: [
-                    IconButton.outlined(
-                      onPressed: () => showModalBottomSheet(
-                        context: scaffoldContext,
-                        builder: (context) {
-                          final ExerciseFilterNotifier notifierFilter = Provider.of(scaffoldContext, listen: false);
-                          return ChangeNotifierProvider.value(
-                              value: notifierFilter,
-                              builder: (context, child) {
-                                return SizedBox(
-                                  height: 400,
-                                  width: double.infinity,
-                                  child: Column(
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child: IconButton(
+                        onPressed: () => showModalBottomSheet(
+                          context: scaffoldContext,
+                          builder: (context) {
+                            final ExerciseFilterNotifier notifierFilter = Provider.of(scaffoldContext, listen: false);
+                            return ChangeNotifierProvider.value(
+                                value: notifierFilter,
+                                builder: (context, child) {
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'Filtrer',
-                                          style: Theme.of(scaffoldContext).textTheme.displaySmall?.copyWith(
-                                                color: Theme.of(scaffoldContext).primaryColor,
-                                              ),
-                                        ),
-                                      ),
-                                      Flexible(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
-                                              'Groupes musculaires',
-                                              style: GoogleFonts.nunito(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w900,
+                                            Container(),
+                                            Flexible(
+                                              child: Text(
+                                                'Filtrer',
+                                                style: Theme.of(scaffoldContext).textTheme.displaySmall?.copyWith(
+                                                      color: Theme.of(scaffoldContext).primaryColor,
+                                                    ),
                                               ),
                                             ),
-                                            Flexible(
-                                              child:
-                                                  Consumer<ExerciseFilterNotifier>(builder: (_, notifierFilter, child) {
-                                                return SingleChildScrollView(
-                                                  child: Wrap(
-                                                      children: notifierFilter.groupFilters.map((e) {
-                                                    return Padding(
-                                                      padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                                                      child: ChoiceChip(
-                                                        label: Text(e.label),
-                                                        selected: notifierFilter.isSelected(e),
-                                                        onSelected: (bool selected) {
-                                                          notifierFilter.setSelected(e);
-                                                          Provider.of<ExerciseListNotifier>(scaffoldContext,
-                                                                  listen: false)
-                                                              .searchByGroup(notifierFilter.groupSelected);
-                                                        },
-                                                      ),
-                                                    );
-                                                  }).toList()),
-                                                );
-                                              }),
+                                            IconButton(
+                                              onPressed: () => Navigator.of(context).pop(),
+                                              icon: const Icon(Icons.close),
                                             ),
                                           ],
                                         ),
                                       ),
-                                      TextButton(
-                                        onPressed: () => Navigator.of(context).pop(),
-                                        child: const Text('Sortir'),
+                                      Padding(
+                                        padding: const EdgeInsets.only(bottom: 10.0),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Groupes musculaires',
+                                              style: GoogleFonts.anton(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w900,
+                                              ),
+                                            ),
+                                            Consumer<ExerciseFilterNotifier>(builder: (_, notifierFilter, child) {
+                                              return SingleChildScrollView(
+                                                child: Wrap(
+                                                    runSpacing: 5.0,
+                                                    children: notifierFilter.groupFilters.map((e) {
+                                                      return Padding(
+                                                        padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                                                        child: ChoiceChip(
+                                                          label: Text(e.label),
+                                                          selected: notifierFilter.isSelected(e),
+                                                          onSelected: (bool selected) {
+                                                            notifierFilter.setSelected(e);
+                                                            Provider.of<ExerciseListNotifier>(scaffoldContext,
+                                                                    listen: false)
+                                                                .searchByGroup(notifierFilter.groupSelected);
+                                                          },
+                                                        ),
+                                                      );
+                                                    }).toList()),
+                                              );
+                                            }),
+                                          ],
+                                        ),
                                       ),
                                     ],
-                                  ),
-                                );
-                              });
-                        },
+                                  );
+                                });
+                          },
+                        ),
+                        icon: Consumer<ExerciseFilterNotifier>(builder: (context, not, child) {
+                          return badges.Badge(
+                            showBadge: not.groupSelected.isNotEmpty,
+                            child: const Icon(Icons.filter_list),
+                          );
+                        }),
                       ),
-                      icon: const Icon(Icons.filter_list),
                     ),
                   ],
                 ),
-                floatingActionButton: FloatingActionButton(
+                floatingActionButton: FloatingActionButton.extended(
                   onPressed: () => context.push(FitnessRouter.exercisesNew),
-                  child: const Icon(
-                    Icons.add,
+                  label: Row(
+                    children: [
+                      Text('createExercise'.i18n()),
+                      const Icon(
+                        Icons.add,
+                      ),
+                    ],
                   ),
                 ),
                 body: Consumer<ExerciseListNotifier>(builder: (context, notifier, child) {

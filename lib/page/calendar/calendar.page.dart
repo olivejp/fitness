@@ -73,10 +73,15 @@ class CalendarPage extends StatelessWidget {
                     return Timeline(list: list);
                   }),
             ),
-            floatingActionButton: FloatingActionButton(
+            floatingActionButton: FloatingActionButton.extended(
               onPressed: () => goToExerciseChoice(context),
-              child: const Icon(
-                Icons.add,
+              label: Row(
+                children: [
+                  Text('createWorkout'.i18n()),
+                  const Icon(
+                    Icons.add,
+                  ),
+                ],
               ),
             ),
             body: Row(

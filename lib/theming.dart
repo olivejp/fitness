@@ -28,7 +28,7 @@ class Theming {
         backgroundColor: Colors.amber,
         extendedTextStyle: TextStyle(color: Colors.white),
       ),
-      bottomSheetTheme: BottomSheetThemeData(
+      bottomSheetTheme: const BottomSheetThemeData(
         shadowColor: Colors.red,
         elevation: 20,
         modalElevation: 20,

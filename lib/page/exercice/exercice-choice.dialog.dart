@@ -371,18 +371,18 @@ class ExerciseCard extends StatelessWidget {
                                     child: Text(
                                       exercise.name,
                                       textAlign: TextAlign.start,
-                                      style: GoogleFonts.nunito(
+                                      style: GoogleFonts.anton(
                                         fontSize: 16,
-                                        fontWeight: FontWeight.w900,
+                                        fontWeight: FontWeight.w500,
                                       ),
                                     ),
                                   )
                                 : Text(
                                     exercise.name,
                                     textAlign: TextAlign.start,
-                                    style: GoogleFonts.nunito(
+                                    style: GoogleFonts.anton(
                                       fontSize: 16,
-                                      fontWeight: FontWeight.w900,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                           ),
