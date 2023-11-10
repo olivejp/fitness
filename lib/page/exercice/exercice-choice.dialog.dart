@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:badges/badges.dart' as badges;
 import 'package:fitnc_user/page/exercice/exercice.page.dart';
 import 'package:fitnc_user/page/workout/workout-instance.page.dart';
+import 'package:fitnc_user/service/debug_printer.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/service/muscular_group.service.dart';
-import 'package:fitnc_user/service/ref-exercice.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:fitnc_user/widget/network_image.widget.dart';
@@ -26,10 +26,8 @@ class ExerciseChoiceFilterNotifier extends ChangeNotifier {
   List<Picto> groupSelected = [];
 
   ExerciseChoiceFilterNotifier() {
-    groupFilters.addAll(
-        MuscularGroupService.getListFront().map((e) => Picto(e.name, e.name.toLowerCase().i18n(), e.part)).toList());
-    groupFilters.addAll(
-        MuscularGroupService.getListBack().map((e) => Picto(e.name, e.name.toLowerCase().i18n(), e.part)).toList());
+    groupFilters.addAll(MuscularGroupService.getListFront().map((e) => Picto(e.name, e.name.i18n(), e.part)).toList());
+    groupFilters.addAll(MuscularGroupService.getListBack().map((e) => Picto(e.name, e.name.i18n(), e.part)).toList());
   }
 
   bool isSelected(Picto picto) {
@@ -47,8 +45,7 @@ class ExerciseChoiceFilterNotifier extends ChangeNotifier {
 }
 
 class ExerciseChoiceDialogController extends ChangeNotifier {
-  final ExerciceService service = GetIt.I.get();
-  final RefExerciceService refExerciceService = GetIt.I.get();
+  final ExerciceService exerciceService = GetIt.I.get();
   final UserSetService userSetService = GetIt.I.get();
   final WorkoutInstanceService workoutInstanceService = GetIt.I.get();
 
@@ -60,7 +57,7 @@ class ExerciseChoiceDialogController extends ChangeNotifier {
     listChosen.clear();
     strSubExercice?.cancel();
 
-    strSubExercice = service.listenAllAndRef().listen((listExercice) {
+    strSubExercice = exerciceService.listenAllAndRef().listen((listExercice) {
       localListExercice = listExercice;
       notifyListeners();
     });
@@ -71,8 +68,7 @@ class ExerciseChoiceDialogController extends ChangeNotifier {
     if (groupSelected != null && groupSelected.isNotEmpty) {
       strSubExercice = ZipStream(
           [
-            service.whereListen('group', arrayContainsAny: groupSelected.map((e) => e.name).toList()),
-            refExerciceService.whereListen('group', arrayContainsAny: groupSelected.map((e) => e.name).toList()),
+            exerciceService.whereListen('group', arrayContainsAny: groupSelected.map((e) => e.name).toList()),
           ],
           (values) => values.reduce((value, element) {
                 value.addAll(element);
@@ -82,7 +78,7 @@ class ExerciseChoiceDialogController extends ChangeNotifier {
         notifyListeners();
       });
     } else {
-      strSubExercice = service.listenAllAndRef().listen((listExercice) {
+      strSubExercice = exerciceService.listenAllAndRef().listen((listExercice) {
         localListExercice = listExercice;
         notifyListeners();
       });
@@ -141,14 +137,18 @@ class ExerciseChoiceDialogController extends ChangeNotifier {
 
   Future<void> _addUserSet(WorkoutInstance workoutInstance) async {
     for (Exercice exercise in listChosen) {
+      String uidExercice = exercise.uid!;
+      String uidWorkout = workoutInstance.uid!;
+      DebugPrinter.printLn('UidExercice : $uidExercice');
+      DebugPrinter.printLn('UidWorkout : $uidWorkout');
       final UserSet userSet = UserSet(
-          uidExercice: exercise.uid!,
-          uidWorkout: workoutInstance.uid!,
+          uidExercice: uidExercice,
+          uidWorkout: uidWorkout,
           nameExercice: exercise.name,
           imageUrlExercice: exercise.imageUrl,
           typeExercice: exercise.typeExercice,
           date: workoutInstance.date);
-      userSetService.save(userSet);
+      return userSetService.save(userSet);
     }
   }
 }
@@ -198,7 +198,7 @@ class ExerciseChoiceDialog extends StatelessWidget {
               ),
             ),
             actions: [
-              IconButton.outlined(
+              IconButton(
                 onPressed: () => showModalBottomSheet(
                   context: scaffoldContext,
                   builder: (context) {
@@ -206,22 +206,23 @@ class ExerciseChoiceDialog extends StatelessWidget {
                     return ChangeNotifierProvider.value(
                         value: notifierFilter,
                         builder: (context, child) {
-                          return SizedBox(
-                            height: 400,
-                            width: double.infinity,
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    'Filtrer',
-                                    style: Theme.of(scaffoldContext).textTheme.displaySmall?.copyWith(
-                                          color: Theme.of(scaffoldContext).primaryColor,
-                                        ),
-                                  ),
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  'Filtrer',
+                                  style: Theme.of(scaffoldContext).textTheme.displaySmall?.copyWith(
+                                        color: Theme.of(scaffoldContext).primaryColor,
+                                      ),
                                 ),
-                                Flexible(
+                              ),
+                              Flexible(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
                                   child: Column(
+                                    mainAxisSize: MainAxisSize.min,
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
@@ -236,33 +237,30 @@ class ExerciseChoiceDialog extends StatelessWidget {
                                             Consumer<ExerciseChoiceFilterNotifier>(builder: (_, notifierFilter, child) {
                                           return SingleChildScrollView(
                                             child: Wrap(
+                                                runSpacing: 5.0,
                                                 children: notifierFilter.groupFilters.map((e) {
-                                              return Padding(
-                                                padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                                                child: ChoiceChip(
-                                                  label: Text(e.label),
-                                                  selected: notifierFilter.isSelected(e),
-                                                  onSelected: (bool selected) {
-                                                    notifierFilter.setSelected(e);
-                                                    Provider.of<ExerciseChoiceDialogController>(scaffoldContext,
-                                                            listen: false)
-                                                        .searchByGroup(notifierFilter.groupSelected);
-                                                  },
-                                                ),
-                                              );
-                                            }).toList()),
+                                                  return Padding(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                                                    child: ChoiceChip(
+                                                      label: Text(e.label),
+                                                      selected: notifierFilter.isSelected(e),
+                                                      onSelected: (bool selected) {
+                                                        notifierFilter.setSelected(e);
+                                                        Provider.of<ExerciseChoiceDialogController>(scaffoldContext,
+                                                                listen: false)
+                                                            .searchByGroup(notifierFilter.groupSelected);
+                                                      },
+                                                    ),
+                                                  );
+                                                }).toList()),
                                           );
                                         }),
                                       ),
                                     ],
                                   ),
                                 ),
-                                TextButton(
-                                  onPressed: () => Navigator.of(context).pop(),
-                                  child: const Text('Sortir'),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           );
                         });
                   },

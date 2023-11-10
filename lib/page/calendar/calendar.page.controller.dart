@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
@@ -50,7 +51,19 @@ class CalendarNotifier extends ChangeNotifier {
     return workoutInstanceService.listenAll();
   }
 
-  Future<void> deleteWorkout(WorkoutInstance instance) {
+  Future<void> deleteWorkout(WorkoutInstance instance) async {
+    final QuerySnapshot querySnapshot =
+        await workoutInstanceService.getCollectionReference().doc(instance.uid).collection('userSet').get();
+
+    for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+      await workoutInstanceService
+          .getCollectionReference()
+          .doc(instance.uid)
+          .collection('userSet')
+          .doc(doc.id)
+          .delete();
+    }
+
     return workoutInstanceService.delete(instance);
   }
 

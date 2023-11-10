@@ -6,7 +6,6 @@ import 'package:fitness_domain/domain/user.line.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:tuple/tuple.dart';
 
@@ -20,9 +19,31 @@ enum TypeChart {
 class StatExercicePageNotifier extends ChangeNotifier {
   final UserSetService userSetService = GetIt.I.get();
   final WorkoutInstanceService workoutInstanceService = GetIt.I.get();
-  final Rx<Tuple2<String, DateTime>> dateSelected = Tuple2('', DateTime.now()).obs;
-  final Rx<TypeChart> typeChart = TypeChart.volume.obs;
-  final Rx<UserSet> selectedUserSet = UserSet().obs;
+
+  Tuple2<String, DateTime> _dateSelected = Tuple2('', DateTime.now());
+  UserSet _selectedUserSet = UserSet();
+  TypeChart _typeChart = TypeChart.volume;
+
+  TypeChart get typeChart => _typeChart;
+
+  UserSet get selectedUserSet => _selectedUserSet;
+
+  Tuple2<String, DateTime> get dateSelected => _dateSelected;
+
+  set typeChart(TypeChart origin) {
+    _typeChart = origin;
+    notifyListeners();
+  }
+
+  set selectedUserSet(UserSet userSet) {
+    _selectedUserSet = userSet;
+    notifyListeners();
+  }
+
+  set dateSelected(Tuple2<String, DateTime> tuple) {
+    _dateSelected = tuple;
+    notifyListeners();
+  }
 
   Future<List<UserSet>> getAllUserSetByExercice(String exerciceUid) {
     return userSetService.getForExercice(exerciceUid);
@@ -31,19 +52,6 @@ class StatExercicePageNotifier extends ChangeNotifier {
   Future<WorkoutInstance?> getWorkoutInstance(String uidWorkout) {
     return workoutInstanceService.read(uidWorkout);
   }
-  //
-  // List<charts.Series<TimeSeries, DateTime>> toChartSeries(String exerciceUid, List<TimeSeries> data) {
-  //   data.sort((a, b) => a.time.compareTo(b.time));
-  //   return [
-  //     charts.Series<TimeSeries, DateTime>(
-  //       id: exerciceUid,
-  //       colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-  //       domainFn: (TimeSeries sales, _) => sales.time,
-  //       measureFn: (TimeSeries sales, _) => sales.total,
-  //       data: data,
-  //     )
-  //   ];
-  // }
 
   int getVolume(UserSet userSet) {
     int volume = 0;
@@ -82,46 +90,4 @@ class StatExercicePageNotifier extends ChangeNotifier {
     }
     return maxWeight;
   }
-
-// List<charts.Series<TimeSeries, DateTime>> getWorkoutVolume(List<UserSet> listUserSet, Exercice exercice) {
-//   if (listUserSet.isEmpty) {
-//     return [];
-//   }
-//
-//   final String exerciceUid = exercice.uid!;
-//   final data = <TimeSeries>[];
-//   for (UserSet userSet in listUserSet) {
-//     data.add(TimeSeries<UserSet>(userSet.date!, getVolume(userSet), userSet));
-//   }
-//
-//   return toChartSeries(exerciceUid, data);
-// }
-
-// List<charts.Series<TimeSeries, DateTime>> getWorkoutMaxReps(List<UserSet> listUserSet, Exercice exercice) {
-//   if (listUserSet.isEmpty) {
-//     return [];
-//   }
-//
-//   final String exerciceUid = exercice.uid!;
-//   final data = <TimeSeries>[];
-//   for (UserSet userSet in listUserSet) {
-//     data.add(TimeSeries<UserSet>(userSet.date!, getMaxReps(userSet), userSet));
-//   }
-//
-//   return toChartSeries(exerciceUid, data);
-// }
-
-// List<charts.Series<TimeSeries, DateTime>> getWorkoutMaxWeight(List<UserSet> listUserSet, Exercice exercice) {
-//   if (listUserSet.isEmpty) {
-//     return [];
-//   }
-//
-//   final String exerciceUid = exercice.uid!;
-//   final data = <TimeSeries>[];
-//   for (UserSet userSet in listUserSet) {
-//     data.add(TimeSeries<UserSet>(userSet.date!, getMaxWeight(userSet), userSet));
-//   }
-//
-//   return toChartSeries(exerciceUid, data);
-// }
 }

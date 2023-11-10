@@ -145,7 +145,7 @@ class Timeline extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(right: 8),
-              child: OutlinedButton(
+              child: TextButton(
                 onPressed: () {
                   notifierReadOnly.initialDate = DateTime.now();
                   notifierReadOnly.selectedDate = DateTime.now();
@@ -294,7 +294,7 @@ class WorkoutInstanceCard extends StatelessWidget {
                         children: [
                           Text(
                             dateStr,
-                            style: const TextStyle(
+                            style: GoogleFonts.anton(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
                             ),
@@ -410,7 +410,13 @@ class WorkoutInstanceCard extends StatelessWidget {
                           Flexible(
                             child: Column(
                               children: [
-                                if (set.nameExercice != null) Text(set.nameExercice!),
+                                if (set.nameExercice != null)
+                                  Text(
+                                    set.nameExercice!,
+                                    style: GoogleFonts.anton(
+                                      fontWeight: FontWeight.w100,
+                                    ),
+                                  ),
                               ],
                             ),
                           ),
@@ -442,6 +448,7 @@ class WorkoutInstanceCard extends StatelessWidget {
                           ),
                           label: Text(
                             'addExercise'.i18n(),
+                            style: GoogleFonts.anton(),
                           ),
                         ),
                       ],

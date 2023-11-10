@@ -198,7 +198,11 @@ class UserSetUpdate extends StatelessWidget {
                     final GlobalKey keyDist = GlobalKey();
                     final UserLine userLine = controller.listLines.elementAt(index);
                     return Padding(
-                      padding: EdgeInsets.only(right: padding, left: padding, top: 5),
+                      padding: EdgeInsets.only(
+                        right: padding,
+                        left: padding,
+                        top: 5,
+                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[

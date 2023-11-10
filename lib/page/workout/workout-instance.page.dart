@@ -10,6 +10,7 @@ import 'package:fitness_domain/domain/workout-instance.domain.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:localization/localization.dart';
@@ -289,7 +290,10 @@ class WorkoutPage extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               TextButton.icon(
-                                label: Text('addExercise'.i18n()),
+                                label: Text(
+                                  'addExercise'.i18n(),
+                                  style: GoogleFonts.anton(),
+                                ),
                                 icon: const Icon(Icons.add_circle_outline),
                                 onPressed: () => Navigator.of(context).push(
                                   MaterialPageRoute(

@@ -124,6 +124,7 @@ class ExerciseDetailPage extends StatelessWidget {
                                           Padding(
                                             padding: const EdgeInsets.only(left: 20),
                                             child: TextFormField(
+                                              style: GoogleFonts.anton(fontSize: 15),
                                               readOnly: isReadOnly,
                                               controller: TextEditingController(text: controller.exercise.name),
                                               onChanged: (String name) => controller.exercise.name = name,
@@ -135,7 +136,8 @@ class ExerciseDetailPage extends StatelessWidget {
                                               },
                                               decoration: InputDecoration(
                                                 labelText: 'name'.i18n(),
-                                                hintStyle: GoogleFonts.roboto(fontSize: 15),
+                                                labelStyle: GoogleFonts.anton(fontSize: 15),
+                                                hintStyle: GoogleFonts.anton(fontSize: 15),
                                                 focusedBorder: OutlineInputBorder(
                                                   borderSide: BorderSide(
                                                     width: 0.5,
@@ -177,10 +179,13 @@ class ExerciseDetailPage extends StatelessWidget {
                                 value: controller.exercise.typeExercice,
                                 items: snapshot.data,
                                 itemHeight: 50,
+                                style: GoogleFonts.anton(fontSize: 15),
                                 decoration: InputDecoration(
                                   labelText: 'exerciseType'.i18n(),
+                                  labelStyle: GoogleFonts.anton(fontSize: 15),
                                   border: const OutlineInputBorder(),
                                   hintText: 'exerciseType'.i18n(),
+                                  hintStyle: GoogleFonts.anton(fontSize: 15),
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(color: Theme.of(context).primaryColor),
                                   ),
@@ -199,6 +204,8 @@ class ExerciseDetailPage extends StatelessWidget {
                               onChanged: (String description) => controller.exercise.description = description,
                               decoration: InputDecoration(
                                 labelText: 'description'.i18n(),
+                                labelStyle: GoogleFonts.anton(fontSize: 15),
+                                hintStyle: GoogleFonts.anton(fontSize: 15),
                                 helperText: 'optional'.i18n(),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(

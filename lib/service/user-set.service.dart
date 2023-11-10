@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
+import 'package:fitness_domain/domain/user.line.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
 import 'package:fitness_domain/service/abstract.service.dart';
@@ -45,5 +46,43 @@ class UserSetService
       }
       return checked;
     });
+  }
+
+  static double getVolume(UserSet userSet) {
+    double volume = 0;
+    if (userSet.lines.isNotEmpty) {
+      for (UserLine userLine in userSet.lines) {
+        if (userLine.weight != null && userLine.reps != null) {
+          volume += double.parse(userLine.weight!) * double.parse(userLine.reps!);
+        }
+      }
+    }
+    return volume;
+  }
+
+  static double getMaxReps(UserSet userSet) {
+    double maxReps = 0;
+    if (userSet.lines.isNotEmpty) {
+      for (UserLine userLine in userSet.lines) {
+        if (userLine.reps != null) {
+          double userLineReps = double.parse(userLine.reps!);
+          maxReps = (userLineReps > maxReps) ? userLineReps : maxReps;
+        }
+      }
+    }
+    return maxReps;
+  }
+
+  static double getMaxWeight(UserSet userSet) {
+    double maxWeight = 0;
+    if (userSet.lines.isNotEmpty) {
+      for (UserLine userLine in userSet.lines) {
+        if (userLine.weight != null) {
+          double userLineReps = double.parse(userLine.weight!);
+          maxWeight = (userLineReps > maxWeight) ? userLineReps : maxWeight;
+        }
+      }
+    }
+    return maxWeight;
   }
 }
