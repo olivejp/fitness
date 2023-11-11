@@ -88,10 +88,10 @@ class ExerciseChoiceDialogController extends ChangeNotifier {
   }
 
   Future<WorkoutInstance> createNewWorkoutInstance(DateTime dateTime, TypeWorkout typeWorkout) async {
-    DateTime now = DateTime.now();
-    WorkoutInstance instance = WorkoutInstance();
+    final DateTime now = DateTime.now();
+    final WorkoutInstance instance = WorkoutInstance();
     instance.typeWorkout = typeWorkout;
-    instance.date = DateTime(
+    final DateTime date = DateTime(
       dateTime.year,
       dateTime.month,
       dateTime.day,
@@ -99,6 +99,7 @@ class ExerciseChoiceDialogController extends ChangeNotifier {
       now.minute,
       now.second,
     );
+    instance.date = Timestamp.fromMicrosecondsSinceEpoch(date.microsecondsSinceEpoch);
     workoutInstanceService.create(instance);
     return instance;
   }

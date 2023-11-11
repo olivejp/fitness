@@ -71,8 +71,6 @@ class ProfilePage extends StatelessWidget {
                                   padding: const EdgeInsets.only(bottom: bottomPadding),
                                   child: FitnessDecorationTextFormField(
                                       controller: TextEditingController(text: controller.user?.name),
-                                      inputBorder:
-                                          const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
                                       onChanged: (String name) => controller.user?.name = name,
                                       labelText: 'name'.i18n(),
                                       validator: (String? value) {
@@ -86,8 +84,6 @@ class ProfilePage extends StatelessWidget {
                                   padding: const EdgeInsets.only(bottom: bottomPadding),
                                   child: FitnessDecorationTextFormField(
                                       controller: TextEditingController(text: controller.user?.prenom),
-                                      inputBorder:
-                                          const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
                                       onChanged: (String firstName) => controller.user?.prenom = firstName,
                                       labelText: 'surname'.i18n(),
                                       validator: (String? value) {

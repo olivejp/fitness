@@ -292,7 +292,7 @@ class WorkoutPage extends StatelessWidget {
                               TextButton.icon(
                                 label: Text(
                                   'addExercise'.i18n(),
-                                  style: GoogleFonts.anton(),
+                                  style: GoogleFonts.antonio(),
                                 ),
                                 icon: const Icon(Icons.add_circle_outline),
                                 onPressed: () => WorkoutUtility.goToExerciseChoiceDialog(

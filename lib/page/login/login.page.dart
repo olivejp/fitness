@@ -80,8 +80,9 @@ class LoginForm extends StatelessWidget {
                   color: Colors.white,
                 ),
                 labelText: 'mail'.i18n(),
-                labelStyle: TextStyle(color: Theme.of(context).primaryColor),
-                hintStyle: GoogleFonts.roboto(fontSize: 15),
+                labelStyle: GoogleFonts.anton(
+                  color: Colors.white,
+                ),
               ),
               onChanged: notifierReadOnly.setEmail,
               onFieldSubmitted: (String value) => notifierReadOnly.authenticate(context, formKey),
@@ -108,7 +109,7 @@ class LoginForm extends StatelessWidget {
                 Consumer<LoginPageNotifier>(
                   builder: (context, notifier, child) => TextFormField(
                     initialValue: notifier.password,
-                    style: GoogleFonts.roboto(
+                    style: GoogleFonts.nunito(
                       fontSize: 15,
                       color: Colors.white,
                     ),
@@ -117,7 +118,9 @@ class LoginForm extends StatelessWidget {
                     autocorrect: false,
                     decoration: InputDecoration(
                       labelText: 'password'.i18n(),
-                      labelStyle: TextStyle(color: Theme.of(context).primaryColor),
+                      labelStyle: GoogleFonts.anton(
+                        color: Colors.white,
+                      ),
                       hintStyle: GoogleFonts.roboto(fontSize: 15),
                       suffixIcon: IconButton(
                         tooltip: notifier.hidePassword ? 'showPassword'.i18n() : 'hidePassword'.i18n(),
@@ -164,6 +167,7 @@ class LoginForm extends StatelessWidget {
                   },
                   child: Text(
                     'lostPasswordQuestion'.i18n(),
+                    style: GoogleFonts.antonio(),
                   ),
                 ),
               ],

@@ -176,14 +176,14 @@ class MonthDropDown extends StatelessWidget {
             child: RichText(
               text: TextSpan(
                 text: monthList.elementAt(i),
-                style: GoogleFonts.nunito(
+                style: GoogleFonts.antonio(
                   color: FitnessNcColors.black800,
                   fontSize: 18,
                 ),
                 children: [
                   TextSpan(
                     text: year.toString().substring(2, 4),
-                    style: GoogleFonts.nunito(
+                    style: GoogleFonts.anton(
                       fontSize: 19,
                       fontWeight: FontWeight.bold,
                     ),

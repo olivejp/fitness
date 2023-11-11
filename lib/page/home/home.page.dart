@@ -43,7 +43,7 @@ class HomePage extends StatelessWidget {
                 }
                 return Text(
                   '${'welcome'.i18n()} $name 👋',
-                  style: GoogleFonts.nunito(
+                  style: GoogleFonts.antonio(
                     color: Colors.black,
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
@@ -83,7 +83,7 @@ class MyInfos extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Text(
               'Mes informations',
-              style: GoogleFonts.nunito(fontSize: 16, fontWeight: FontWeight.w900),
+              style: GoogleFonts.antonio(fontSize: 16, fontWeight: FontWeight.w900),
             ),
           ),
           SizedBox(

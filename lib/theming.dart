@@ -7,6 +7,24 @@ class Theming {
   static ThemeData getLightTheme() {
     return ThemeData(
       useMaterial3: true,
+      textSelectionTheme: const TextSelectionThemeData(
+        cursorColor: Colors.amber,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        hintStyle: GoogleFonts.anton(),
+        labelStyle: GoogleFonts.anton(),
+        hoverColor: Colors.amberAccent,
+        enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.grey,
+          ),
+        ),
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.amber,
+          ),
+        ),
+      ),
       primarySwatch: Colors.amber,
       primaryColor: Colors.amber,
       filledButtonTheme: FilledButtonThemeData(
@@ -23,10 +41,10 @@ class Theming {
         ),
       ),
       chipTheme: const ChipThemeData(selectedColor: Colors.amber),
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
         foregroundColor: Colors.white,
         backgroundColor: Colors.amber,
-        extendedTextStyle: TextStyle(color: Colors.white),
+        extendedTextStyle: GoogleFonts.antonio(),
       ),
       bottomSheetTheme: const BottomSheetThemeData(
         shadowColor: Colors.red,
@@ -38,15 +56,14 @@ class Theming {
         showUnselectedLabels: true,
         unselectedItemColor: FitnessNcColors.darkCardBackground,
         selectedItemColor: FitnessNcColors.amber,
-        selectedLabelStyle: GoogleFonts.nunito(
+        selectedLabelStyle: GoogleFonts.antonio(
           color: FitnessNcColors.amber,
           fontSize: 10,
           fontWeight: FontWeight.w900,
         ),
-        unselectedLabelStyle: GoogleFonts.nunito(
+        unselectedLabelStyle: GoogleFonts.antonio(
           color: FitnessNcColors.darkCardBackground,
           fontSize: 10,
-          fontWeight: FontWeight.w900,
         ),
       ),
       bottomAppBarTheme: const BottomAppBarTheme(

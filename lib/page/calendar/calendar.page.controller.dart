@@ -36,9 +36,11 @@ class CalendarNotifier extends ChangeNotifier {
   }
 
   Future<WorkoutInstance> createNewWorkoutInstance(DateTime dateTime) async {
-    DateTime now = DateTime.now();
-    WorkoutInstance instance = WorkoutInstance();
-    instance.date = DateTime(dateTime.year, dateTime.month, dateTime.day, now.hour, now.minute, now.second);
+    final DateTime now = DateTime.now();
+    final WorkoutInstance instance = WorkoutInstance();
+    final int microSecondSinceEpoch =
+        DateTime(dateTime.year, dateTime.month, dateTime.day, now.hour, now.minute, now.second).microsecondsSinceEpoch;
+    instance.date = Timestamp.fromMicrosecondsSinceEpoch(microSecondSinceEpoch);
     workoutInstanceService.create(instance);
     return instance;
   }

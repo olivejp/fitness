@@ -24,8 +24,11 @@ class SignUpForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final OutlineInputBorder defaultBorder = OutlineInputBorder(
-      borderSide: BorderSide(width: 0.5, color: Theme.of(context).primaryColor),
+    final InputBorder defaultBorder = UnderlineInputBorder(
+      borderSide: BorderSide(
+        width: 0.5,
+        color: Theme.of(context).primaryColor,
+      ),
     );
 
     return MultiProvider(
@@ -49,10 +52,12 @@ class SignUpForm extends StatelessWidget {
                 child: TextFormField(
                   style: GoogleFonts.roboto(fontSize: 15),
                   decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
-                    suffixIcon: const Icon(Icons.email),
+                    suffixIcon: const Icon(
+                      Icons.email,
+                      color: Colors.white,
+                    ),
                     labelText: 'mail'.i18n(),
+                    labelStyle: GoogleFonts.anton(color: Colors.white),
                     focusedBorder: defaultBorder,
                     border: defaultBorder,
                     enabledBorder: defaultBorder,
@@ -76,13 +81,11 @@ class SignUpForm extends StatelessWidget {
                 child: TextFormField(
                     style: GoogleFonts.roboto(fontSize: 15),
                     decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      filled: true,
-                      labelStyle: GoogleFonts.roboto(fontSize: 15),
                       focusedBorder: defaultBorder,
                       border: defaultBorder,
                       enabledBorder: defaultBorder,
                       labelText: 'name'.i18n(),
+                      labelStyle: GoogleFonts.anton(color: Colors.white),
                     ),
                     onChanged: signUpReadOnlyNotifier.setName,
                     validator: (String? value) {
@@ -97,12 +100,11 @@ class SignUpForm extends StatelessWidget {
                 child: TextFormField(
                     style: GoogleFonts.roboto(fontSize: 15),
                     decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      filled: true,
                       labelText: 'surname'.i18n(),
                       focusedBorder: defaultBorder,
                       border: defaultBorder,
                       enabledBorder: defaultBorder,
+                      labelStyle: GoogleFonts.anton(color: Colors.white),
                     ),
                     onChanged: signUpReadOnlyNotifier.setPrenom,
                     validator: (String? value) {
@@ -118,10 +120,12 @@ class SignUpForm extends StatelessWidget {
                   style: GoogleFonts.roboto(fontSize: 15),
                   onChanged: signUpReadOnlyNotifier.setTelephone,
                   decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
-                    suffixIcon: const Icon(Icons.phone_android),
+                    suffixIcon: const Icon(
+                      Icons.phone_android,
+                      color: Colors.white,
+                    ),
                     labelText: 'phone'.i18n(),
+                    labelStyle: GoogleFonts.anton(color: Colors.white),
                     focusedBorder: defaultBorder,
                     border: defaultBorder,
                     enabledBorder: defaultBorder,
@@ -136,9 +140,8 @@ class SignUpForm extends StatelessWidget {
                       onChanged: signUpReadOnlyNotifier.setPassword,
                       obscureText: hidePasswordController.hidePassword1,
                       decoration: InputDecoration(
-                          fillColor: Colors.white,
-                          filled: true,
                           labelText: 'password'.i18n(),
+                          labelStyle: GoogleFonts.anton(color: Colors.white),
                           focusedBorder: defaultBorder,
                           border: defaultBorder,
                           enabledBorder: defaultBorder,
@@ -147,8 +150,14 @@ class SignUpForm extends StatelessWidget {
                                 hidePasswordController.hidePassword1 ? 'showPassword'.i18n() : 'hidePassword'.i18n(),
                             onPressed: hidePasswordController.switchPassword1,
                             icon: hidePasswordController.hidePassword1
-                                ? const Icon(Icons.visibility_outlined)
-                                : const Icon(Icons.visibility_off_outlined),
+                                ? const Icon(
+                                    Icons.visibility_outlined,
+                                    color: Colors.white,
+                                  )
+                                : const Icon(
+                                    Icons.visibility_off_outlined,
+                                    color: Colors.white,
+                                  ),
                           )),
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
@@ -166,19 +175,25 @@ class SignUpForm extends StatelessWidget {
                       onChanged: signUpReadOnlyNotifier.setPasswordCheck,
                       obscureText: hidePasswordNotifier.hidePassword2,
                       decoration: InputDecoration(
-                          fillColor: Colors.white,
-                          filled: true,
-                          focusedBorder: defaultBorder,
-                          border: defaultBorder,
-                          enabledBorder: defaultBorder,
-                          labelText: 'retypePassword'.i18n(),
-                          suffixIcon: IconButton(
-                              tooltip:
-                                  hidePasswordNotifier.hidePassword2 ? 'showPassword'.i18n() : 'hidePassword'.i18n(),
-                              onPressed: hidePasswordNotifier.switchPassword2,
-                              icon: hidePasswordNotifier.hidePassword2
-                                  ? const Icon(Icons.visibility_outlined)
-                                  : const Icon(Icons.visibility_off_outlined))),
+                        focusedBorder: defaultBorder,
+                        border: defaultBorder,
+                        enabledBorder: defaultBorder,
+                        labelText: 'retypePassword'.i18n(),
+                        labelStyle: GoogleFonts.anton(color: Colors.white),
+                        suffixIcon: IconButton(
+                          tooltip: hidePasswordNotifier.hidePassword2 ? 'showPassword'.i18n() : 'hidePassword'.i18n(),
+                          onPressed: hidePasswordNotifier.switchPassword2,
+                          icon: hidePasswordNotifier.hidePassword2
+                              ? const Icon(
+                                  Icons.visibility_outlined,
+                                  color: Colors.white,
+                                )
+                              : const Icon(
+                                  Icons.visibility_off_outlined,
+                                  color: Colors.white,
+                                ),
+                        ),
+                      ),
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
                           return 'noEmptyPassword'.i18n();
@@ -197,6 +212,9 @@ class SignUpForm extends StatelessWidget {
                     signUpReadOnlyNotifier.validateSignUp(_formKey, callback);
                   },
                   title: 'signUp'.i18n(),
+                  style: GoogleFonts.antonio(
+                    fontSize: 18.0,
+                  ),
                   isLoading: signUpReadOnlyNotifier.isLoading,
                 ),
               ),
@@ -207,12 +225,13 @@ class SignUpForm extends StatelessWidget {
                   children: <Widget>[
                     Text(
                       'haveAnAccount'.i18n(),
-                      style: TextStyle(color: accountTextColor),
+                      style: GoogleFonts.antonio(color: accountTextColor),
                     ),
                     TextButton(
                       onPressed: () => context.go(FitnessRouter.signIn),
                       child: Text(
                         'signIn'.i18n(),
+                        style: GoogleFonts.antonio(),
                       ),
                     ),
                   ],

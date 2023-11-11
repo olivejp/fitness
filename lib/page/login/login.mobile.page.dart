@@ -5,6 +5,7 @@ import 'package:fitnc_user/widget/bottom_cu.widget.dart';
 import 'package:fitness_domain/service/display.service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
@@ -85,6 +86,9 @@ class LoginMobilePage extends StatelessWidget {
                                     onPressed: () => notifier.authenticate(context, formKey),
                                     isLoading: notifier.isLoading,
                                     title: 'continue'.i18n(),
+                                    style: GoogleFonts.antonio(
+                                      fontSize: 18.0,
+                                    ),
                                   );
                                 }),
                               ),
@@ -92,7 +96,10 @@ class LoginMobilePage extends StatelessWidget {
                                 padding: const EdgeInsets.only(top: 15),
                                 child: TextButton(
                                   onPressed: () => context.go(FitnessRouter.signUp),
-                                  child: Text('signUp'.i18n()),
+                                  child: Text(
+                                    'signUp'.i18n(),
+                                    style: GoogleFonts.antonio(),
+                                  ),
                                 ),
                               ),
                               Consumer<LoginPageNotifier>(builder: (context, notifier, child) {
@@ -132,12 +139,14 @@ class ElevatedLoadingButton extends StatelessWidget {
     required this.title,
     required this.isLoading,
     this.loadingWidget,
+    this.style,
   });
 
   final VoidCallback? onPressed;
   final String title;
   final bool isLoading;
   final Widget? loadingWidget;
+  final TextStyle? style;
 
   @override
   Widget build(BuildContext context) {
@@ -170,9 +179,7 @@ class ElevatedLoadingButton extends StatelessWidget {
             ? widget
             : Text(
                 title,
-                style: const TextStyle(
-                  color: Colors.white,
-                ),
+                style: style,
               ),
       ),
     );

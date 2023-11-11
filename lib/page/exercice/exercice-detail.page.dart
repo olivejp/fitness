@@ -201,6 +201,7 @@ class ExerciseDetailPage extends StatelessWidget {
                               maxLength: 2000,
                               minLines: 5,
                               maxLines: 20,
+                              style: GoogleFonts.antonio(),
                               onChanged: (String description) => controller.exercise.description = description,
                               decoration: InputDecoration(
                                 labelText: 'description'.i18n(),
