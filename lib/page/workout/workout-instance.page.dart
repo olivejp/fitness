@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
-import 'package:fitnc_user/page/exercice/exercice-choice.dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitnc_user/page/workout/add_user_set.page.dart';
+import 'package:fitnc_user/service/calendar_service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
@@ -20,7 +21,7 @@ import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 import './stepper.data.dart';
 
-class WorkoutPageController extends ChangeNotifier {
+class WorkoutPageNotifier extends ChangeNotifier {
   final WorkoutInstanceService service = GetIt.I.get();
   final UserSetService userSetService = GetIt.I.get();
 
@@ -46,7 +47,7 @@ class WorkoutPageController extends ChangeNotifier {
   int timerSecond = 0;
   StreamSubscription? timerSubscription;
 
-  WorkoutPageController() {
+  WorkoutPageNotifier() {
     // To play asset we need AudioCache. But AudioCache is not provided for Web.
     // see {https://github.com/bluefireteam/audioplayers/blob/master/packages/audioplayers/doc/audio_cache.md}
     if (kIsWeb) {
@@ -182,9 +183,9 @@ class WorkoutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
-      value: WorkoutPageController(),
+      value: WorkoutPageNotifier(),
       builder: (context, child) {
-        final WorkoutPageController notifierReadOnly = Provider.of<WorkoutPageController>(context, listen: false);
+        final WorkoutPageNotifier notifierReadOnly = Provider.of<WorkoutPageNotifier>(context, listen: false);
         notifierReadOnly.init(instance, goToLastPage: goToLastPage);
         return SafeArea(
           child: Scaffold(
@@ -203,14 +204,13 @@ class WorkoutPage extends StatelessWidget {
               title: Padding(
                 padding: const EdgeInsets.only(top: 0),
                 child: Text(
-                  DateFormat('dd/MM/yy - kk:mm').format(instance.date!),
+                  DateFormat('dd/MM/yy - kk:mm').format(
+                      DateTime.fromMicrosecondsSinceEpoch((instance.date! as Timestamp).microsecondsSinceEpoch)),
                   style: Theme.of(context).textTheme.displaySmall?.copyWith(color: Theme.of(context).primaryColor),
                 ),
               ),
               leading: IconButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
+                onPressed: Navigator.of(context).pop,
                 icon: const Icon(
                   Icons.arrow_back,
                   color: Colors.amber,
@@ -242,7 +242,7 @@ class WorkoutPage extends StatelessWidget {
             ),
             body: Column(
               children: <Widget>[
-                Consumer<WorkoutPageController>(
+                Consumer<WorkoutPageNotifier>(
                   builder: (context, notifier, child) {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -295,13 +295,12 @@ class WorkoutPage extends StatelessWidget {
                                   style: GoogleFonts.anton(),
                                 ),
                                 icon: const Icon(Icons.add_circle_outline),
-                                onPressed: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => ExerciseChoiceDialog(
-                                      workoutInstance: instance,
-                                      popOnChoice: true,
-                                    ),
-                                  ),
+                                onPressed: () => WorkoutUtility.goToExerciseChoiceDialog(
+                                  context: context,
+                                  workoutInstance: instance,
+                                  isCreation: false,
+                                  popOnChoice: false,
+                                  dateTime: null,
                                 ),
                               ),
                             ],
@@ -347,7 +346,7 @@ class ChronoBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       elevation: 5,
-      child: Consumer<WorkoutPageController>(
+      child: Consumer<WorkoutPageNotifier>(
         builder: (context, controller, child) => AnimatedContainer(
           alignment: Alignment.topCenter,
           duration: const Duration(milliseconds: 150),

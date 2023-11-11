@@ -70,11 +70,15 @@ class LoginForm extends StatelessWidget {
             padding: EdgeInsets.only(top: paddingTop),
             child: TextFormField(
               initialValue: notifierReadOnly.email,
-              style: GoogleFonts.roboto(fontSize: 15),
+              style: GoogleFonts.roboto(
+                fontSize: 15,
+                color: Colors.white,
+              ),
               decoration: InputDecoration(
-                suffixIcon: const Icon(Icons.email),
-                fillColor: Colors.white,
-                filled: true,
+                suffixIcon: const Icon(
+                  Icons.email,
+                  color: Colors.white,
+                ),
                 labelText: 'mail'.i18n(),
                 labelStyle: TextStyle(color: Theme.of(context).primaryColor),
                 hintStyle: GoogleFonts.roboto(fontSize: 15),
@@ -104,13 +108,14 @@ class LoginForm extends StatelessWidget {
                 Consumer<LoginPageNotifier>(
                   builder: (context, notifier, child) => TextFormField(
                     initialValue: notifier.password,
-                    style: GoogleFonts.roboto(fontSize: 15),
+                    style: GoogleFonts.roboto(
+                      fontSize: 15,
+                      color: Colors.white,
+                    ),
                     obscureText: notifier.hidePassword,
                     enableSuggestions: false,
                     autocorrect: false,
                     decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      filled: true,
                       labelText: 'password'.i18n(),
                       labelStyle: TextStyle(color: Theme.of(context).primaryColor),
                       hintStyle: GoogleFonts.roboto(fontSize: 15),
@@ -118,8 +123,14 @@ class LoginForm extends StatelessWidget {
                         tooltip: notifier.hidePassword ? 'showPassword'.i18n() : 'hidePassword'.i18n(),
                         onPressed: notifier.switchHidePassword,
                         icon: notifier.hidePassword
-                            ? const Icon(Icons.visibility_outlined)
-                            : const Icon(Icons.visibility_off_outlined),
+                            ? const Icon(
+                                Icons.visibility_outlined,
+                                color: Colors.white,
+                              )
+                            : const Icon(
+                                Icons.visibility_off_outlined,
+                                color: Colors.white,
+                              ),
                       ),
                     ),
                     onChanged: notifier.setPassword,

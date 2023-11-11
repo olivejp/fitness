@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnc_user/service/fitness-user.service.dart';
 import 'package:fitness_domain/domain/fitness-user.domain.dart';
 import 'package:fitness_domain/service/auth.service.dart';
+import 'package:fitness_domain/widget/layout-display.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,48 +16,50 @@ class HomePage extends StatelessWidget {
     final FitnessUserService fitnessUserService = GetIt.I.get();
     final String? imageUrl = AuthService.getUserConnectedOrThrow().photoURL;
 
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 45,
-          foregroundColor: Colors.white,
-          backgroundColor: Colors.white,
-          centerTitle: false,
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 20),
-              child: CircleAvatar(
-                radius: 20,
-                foregroundColor: Theme.of(context).primaryColor,
-                foregroundImage: (imageUrl != null) ? CachedNetworkImageProvider(imageUrl) : null,
-              ),
-            )
-          ],
-          title: FutureBuilder<FitnessUser?>(
-            future: fitnessUserService.getConnectedUser(),
-            builder: (_, snapshot) {
-              String? name = '';
-              if (snapshot.hasData) {
-                name = snapshot.data!.prenom;
-              }
-              return Text(
-                '${'welcome'.i18n()} $name 👋',
-                style: GoogleFonts.nunito(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
+    return LayoutNotifier(
+      child: SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            toolbarHeight: 45,
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.white,
+            centerTitle: false,
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 20),
+                child: CircleAvatar(
+                  radius: 20,
+                  foregroundColor: Theme.of(context).primaryColor,
+                  foregroundImage: (imageUrl != null) ? CachedNetworkImageProvider(imageUrl) : null,
                 ),
-              );
-            },
-          ),
-        ),
-        body: const SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              MyInfos(),
+              )
             ],
+            title: FutureBuilder<FitnessUser?>(
+              future: fitnessUserService.getConnectedUser(),
+              builder: (_, snapshot) {
+                String? name = '';
+                if (snapshot.hasData) {
+                  name = snapshot.data!.prenom;
+                }
+                return Text(
+                  '${'welcome'.i18n()} $name 👋',
+                  style: GoogleFonts.nunito(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                  ),
+                );
+              },
+            ),
+          ),
+          body: const SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                MyInfos(),
+              ],
+            ),
           ),
         ),
       ),

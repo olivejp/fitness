@@ -75,7 +75,7 @@ class UserSetController extends ChangeNotifier {
     userSetService.save(userSet).then((value) => notifyListeners());
     initList(userSet.lines, true);
     if (checked) {
-      Provider.of<WorkoutPageController>(context, listen: false).check();
+      Provider.of<WorkoutPageNotifier>(context, listen: false).check();
     }
   }
 

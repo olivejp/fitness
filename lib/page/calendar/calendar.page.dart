@@ -1,7 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitnc_user/constants.dart';
-import 'package:fitnc_user/page/exercice/exercice-choice.dialog.dart';
 import 'package:fitnc_user/page/workout/workout-instance.page.dart';
-import 'package:fitnc_user/service/debug_printer.dart';
+import 'package:fitnc_user/service/calendar_service.dart';
 import 'package:fitnc_user/widget/fitness-date-picker.widget.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
@@ -23,34 +23,6 @@ class TodayNotifier extends ChangeNotifier {
 class CalendarPage extends StatelessWidget {
   const CalendarPage({super.key});
 
-  void goToExerciseChoice(BuildContext context) {
-    final CalendarNotifier controller = Provider.of<CalendarNotifier>(context, listen: false);
-    controller.initialDate = controller.selectedDate;
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => ExerciseChoiceDialog(
-          isCreation: true,
-          date: controller.selectedDate,
-          workoutInstance: null,
-        ),
-      ),
-    );
-  }
-
-  void goToTypeWorkoutChoice(BuildContext context) {
-    final CalendarNotifier controller = Provider.of<CalendarNotifier>(context, listen: false);
-    controller.initialDate = controller.selectedDate;
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => ExerciseChoiceDialog(
-          isCreation: true,
-          date: controller.selectedDate,
-          workoutInstance: null,
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -60,21 +32,41 @@ class CalendarPage extends StatelessWidget {
         ],
         builder: (context, child) {
           final CalendarNotifier notifierReadOnly = Provider.of<CalendarNotifier>(context, listen: false);
-          DebugPrinter.printLn('Building CalendarPage');
           notifierReadOnly.initialDate = DateTime.now();
           notifierReadOnly.selectedDate = DateTime.now();
           return Scaffold(
             appBar: AppBar(
               toolbarHeight: 120,
-              title: StreamBuilder<List<WorkoutInstance>>(
-                  stream: notifierReadOnly.workoutInstanceService.listenAll(),
-                  builder: (_, snapshot) {
-                    List<WorkoutInstance> list = snapshot.hasData ? snapshot.data! : [];
-                    return Timeline(list: list);
-                  }),
+              title: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: StreamBuilder<List<WorkoutInstance>>(
+                        stream: notifierReadOnly.workoutInstanceService.listenAll(),
+                        builder: (_, snapshot) {
+                          List<WorkoutInstance> list = snapshot.hasData ? snapshot.data! : [];
+                          return Timeline(list: list);
+                        }),
+                  ),
+                ],
+              ),
             ),
             floatingActionButton: FloatingActionButton.extended(
-              onPressed: () => goToExerciseChoice(context),
+              onPressed: () {
+                notifierReadOnly.initialDate = notifierReadOnly.selectedDate;
+                WorkoutUtility.goToWorkoutTypeChoice(
+                    context: context,
+                    onTypeWorkoutChoice: (typeWorkout) {
+                      Navigator.of(context, rootNavigator: true).pop();
+                      WorkoutUtility.goToExerciseChoiceDialog(
+                        typeWorkout: typeWorkout,
+                        context: context,
+                        dateTime: notifierReadOnly.selectedDate,
+                        popOnChoice: true,
+                        isCreation: true,
+                      );
+                    });
+              },
               label: Row(
                 children: [
                   Text('createWorkout'.i18n()),
@@ -129,7 +121,6 @@ class Timeline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DebugPrinter.printLn('Building TimeLine');
     final CalendarNotifier notifierReadOnly = Provider.of<CalendarNotifier>(context, listen: false);
     return Consumer<TodayNotifier>(
       builder: (context, notifier, child) => FitnessDatePicker(
@@ -164,7 +155,8 @@ class Timeline extends StatelessWidget {
           List<DateTime> listWorkoutForTheDay = list
               .where((workout) => workout.date != null)
               .map((workout) => workout.date)
-              .map((date) => DateTime(date!.year, date.month, date.day))
+              .map((date) => DateTime.fromMicrosecondsSinceEpoch((date as Timestamp).microsecondsSinceEpoch))
+              .map((date) => DateTime(date.year, date.month, date.day))
               .where((date) => date.compareTo(dateTime) == 0)
               .take(4)
               .toList();
@@ -216,18 +208,18 @@ class CalendarDayCard extends StatelessWidget {
                   children: [
                     Text(
                       DateFormat('EE').format(dateTime),
-                      style: GoogleFonts.nunito(
+                      style: GoogleFonts.anton(
                         color: selected ? FitnessNcColors.amber : FitnessNcColors.black800,
-                        fontSize: 15,
+                        fontSize: 14,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
                     Text(
                       dateTime.day.toString(),
-                      style: GoogleFonts.nunito(
+                      style: GoogleFonts.anton(
                         color: selected ? FitnessNcColors.amber : FitnessNcColors.black800,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w100,
                       ),
                     ),
                   ],
@@ -262,7 +254,8 @@ class WorkoutInstanceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     String dateStr = '';
     if (instance.date != null) {
-      dateStr = DateFormat('dd/MM/yyyy - kk:mm').format(instance.date!);
+      dateStr = DateFormat('dd/MM/yyyy - kk:mm')
+          .format(DateTime.fromMicrosecondsSinceEpoch((instance.date! as Timestamp).microsecondsSinceEpoch));
     }
 
     final CalendarNotifier notifier = Provider.of<CalendarNotifier>(context, listen: false);
@@ -437,12 +430,14 @@ class WorkoutInstanceCard extends StatelessWidget {
                     ButtonBar(
                       children: [
                         TextButton.icon(
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) => ExerciseChoiceDialog(workoutInstance: instance),
-                            );
-                          },
+                          onPressed: () => WorkoutUtility.goToExerciseChoiceDialog(
+                            context: context,
+                            workoutInstance: instance,
+                            isCreation: false,
+                            dateTime: DateTime.fromMicrosecondsSinceEpoch(
+                                (instance.date as Timestamp).microsecondsSinceEpoch),
+                            popOnChoice: false,
+                          ),
                           icon: const Icon(
                             Icons.add_circle_outline_outlined,
                           ),

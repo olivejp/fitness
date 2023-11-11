@@ -5,7 +5,7 @@ import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 class CalendarNotifier extends ChangeNotifier {
@@ -45,10 +45,6 @@ class CalendarNotifier extends ChangeNotifier {
 
   Stream<List<WorkoutInstance>> listenWorkoutInstanceByDate(DateTime dateTime) {
     return workoutInstanceService.listenByDate(dateTime);
-  }
-
-  Stream<List<WorkoutInstance>> listenWorkoutInstanceWhereDateTime(DateTime dateTime) {
-    return workoutInstanceService.listenAll();
   }
 
   Future<void> deleteWorkout(WorkoutInstance instance) async {

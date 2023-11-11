@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:badges/badges.dart' as badges;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitnc_user/page/exercice/exercice.page.dart';
 import 'package:fitnc_user/page/workout/workout-instance.page.dart';
 import 'package:fitnc_user/service/debug_printer.dart';
@@ -12,6 +13,7 @@ import 'package:fitnc_user/widget/network_image.widget.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
+import 'package:fitness_domain/enum/type_workout.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -85,9 +87,10 @@ class ExerciseChoiceDialogController extends ChangeNotifier {
     }
   }
 
-  Future<WorkoutInstance> createNewWorkoutInstance(DateTime dateTime) async {
+  Future<WorkoutInstance> createNewWorkoutInstance(DateTime dateTime, TypeWorkout typeWorkout) async {
     DateTime now = DateTime.now();
     WorkoutInstance instance = WorkoutInstance();
+    instance.typeWorkout = typeWorkout;
     instance.date = DateTime(
       dateTime.year,
       dateTime.month,
@@ -118,7 +121,8 @@ class ExerciseChoiceDialogController extends ChangeNotifier {
       (userSet) {
         if (popOnChoice) {
           // TODO Sur le clik on doit rafraichir le UserSet.
-          Provider.of<WorkoutPageController>(context, listen: false).refreshWorkoutPage();
+          final WorkoutPageNotifier? workoutPageNotifier = Provider.of<WorkoutPageNotifier?>(context, listen: false);
+          workoutPageNotifier?.refreshWorkoutPage();
           Navigator.of(context).pop();
         } else {
           Navigator.of(context).pop();
@@ -135,40 +139,43 @@ class ExerciseChoiceDialogController extends ChangeNotifier {
     );
   }
 
-  Future<void> _addUserSet(WorkoutInstance workoutInstance) async {
-    for (Exercice exercise in listChosen) {
-      String uidExercice = exercise.uid!;
-      String uidWorkout = workoutInstance.uid!;
-      DebugPrinter.printLn('UidExercice : $uidExercice');
-      DebugPrinter.printLn('UidWorkout : $uidWorkout');
-      final UserSet userSet = UserSet(
-          uidExercice: uidExercice,
-          uidWorkout: uidWorkout,
-          nameExercice: exercise.name,
-          imageUrlExercice: exercise.imageUrl,
-          typeExercice: exercise.typeExercice,
-          date: workoutInstance.date);
-      return userSetService.save(userSet);
-    }
+  Future<List<dynamic>> _addUserSet(WorkoutInstance workoutInstance) async {
+    List<Future<void>> listFutureUserSet = listChosen
+        .map((exercise) => UserSet(
+            uidExercice: exercise.uid!,
+            uidWorkout: workoutInstance.uid!,
+            nameExercice: exercise.name,
+            imageUrlExercice: exercise.imageUrl,
+            typeExercice: exercise.typeExercice,
+            date: DateTime.fromMicrosecondsSinceEpoch((workoutInstance.date as Timestamp).microsecondsSinceEpoch)))
+        .map((e) => userSetService.save(e))
+        .toList();
+
+    return Future.wait(listFutureUserSet);
   }
 }
 
 class ExerciseChoiceDialog extends StatelessWidget {
   ExerciseChoiceDialog({
     super.key,
+    this.typeWorkout,
     this.workoutInstance,
     this.popOnChoice = false,
     this.isCreation = false,
     this.date,
-  })  : assert(((isCreation && workoutInstance == null) || (!isCreation && workoutInstance != null)),
-            "If isCreation then workoutInstance should be null."),
-        assert(
-            (isCreation && date != null) || ((!isCreation && date == null)), "If isCreation, date should not be null.");
+  }) {
+    DebugPrinter.printLn('Date : $date & isCreation : $isCreation');
+    assert((isCreation && workoutInstance == null) || (!isCreation && workoutInstance != null),
+        "If isCreation then workoutInstance should be null.");
+    assert((isCreation && date != null) || (!isCreation), "If isCreation, date should not be null.");
+  }
+
   final WorkoutInstance? workoutInstance;
   final bool popOnChoice;
   final bool isCreation;
   final DateTime? date;
   final TextEditingController searchTextController = TextEditingController();
+  final TypeWorkout? typeWorkout;
 
   @override
   Widget build(BuildContext context) {
@@ -273,7 +280,7 @@ class ExerciseChoiceDialog extends StatelessWidget {
             onPressed: () {
               if (isCreation) {
                 controller
-                    .createNewWorkoutInstance(date!)
+                    .createNewWorkoutInstance(date!, typeWorkout!)
                     .then((instance) => controller.validate(scaffoldContext, popOnChoice, instance));
               } else {
                 controller.validate(scaffoldContext, popOnChoice, workoutInstance!);

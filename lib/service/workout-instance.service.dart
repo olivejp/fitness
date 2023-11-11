@@ -17,8 +17,8 @@ class WorkoutInstanceService extends AbstractFitnessStorageService<WorkoutInstan
     DateTime dateMax = DateTime(dateTime.year, dateTime.month, dateTime.day, 23, 59, 59);
     return whereListen(
       'date',
-      isGreaterThanOrEqualTo: dateMinus.millisecondsSinceEpoch,
-      isLessThanOrEqualTo: dateMax.millisecondsSinceEpoch,
+      isGreaterThanOrEqualTo: Timestamp.fromDate(dateMinus),
+      isLessThanOrEqualTo: Timestamp.fromDate(dateMax),
     );
   }
 
@@ -27,8 +27,8 @@ class WorkoutInstanceService extends AbstractFitnessStorageService<WorkoutInstan
     DateTime dateMax = DateTime(dateTime.year, dateTime.month, dateTime.day, 23, 59, 59);
     return where(
       'date',
-      isGreaterThanOrEqualTo: dateMinus.millisecondsSinceEpoch,
-      isLessThanOrEqualTo: dateMax.millisecondsSinceEpoch,
+      isGreaterThanOrEqualTo: Timestamp.fromDate(dateMinus),
+      isLessThanOrEqualTo: Timestamp.fromDate(dateMax),
     );
   }
 
