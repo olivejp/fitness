@@ -360,7 +360,7 @@ class RowExerciseDetails extends StatelessWidget {
             children: [
               Text(
                 controller.userSet.nameExercice!,
-                style: GoogleFonts.nunito(
+                style: GoogleFonts.antonio(
                   fontSize: 20,
                   fontWeight: FontWeight.w900,
                 ),

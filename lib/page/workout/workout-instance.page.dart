@@ -28,11 +28,18 @@ class WorkoutPageNotifier extends ChangeNotifier {
   final List<FitStepper> stepperList = <FitStepper>[];
 
   int initialPage = 0;
-  bool bottomSheetIsExpanded = false;
+  bool _bottomSheetIsExpanded = false;
   WorkoutInstance? workoutInstance = WorkoutInstance();
   bool onRefresh = false;
   bool autoPlay = false;
   bool timerStarted = false;
+
+  bool get bottomSheetIsExpanded => _bottomSheetIsExpanded;
+
+  set bottomSheetIsExpanded(bool isExpanded) {
+    _bottomSheetIsExpanded = isExpanded;
+    notifyListeners();
+  }
 
   final StopWatchTimer timer =
       StopWatchTimer(mode: StopWatchMode.countDown, presetMillisecond: StopWatchTimer.getMilliSecFromMinute(0));
@@ -122,7 +129,7 @@ class WorkoutPageNotifier extends ChangeNotifier {
     timerSubscription = timer.rawTime.listen((event) {
       if (event == 0) {
         if (kIsWeb) {
-          audioPlayer?.setSourceAsset('assets/notification.wav').then((value) => null);
+          audioPlayer?.setSource(AssetSource('assets/notification.wav')).then((value) => null);
         } else {
           audioCache?.load('notification.wav').then((value) => null);
         }
@@ -193,9 +200,10 @@ class WorkoutPage extends StatelessWidget {
               onClosing: () => print('close'),
               builder: (_) {
                 return ChronoBottomSheet(
-                    containerMaxHeight: containerMaxHeight,
-                    containerHeight: containerHeight,
-                    iconHorizontalPadding: iconHorizontalPadding);
+                  containerMaxHeight: containerMaxHeight,
+                  containerHeight: containerHeight,
+                  iconHorizontalPadding: iconHorizontalPadding,
+                );
               },
             ),
             appBar: AppBar(
@@ -347,11 +355,12 @@ class ChronoBottomSheet extends StatelessWidget {
     return Material(
       elevation: 5,
       child: Consumer<WorkoutPageNotifier>(
-        builder: (context, controller, child) => AnimatedContainer(
+        builder: (context, notifier, child) => AnimatedContainer(
           alignment: Alignment.topCenter,
           duration: const Duration(milliseconds: 150),
-          height: controller.bottomSheetIsExpanded ? containerMaxHeight : containerHeight,
+          height: notifier.bottomSheetIsExpanded ? containerMaxHeight : containerHeight,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(
                 height: containerHeight,
@@ -365,15 +374,15 @@ class ChronoBottomSheet extends StatelessWidget {
                           padding: EdgeInsets.symmetric(horizontal: iconHorizontalPadding),
                           iconSize: 24,
                           color: Colors.white,
-                          onPressed: () => controller.bottomSheetIsExpanded = !controller.bottomSheetIsExpanded,
-                          icon: (controller.bottomSheetIsExpanded)
+                          onPressed: () => notifier.bottomSheetIsExpanded = !notifier.bottomSheetIsExpanded,
+                          icon: (notifier.bottomSheetIsExpanded)
                               ? const Icon(Icons.keyboard_arrow_down)
                               : const Icon(Icons.keyboard_arrow_up)),
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           StreamBuilder<int>(
-                              stream: controller.getTimer().rawTime,
+                              stream: notifier.getTimer().rawTime,
                               initialData: 0,
                               builder: (_, snapshot) {
                                 if (snapshot.hasData) {
@@ -388,103 +397,115 @@ class ChronoBottomSheet extends StatelessWidget {
                               }),
                         ],
                       ),
-                      (controller.timerStarted)
+                      (notifier.timerStarted)
                           ? IconButton(
                               padding: EdgeInsets.symmetric(horizontal: iconHorizontalPadding),
                               iconSize: 28,
                               color: Colors.white,
-                              onPressed: controller.stopTimer,
+                              onPressed: notifier.stopTimer,
                               icon: const Icon(Icons.pause_circle_outline),
                             )
                           : IconButton(
                               padding: EdgeInsets.symmetric(horizontal: iconHorizontalPadding),
                               iconSize: 28,
                               color: Colors.white,
-                              onPressed: controller.startTimer,
+                              onPressed: notifier.startTimer,
                               icon: const Icon(Icons.play_circle_outline),
                             )
                     ],
                   ),
                 ),
               ),
-              if (controller.bottomSheetIsExpanded)
+              if (notifier.bottomSheetIsExpanded)
                 Flexible(
                   child: Container(
                     color: Theme.of(context).focusColor,
                     height: containerMaxHeight - containerHeight,
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Flexible(
-                              child: Column(
-                                children: [
-                                  const Text('Heure'),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5),
-                                      color: Colors.white,
+                        Flexible(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Text('Heure'),
+                                    Flexible(
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(5),
+                                          color: Colors.white,
+                                        ),
+                                        child: ScrollIncrementerWidget(
+                                          onChanged: (int newValue) => notifier.changeHour(newValue),
+                                          initialValue: notifier.timerHour,
+                                          minValue: 0,
+                                          maxValue: 23,
+                                        ),
+                                      ),
                                     ),
-                                    child: ScrollIncrementerWidget(
-                                      onChanged: (int newValue) => controller.changeHour(newValue),
-                                      initialValue: controller.timerHour,
-                                      minValue: 0,
-                                      maxValue: 23,
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            const Padding(padding: EdgeInsets.all(10)),
-                            Flexible(
-                              child: Column(
-                                children: [
-                                  const Text('Minute'),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5),
-                                      color: Colors.white,
+                              const Padding(padding: EdgeInsets.all(10)),
+                              Flexible(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Text('Minute'),
+                                    Flexible(
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(5),
+                                          color: Colors.white,
+                                        ),
+                                        child: ScrollIncrementerWidget(
+                                          onChanged: (int newValue) => notifier.changeMinute(newValue),
+                                          initialValue: notifier.timerMinute,
+                                          minValue: 0,
+                                          maxValue: 59,
+                                        ),
+                                      ),
                                     ),
-                                    child: ScrollIncrementerWidget(
-                                      onChanged: (int newValue) => controller.changeMinute(newValue),
-                                      initialValue: controller.timerMinute,
-                                      minValue: 0,
-                                      maxValue: 59,
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            const Padding(padding: EdgeInsets.all(10)),
-                            Flexible(
-                              child: Column(
-                                children: [
-                                  const Text('Seconde'),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5),
-                                      color: Colors.white,
+                              const Padding(padding: EdgeInsets.all(10)),
+                              Flexible(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Text('Seconde'),
+                                    Flexible(
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(5),
+                                          color: Colors.white,
+                                        ),
+                                        child: ScrollIncrementerWidget(
+                                          onChanged: (int newValue) => notifier.changeSecond(newValue),
+                                          initialValue: notifier.timerSecond,
+                                          minValue: 0,
+                                          maxValue: 59,
+                                        ),
+                                      ),
                                     ),
-                                    child: ScrollIncrementerWidget(
-                                      onChanged: (int newValue) => controller.changeSecond(newValue),
-                                      initialValue: controller.timerSecond,
-                                      minValue: 0,
-                                      maxValue: 59,
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Text('Auto play'),
                             Checkbox(
-                              value: controller.autoPlay,
-                              onChanged: (bool? value) => controller.autoPlay = value ??= false,
+                              value: notifier.autoPlay,
+                              onChanged: (bool? value) => notifier.autoPlay = value ??= false,
                             ),
                           ],
                         ),
