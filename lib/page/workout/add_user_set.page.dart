@@ -1,13 +1,14 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnc_user/page/exercice/stat-exercice.page.dart';
 import 'package:fitness_domain/constants.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/user.line.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
+import 'package:fitness_domain/enum/dist_unit.enum.dart';
+import 'package:fitness_domain/enum/time_unit.enum.dart';
+import 'package:fitness_domain/enum/weight_unit.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:loading_animations/loading_animations.dart';
 import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 
@@ -41,34 +42,59 @@ class UserSetUpdate extends StatelessWidget {
   List<Widget> getColumnsHeadersByType() {
     if (userSet.typeExercice == TypeExercice.REPS_WEIGHT.name) {
       return [
-        const Flexible(
+        Flexible(
           flex: 2,
-          child: Center(child: Text('Reps')),
+          child: Center(
+            child: Text(
+              'Reps',
+              style: GoogleFonts.antonio(),
+            ),
+          ),
         ),
-        const Flexible(
+        Flexible(
           flex: 2,
-          child: Center(child: Text('Weight')),
+          child: Center(
+            child: Text(
+              'Weight',
+              style: GoogleFonts.antonio(),
+            ),
+          ),
         )
       ];
     } else if (userSet.typeExercice == TypeExercice.REPS_ONLY.name) {
       return [
-        const Flexible(
+        Flexible(
           flex: 4,
-          child: Center(child: Text('Reps')),
+          child: Center(
+            child: Text(
+              'Reps',
+              style: GoogleFonts.antonio(),
+            ),
+          ),
         )
       ];
     } else if (userSet.typeExercice == TypeExercice.TIME.name) {
       return [
-        const Flexible(
+        Flexible(
           flex: 4,
-          child: Center(child: Text('Time')),
+          child: Center(
+            child: Text(
+              'Time',
+              style: GoogleFonts.antonio(),
+            ),
+          ),
         )
       ];
     } else if (userSet.typeExercice == TypeExercice.DIST.name) {
       return [
-        const Flexible(
+        Flexible(
           flex: 4,
-          child: Center(child: Text('Dist')),
+          child: Center(
+            child: Text(
+              'Dist',
+              style: GoogleFonts.antonio(),
+            ),
+          ),
         )
       ];
     } else {
@@ -84,42 +110,104 @@ class UserSetUpdate extends StatelessWidget {
     UserSetController controller,
     GlobalKey keyReps,
     GlobalKey keyWeight,
+    GlobalKey keyWeightUnit,
     GlobalKey keyTime,
+    GlobalKey keyTimeUnit,
     GlobalKey keyDist,
+    GlobalKey keyDistUnit,
   ) {
     if (typeExercise == TypeExercice.REPS_ONLY.name) {
       return [
         Flexible(
-          flex: 4,
-          child: TextInputWidget(
-            keyWeight: keyReps,
-            initialValue: userLine.reps,
-            index: index,
-            callback: controller.changeReps,
+          flex: 2,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: NumberInputWidget(
+              customKey: keyReps,
+              initialValue: userLine.reps,
+              index: index,
+              callback: controller.changeReps,
+            ),
           ),
         ),
       ];
     } else if (typeExercise == TypeExercice.DIST.name) {
       return [
         Flexible(
-          flex: 4,
-          child: TextInputWidget(
-            keyWeight: keyDist,
-            initialValue: userLine.dist,
-            index: index,
-            callback: controller.changeDist,
+          flex: 2,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: NumberInputWidget(
+              customKey: keyDist,
+              initialValue: userLine.dist,
+              index: index,
+              callback: controller.changeDist,
+            ),
+          ),
+        ),
+        Flexible(
+          child: Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: DropdownButtonFormField<DistUnit>(
+              isDense: true,
+              iconSize: 0.0,
+              key: keyDistUnit,
+              itemHeight: 48.0,
+              value: userLine.distUnit ?? DistUnit.KM,
+              style: GoogleFonts.anton(),
+              items: DistUnit.values
+                  .map(
+                    (e) => DropdownMenuItem(
+                      value: e,
+                      child: Text(
+                        e.name.i18n(),
+                        style: GoogleFonts.anton(),
+                      ),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (DistUnit? value) => controller.changeDistUnit(index, value ?? DistUnit.KM),
+            ),
           ),
         ),
       ];
     } else if (typeExercise == TypeExercice.TIME.name) {
       return [
         Flexible(
-          flex: 4,
-          child: TextInputWidget(
-            keyWeight: keyTime,
-            initialValue: userLine.time,
-            index: index,
-            callback: controller.changeTime,
+          flex: 2,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: NumberInputWidget(
+              customKey: keyTime,
+              initialValue: userLine.time,
+              index: index,
+              callback: controller.changeTime,
+            ),
+          ),
+        ),
+        Flexible(
+          child: Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: DropdownButtonFormField<TimeUnit>(
+              key: keyTimeUnit,
+              isDense: true,
+              iconSize: 0.0,
+              itemHeight: 48.0,
+              value: userLine.timeUnit ?? TimeUnit.MIN,
+              style: GoogleFonts.anton(),
+              items: TimeUnit.values
+                  .map(
+                    (e) => DropdownMenuItem(
+                      value: e,
+                      child: Text(
+                        e.name.i18n(),
+                        style: GoogleFonts.anton(),
+                      ),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (TimeUnit? value) => controller.changeTimeUnit(index, value ?? TimeUnit.MIN),
+            ),
           ),
         ),
       ];
@@ -127,22 +215,53 @@ class UserSetUpdate extends StatelessWidget {
       return [
         Flexible(
           flex: 2,
-          child: TextInputWidget(
-            keyWeight: keyReps,
-            initialValue: userLine.reps,
-            index: index,
-            callback: controller.changeReps,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: NumberInputWidget(
+              customKey: keyReps,
+              initialValue: userLine.reps,
+              index: index,
+              callback: controller.changeReps,
+            ),
           ),
         ),
         Flexible(
           flex: 2,
-          child: TextInputWidget(
-            keyWeight: keyWeight,
-            initialValue: userLine.weight,
-            index: index,
-            callback: controller.changeWeight,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: NumberInputWidget(
+              customKey: keyWeight,
+              initialValue: userLine.weight,
+              index: index,
+              callback: controller.changeWeight,
+            ),
           ),
-        )
+        ),
+        Flexible(
+          child: Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: DropdownButtonFormField<WeightUnit>(
+              key: keyWeightUnit,
+              isDense: true,
+              iconSize: 0.0,
+              itemHeight: 48.0,
+              value: userLine.weightUnit ?? WeightUnit.KG,
+              style: GoogleFonts.anton(),
+              items: WeightUnit.values
+                  .map(
+                    (e) => DropdownMenuItem(
+                      value: e,
+                      child: Text(
+                        e.name.i18n(),
+                        style: GoogleFonts.anton(),
+                      ),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (WeightUnit? value) => controller.changeWeightUnit(index, value ?? WeightUnit.KG),
+            ),
+          ),
+        ),
       ];
     } else {
       throw Exception('Type exercise unknown');
@@ -151,149 +270,168 @@ class UserSetUpdate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserSetController>(builder: (context, controller, child) {
-      controller.initList(userSet.lines, false);
-      bool allIsChecked = controller.listLines.every((element) => element.checked);
-      return SingleChildScrollView(
-        controller: scrollController,
-        child: Form(
-          key: formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(right: padding, left: padding),
-                child: RowExerciseDetails(controller: controller),
-              ),
-              Padding(
-                padding: EdgeInsets.only(right: padding, left: padding),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    const Flexible(
-                      child: Center(child: Text('Sets')),
-                    ),
-                    ...getColumnsHeadersByType(),
-                    Flexible(
-                      child: Center(
-                        child: IconButton(
-                          icon: const Icon(Icons.done_all_rounded),
-                          color: allIsChecked ? Colors.green : Colors.grey,
-                          iconSize: 30,
-                          onPressed: () => controller.checkAll(),
-                        ),
+    /// Initialize the userSet list.
+    Provider.of<UserSetController>(context, listen: false).initList(userSet.lines, false);
+
+    return SingleChildScrollView(
+      controller: scrollController,
+      child: Form(
+        key: formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(right: padding, left: padding),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Flexible(
+                    child: Center(
+                      child: Text(
+                        'Sets',
+                        style: GoogleFonts.antonio(),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  ...getColumnsHeadersByType(),
+                  Flexible(
+                    child: Center(
+                      child: Consumer<UserSetController>(
+                        builder: (_, controller, icon) {
+                          return IconButton(
+                            icon: icon!,
+                            color:
+                                controller.listLines.every((element) => element.checked) ? Colors.green : Colors.grey,
+                            iconSize: 30,
+                            onPressed: () => controller.checkAll(),
+                          );
+                        },
+                        child: const Icon(Icons.done_all_rounded),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              ListView.builder(
+            ),
+            Consumer<UserSetController>(builder: (_, controller, child) {
+              return ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: controller.listLines.length,
                   itemBuilder: (BuildContext context, int index) {
                     final GlobalKey keyReps = GlobalKey();
                     final GlobalKey keyWeight = GlobalKey();
-                    final GlobalKey keyTime = GlobalKey();
+                    final GlobalKey keyWeightUnit = GlobalKey();
                     final GlobalKey keyDist = GlobalKey();
+                    final GlobalKey keyDistUnit = GlobalKey();
+                    final GlobalKey keyTime = GlobalKey();
+                    final GlobalKey keyTimeUnit = GlobalKey();
+                    final GlobalKey keyRestTime = GlobalKey();
+                    final GlobalKey keyRestTimeUnit = GlobalKey();
                     final UserLine userLine = controller.listLines.elementAt(index);
-                    return Padding(
-                      padding: EdgeInsets.only(
-                        right: padding,
-                        left: padding,
-                        top: 5,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Flexible(
-                            child: Center(child: Text('${index + 1}')),
-                          ),
-                          ...getColumnsFieldsByType(
-                            userSet.typeExercice,
-                            userLine,
-                            index,
-                            controller,
-                            keyReps,
-                            keyWeight,
-                            keyTime,
-                            keyDist,
-                          ),
-                          Flexible(
-                            child: Center(
-                              child: UserLineCheckWidget(
-                                index: index,
-                                userLine: userLine,
-                                onPress: (index, checked) => controller.changeCheck(context, index, checked),
-                              ),
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text('${index + 1}'),
+                        ),
+                        ...getColumnsFieldsByType(
+                          userSet.typeExercice,
+                          userLine,
+                          index,
+                          controller,
+                          keyReps,
+                          keyWeight,
+                          keyWeightUnit,
+                          keyTime,
+                          keyTimeUnit,
+                          keyDist,
+                          keyDistUnit,
+                        ),
+                        Flexible(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: NumberInputWidget(
+                              customKey: keyRestTime,
+                              initialValue: userLine.restTime,
+                              index: index,
+                              callback: controller.changeRestTime,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                        Flexible(
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: DropdownButtonFormField<TimeUnit>(
+                              iconSize: 0.0,
+                              isDense: true,
+                              itemHeight: 48.0,
+                              key: keyRestTimeUnit,
+                              value: userLine.restTimeUnit ?? TimeUnit.MIN,
+                              style: GoogleFonts.anton(),
+                              items: TimeUnit.values
+                                  .map((e) => DropdownMenuItem(
+                                      value: e, child: Text(e.name.i18n(), style: GoogleFonts.anton())))
+                                  .toList(),
+                              onChanged: (TimeUnit? value) =>
+                                  controller.changeRestTimeUnit(index, value ?? TimeUnit.MIN),
+                            ),
+                          ),
+                        ),
+                      ],
                     );
-                  }),
-              RowAddRemoveSet(controller: controller),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton.icon(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AddCommentAlertDialog(controller: controller),
-                      );
-                    },
-                    label: Text('comment'.i18n()),
-                    icon: const Icon(Icons.note_outlined),
-                  )
-                ],
-              )
-            ],
-          ),
+                  });
+            }),
+            RowAddRemoveSet(controller: Provider.of<UserSetController>(context, listen: false)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton.icon(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) =>
+                          AddCommentAlertDialog(controller: Provider.of<UserSetController>(context, listen: false)),
+                    );
+                  },
+                  label: Text('comment'.i18n()),
+                  icon: const Icon(Icons.note_outlined),
+                )
+              ],
+            )
+          ],
         ),
-      );
-    });
+      ),
+    );
   }
 }
 
-class TextInputWidget extends StatelessWidget {
-  const TextInputWidget({
+class NumberInputWidget extends StatelessWidget {
+  const NumberInputWidget({
     super.key,
-    required this.keyWeight,
+    required this.customKey,
     required this.callback,
     required this.index,
     required this.initialValue,
   });
 
-  final GlobalKey<State<StatefulWidget>> keyWeight;
+  final GlobalKey<State<StatefulWidget>> customKey;
   final String? initialValue;
   final int index;
   final void Function(int index, String value) callback;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.only(left: 5, right: 5),
-        child: TextFormField(
-          key: keyWeight,
-          initialValue: initialValue,
-          textAlign: TextAlign.center,
-          keyboardType: TextInputType.number,
-          inputFormatters: <TextInputFormatter>[
-            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-          ],
-          decoration: InputDecoration(
-              constraints: const BoxConstraints(maxHeight: 36),
-              border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-              focusedBorder: OutlineInputBorder(
-                  borderRadius: const BorderRadius.all(Radius.circular(5)),
-                  borderSide: BorderSide(width: 1, color: Theme.of(context).primaryColor)),
-              hintStyle: const TextStyle(fontSize: 14),
-              hintText: '0'),
-          onChanged: (value) => callback(index, value),
-        ),
-      ),
+    return TextFormField(
+      key: customKey,
+      initialValue: initialValue,
+      textAlign: TextAlign.center,
+      keyboardType: TextInputType.number,
+      inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
+      decoration: const InputDecoration(hintText: '0'),
+      onChanged: (value) => callback(index, value),
     );
   }
 }
@@ -312,51 +450,10 @@ class RowExerciseDetails extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        FutureBuilder<String>(
-          future: controller.getExerciceImageUrl(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              final String imageUrl = snapshot.data!;
-              if (imageUrl.isNotEmpty) {
-                return SizedBox.square(
-                  dimension: 100,
-                  child: Card(
-                    clipBehavior: Clip.antiAlias,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: CachedNetworkImage(
-                      imageUrl: imageUrl,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => LoadingBouncingGrid.circle(),
-                      errorWidget: (context, url, error) => Container(
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                  ),
-                );
-              } else {
-                return SizedBox.square(
-                  dimension: 100,
-                  child: Card(
-                    clipBehavior: Clip.antiAlias,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Container(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                );
-              }
-            } else {
-              return LoadingBouncingGrid.square();
-            }
-          },
-        ),
         Flexible(
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
                 controller.userSet.nameExercice!,
@@ -365,6 +462,7 @@ class RowExerciseDetails extends StatelessWidget {
                   fontWeight: FontWeight.w900,
                 ),
               ),
+              const SizedBox(width: 10),
               IconButton(
                 icon: const Icon(
                   Icons.insert_chart_outlined_rounded,

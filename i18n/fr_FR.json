@@ -138,5 +138,8 @@
   "EMOM": "\"EMOM,\" qui signifie \"Every Minute On the Minute,\" c'est une approche d'entraînement ultra-dynamique ! Tu réalises une tâche spécifique au début de chaque minute, et le temps restant sert de période de repos. C'est une méthode intense et rapide, parfaite pour améliorer l'endurance, la force et la condition physique générale. Prêt à performer à chaque minute et repousser tes limites ! \uD83D\uDE80\uD83D\uDCAA",
   "SIMPLE": "L'entraînement par set implique l'exécution d'un groupe prédéfini de répétitions d'un exercice spécifique, suivi d'une période de repos. Ces sets répétés favorisent la croissance musculaire, la force et l'endurance. En ajustant le nombre de répétitions et la charge, cette méthode offre une flexibilité pour atteindre divers objectifs, que ce soit la prise de masse, la définition ou l'amélioration de la force. La clé réside dans la précision et l'intensité, stimulant ainsi le développement musculaire de manière efficace. \uD83D\uDCAA\uD83D\uDD25",
   "TABATA": "Le TABATA, c'est le feu de l'action dans un temps record ! Vingt secondes d'entraînement intense, suivi de dix secondes de repos, et on répète ça pendant quatre minutes au total, soit huit cycles. C'est court, mais intense, parfait pour booster le cardio, l'endurance, et brûler des calories ! Imagine-toi en action totale pendant ces 20 secondes, puis tu relâches un peu pendant le repos. C'est du HIIT pur, prêt à faire exploser ton entraînement ! \uD83D\uDD25\uD83D\uDCA5",
-  "chooseWorkoutType": "Choix du type de séance"
+  "chooseWorkoutType": "Choix du type de séance",
+  "MIN": "Min",
+  "HOUR": "Heure",
+  "SEC": "Sec."
 }

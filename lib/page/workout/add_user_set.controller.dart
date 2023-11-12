@@ -1,12 +1,16 @@
 import 'dart:async';
 
 import 'package:fitnc_user/page/workout/workout-instance.page.dart';
+import 'package:fitnc_user/service/debug_printer.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:fitness_domain/domain/exercice.domain.dart';
 import 'package:fitness_domain/domain/user.line.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
+import 'package:fitness_domain/enum/dist_unit.enum.dart';
+import 'package:fitness_domain/enum/time_unit.enum.dart';
+import 'package:fitness_domain/enum/weight_unit.enum.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
@@ -59,15 +63,20 @@ class UserSetController extends ChangeNotifier {
   void changeReps(int index, String reps) {
     userSet.lines[index].reps = reps;
     afterDebounce(() {
-      userSetService.save(userSet).then((value) => notifyListeners());
+      userSetService.save(userSet).then((value) => DebugPrinter.printLn('Reps saved'));
     });
   }
 
   void changeWeight(int index, String weight) {
     userSet.lines[index].weight = weight;
     afterDebounce(() {
-      userSetService.save(userSet).then((value) => notifyListeners());
+      userSetService.save(userSet).then((value) => DebugPrinter.printLn('Weight saved'));
     });
+  }
+
+  void changeWeightUnit(int index, WeightUnit unit) {
+    userSet.lines[index].weightUnit = unit;
+    userSetService.save(userSet).then((value) => DebugPrinter.printLn('Weight unit saved'));
   }
 
   void changeCheck(BuildContext context, int index, bool checked) {
@@ -82,15 +91,37 @@ class UserSetController extends ChangeNotifier {
   void changeTime(int index, String value) {
     userSet.lines[index].time = value;
     afterDebounce(() {
-      userSetService.save(userSet).then((value) => notifyListeners());
+      userSetService.save(userSet).then((value) => DebugPrinter.printLn('Time saved'));
     });
+  }
+
+  void changeTimeUnit(int index, TimeUnit unit) {
+    userSet.lines[index].timeUnit = unit;
+    userSetService.save(userSet).then((value) => DebugPrinter.printLn('Time unit saved'));
   }
 
   void changeDist(int index, String value) {
     userSet.lines[index].dist = value;
     afterDebounce(() {
-      userSetService.save(userSet).then((value) => notifyListeners());
+      userSetService.save(userSet).then((value) => DebugPrinter.printLn('Dist saved'));
     });
+  }
+
+  void changeDistUnit(int index, DistUnit unit) {
+    userSet.lines[index].distUnit = unit;
+    userSetService.save(userSet).then((value) => DebugPrinter.printLn('Dist unit saved'));
+  }
+
+  void changeRestTime(int index, String value) {
+    userSet.lines[index].restTime = value;
+    afterDebounce(() {
+      userSetService.save(userSet).then((value) => DebugPrinter.printLn('Rest Time saved'));
+    });
+  }
+
+  void changeRestTimeUnit(int index, TimeUnit unit) {
+    userSet.lines[index].restTimeUnit = unit;
+    userSetService.save(userSet).then((value) => DebugPrinter.printLn('Rest Time unit saved'));
   }
 
   void checkAll() {
@@ -110,10 +141,10 @@ class UserSetController extends ChangeNotifier {
     return exerciseService.read(uidExercise);
   }
 
-  Future<String> getExerciceImageUrl() async {
-    final Exercice? exercice = await getExercise(userSet.uidExercice);
-    if (exercice != null && exercice.imageUrl != null) {
-      return exercice.imageUrl!;
+  Future<String> getExerciseImageUrl() async {
+    final Exercice? exercise = await getExercise(userSet.uidExercice);
+    if (exercise != null && exercise.imageUrl != null) {
+      return exercise.imageUrl!;
     }
     return '';
   }

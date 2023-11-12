@@ -31,8 +31,15 @@ class WorkoutPageNotifier extends ChangeNotifier {
   bool _bottomSheetIsExpanded = false;
   WorkoutInstance? workoutInstance = WorkoutInstance();
   bool onRefresh = false;
-  bool autoPlay = false;
+  bool _autoPlay = false;
   bool timerStarted = false;
+
+  bool get autoPlay => _autoPlay;
+
+  set autoPlay(bool check) {
+    _autoPlay = check;
+    notifyListeners();
+  }
 
   bool get bottomSheetIsExpanded => _bottomSheetIsExpanded;
 
@@ -126,17 +133,19 @@ class WorkoutPageNotifier extends ChangeNotifier {
   void startTimer() {
     timerStarted = true;
     timer.onStartTimer();
+    timerSubscription?.cancel();
     timerSubscription = timer.rawTime.listen((event) {
       if (event == 0) {
         if (kIsWeb) {
-          audioPlayer?.setSource(AssetSource('assets/notification.wav')).then((value) => null);
+          audioPlayer?.setSource(AssetSource('assets/notification.wav')).then((value) {});
         } else {
-          audioCache?.load('notification.wav').then((value) => null);
+          audioCache?.load('notification.wav').then((value) {});
         }
-
         changeTimer();
+        notifyListeners();
       }
     });
+    notifyListeners();
   }
 
   void stopTimer() {
@@ -250,21 +259,6 @@ class WorkoutPage extends StatelessWidget {
             ),
             body: Column(
               children: <Widget>[
-                Consumer<WorkoutPageNotifier>(
-                  builder: (context, notifier, child) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: notifier.stepperList.map(
-                        (FitStepper e) {
-                          return Icon(
-                            e.checked ? Icons.circle : Icons.circle_outlined,
-                            color: e.allExerciseDone ? Colors.green : Theme.of(context).primaryColor,
-                          );
-                        },
-                      ).toList(),
-                    );
-                  },
-                ),
                 Flexible(
                   child: FutureBuilder<List<UserSet>>(
                     future: notifierReadOnly.getAllUserSet(),
@@ -284,12 +278,50 @@ class WorkoutPage extends StatelessWidget {
                         if (snapshot.data!.isNotEmpty) {
                           final List<UserSet> listUserSet = snapshot.data!;
 
-                          final PageController pageController =
-                              PageController(initialPage: notifierReadOnly.initialPage);
-                          return PageView(
-                            controller: pageController,
-                            children: listUserSet.map((e) => OpenUserSetInstance(userSet: e)).toList(),
-                            onPageChanged: (pageNumber) => notifierReadOnly.changeStepper(pageNumber),
+                          return SingleChildScrollView(
+                            child: Column(
+                              children: listUserSet.map((userSet) {
+                                final ValueNotifier isExpandedNotifier = ValueNotifier<bool>(false);
+                                return ValueListenableBuilder(
+                                  valueListenable: isExpandedNotifier,
+                                  builder: (_, isExpanded, __) => InkWell(
+                                    onTap: () => isExpandedNotifier.value = !isExpandedNotifier.value,
+                                    child: Material(
+                                      elevation: 1.0,
+                                      child: Column(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Text(
+                                                  userSet.nameExercice!,
+                                                  style: GoogleFonts.antonio(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.w900,
+                                                  ),
+                                                ),
+                                                IconButton(
+                                                  onPressed: () => isExpandedNotifier.value = !isExpandedNotifier.value,
+                                                  icon: Icon(
+                                                    isExpandedNotifier.value
+                                                        ? Icons.arrow_circle_up_sharp
+                                                        : Icons.arrow_circle_down_sharp,
+                                                    color: Colors.grey,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          if (isExpanded) OpenUserSetInstance(userSet: userSet)
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
                           );
                         }
                         if (snapshot.data!.isEmpty) {
@@ -355,7 +387,7 @@ class ChronoBottomSheet extends StatelessWidget {
     return Material(
       elevation: 5,
       child: Consumer<WorkoutPageNotifier>(
-        builder: (context, notifier, child) => AnimatedContainer(
+        builder: (_, notifier, __) => AnimatedContainer(
           alignment: Alignment.topCenter,
           duration: const Duration(milliseconds: 150),
           height: notifier.bottomSheetIsExpanded ? containerMaxHeight : containerHeight,
@@ -505,7 +537,7 @@ class ChronoBottomSheet extends StatelessWidget {
                             const Text('Auto play'),
                             Checkbox(
                               value: notifier.autoPlay,
-                              onChanged: (bool? value) => notifier.autoPlay = value ??= false,
+                              onChanged: (bool? value) => notifier.autoPlay = value ?? false,
                             ),
                           ],
                         ),

@@ -138,5 +138,8 @@
   "EMOM":   "\"EMOM,\" which stands for \"Every Minute On the Minute,\" is all about high-energy training! You perform a specific task at the start of each minute, and whatever time remains is your rest. It's a fast-paced, intense approach to workouts. Perfect for boosting endurance, strength, and overall fitness. Get ready to crush each minute and push your limits! \uD83D\uDE80\uD83D\uDCAA",
   "SIMPLE": "Set training involves performing a predetermined group of repetitions of a specific exercise, followed by a rest period. These repeated sets promote muscle growth, strength, and endurance. By adjusting the number of repetitions and the load, this method offers flexibility to achieve various goals, whether it's bulking up, defining muscles, or improving strength. The key lies in precision and intensity, effectively stimulating muscle development. \uD83D\uDCAA\uD83D\uDD25",
   "TABATA": "TABATA is all about bringing the heat in record time! Twenty seconds of intense workout, followed by ten seconds of rest, and you repeat that for a total of four minutes—eight cycles in all. It's short but intense, perfect for boosting cardio, endurance, and torching calories! Picture yourself going all out during those 20 seconds, then easing up a bit during the rest. It's pure HIIT, ready to take your workout to the next level! 🔥💥",
-  "chooseWorkoutType": "Choose workout type"
+  "chooseWorkoutType": "Choose workout type",
+  "MIN": "Min",
+  "HOUR": "Hour",
+  "SEC": "Second"
 }
