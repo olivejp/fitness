@@ -1,10 +1,10 @@
 import 'package:fitnc_user/page/exercice/stat-exercice.page.dart';
-import 'package:fitness_domain/constants.dart';
-import 'package:fitness_domain/domain/exercice.domain.dart';
+import 'package:fitness_domain/domain/exercise.domain.dart';
 import 'package:fitness_domain/domain/user.line.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fitness_domain/enum/dist_unit.enum.dart';
 import 'package:fitness_domain/enum/time_unit.enum.dart';
+import 'package:fitness_domain/enum/type_exercise.enum.dart';
 import 'package:fitness_domain/enum/weight_unit.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +13,30 @@ import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 
 import 'add_user_set.controller.dart';
+
+class DropdownFormFieldTheme extends InheritedWidget {
+  const DropdownFormFieldTheme({
+    super.key,
+    required super.child,
+    this.textStyle,
+    this.menuItemTextStyle,
+    this.inputDecoration,
+  });
+
+  final TextStyle? textStyle;
+  final TextStyle? menuItemTextStyle;
+  final InputDecorationTheme? inputDecoration;
+
+  static DropdownFormFieldTheme? of(BuildContext context) =>
+      context.getInheritedWidgetOfExactType<DropdownFormFieldTheme>();
+
+  @override
+  bool updateShouldNotify(DropdownFormFieldTheme oldWidget) {
+    return oldWidget.textStyle != textStyle ||
+        oldWidget.inputDecoration != inputDecoration ||
+        oldWidget.menuItemTextStyle != menuItemTextStyle;
+  }
+}
 
 class OpenUserSetInstance extends StatelessWidget {
   const OpenUserSetInstance({super.key, required this.userSet});
@@ -25,7 +49,10 @@ class OpenUserSetInstance extends StatelessWidget {
         value: UserSetController(),
         builder: (context, child) {
           Provider.of<UserSetController>(context, listen: false).init(userSet);
-          return UserSetUpdate(userSet: userSet);
+          return DropdownFormFieldTheme(
+            menuItemTextStyle: GoogleFonts.anton(color: Colors.black54),
+            child: UserSetUpdate(userSet: userSet),
+          );
         });
   }
 }
@@ -40,7 +67,7 @@ class UserSetUpdate extends StatelessWidget {
 
   /// Returns headers columns depending on the Exercise type.
   List<Widget> getColumnsHeadersByType() {
-    if (userSet.typeExercice == TypeExercice.REPS_WEIGHT.name) {
+    if (userSet.typeExercise == TypeExercise.REPS_WEIGHT.name) {
       return [
         Flexible(
           flex: 2,
@@ -61,7 +88,7 @@ class UserSetUpdate extends StatelessWidget {
           ),
         )
       ];
-    } else if (userSet.typeExercice == TypeExercice.REPS_ONLY.name) {
+    } else if (userSet.typeExercise == TypeExercise.REPS.name) {
       return [
         Flexible(
           flex: 4,
@@ -73,7 +100,7 @@ class UserSetUpdate extends StatelessWidget {
           ),
         )
       ];
-    } else if (userSet.typeExercice == TypeExercice.TIME.name) {
+    } else if (userSet.typeExercise == TypeExercise.TIME.name) {
       return [
         Flexible(
           flex: 4,
@@ -85,7 +112,7 @@ class UserSetUpdate extends StatelessWidget {
           ),
         )
       ];
-    } else if (userSet.typeExercice == TypeExercice.DIST.name) {
+    } else if (userSet.typeExercise == TypeExercise.DISTANCE.name) {
       return [
         Flexible(
           flex: 4,
@@ -104,7 +131,8 @@ class UserSetUpdate extends StatelessWidget {
 
   /// Returns fields columns depending on the Exercise type.
   List<Widget> getColumnsFieldsByType(
-    String? typeExercise,
+    BuildContext context,
+    TypeExercise? typeExercise,
     UserLine userLine,
     int index,
     UserSetController controller,
@@ -116,7 +144,7 @@ class UserSetUpdate extends StatelessWidget {
     GlobalKey keyDist,
     GlobalKey keyDistUnit,
   ) {
-    if (typeExercise == TypeExercice.REPS_ONLY.name) {
+    if (typeExercise == TypeExercise.REPS.name) {
       return [
         Flexible(
           flex: 2,
@@ -131,7 +159,7 @@ class UserSetUpdate extends StatelessWidget {
           ),
         ),
       ];
-    } else if (typeExercise == TypeExercice.DIST.name) {
+    } else if (typeExercise == TypeExercise.DISTANCE.name) {
       return [
         Flexible(
           flex: 2,
@@ -149,19 +177,19 @@ class UserSetUpdate extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: DropdownButtonFormField<DistUnit>(
+              key: keyDistUnit,
+              style: DropdownFormFieldTheme.of(context)!.textStyle,
               isDense: true,
               iconSize: 0.0,
-              key: keyDistUnit,
               itemHeight: 48.0,
               value: userLine.distUnit ?? DistUnit.KM,
-              style: GoogleFonts.anton(),
               items: DistUnit.values
                   .map(
                     (e) => DropdownMenuItem(
                       value: e,
                       child: Text(
                         e.name.i18n(),
-                        style: GoogleFonts.anton(),
+                        style: DropdownFormFieldTheme.of(context)!.menuItemTextStyle,
                       ),
                     ),
                   )
@@ -171,7 +199,7 @@ class UserSetUpdate extends StatelessWidget {
           ),
         ),
       ];
-    } else if (typeExercise == TypeExercice.TIME.name) {
+    } else if (typeExercise == TypeExercise.TIME.name) {
       return [
         Flexible(
           flex: 2,
@@ -189,19 +217,19 @@ class UserSetUpdate extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: DropdownButtonFormField<TimeUnit>(
+              style: DropdownFormFieldTheme.of(context)!.textStyle,
               key: keyTimeUnit,
               isDense: true,
               iconSize: 0.0,
               itemHeight: 48.0,
               value: userLine.timeUnit ?? TimeUnit.MIN,
-              style: GoogleFonts.anton(),
               items: TimeUnit.values
                   .map(
                     (e) => DropdownMenuItem(
                       value: e,
                       child: Text(
                         e.name.i18n(),
-                        style: GoogleFonts.anton(),
+                        style: DropdownFormFieldTheme.of(context)!.menuItemTextStyle,
                       ),
                     ),
                   )
@@ -211,7 +239,7 @@ class UserSetUpdate extends StatelessWidget {
           ),
         ),
       ];
-    } else if (typeExercise == TypeExercice.REPS_WEIGHT.name) {
+    } else if (typeExercise == TypeExercise.REPS_WEIGHT.name) {
       return [
         Flexible(
           flex: 2,
@@ -241,19 +269,19 @@ class UserSetUpdate extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: DropdownButtonFormField<WeightUnit>(
+              style: DropdownFormFieldTheme.of(context)!.textStyle,
               key: keyWeightUnit,
               isDense: true,
               iconSize: 0.0,
               itemHeight: 48.0,
               value: userLine.weightUnit ?? WeightUnit.KG,
-              style: GoogleFonts.anton(),
               items: WeightUnit.values
                   .map(
                     (e) => DropdownMenuItem(
                       value: e,
                       child: Text(
                         e.name.i18n(),
-                        style: GoogleFonts.anton(),
+                        style: DropdownFormFieldTheme.of(context)!.menuItemTextStyle,
                       ),
                     ),
                   )
@@ -271,7 +299,8 @@ class UserSetUpdate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     /// Initialize the userSet list.
-    Provider.of<UserSetController>(context, listen: false).initList(userSet.lines, false);
+    final UserSetController notifierReadOnly = Provider.of<UserSetController>(context, listen: false);
+    notifierReadOnly.initList(userSet.lines, false);
 
     return SingleChildScrollView(
       controller: scrollController,
@@ -337,8 +366,11 @@ class UserSetUpdate extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Text('${index + 1}'),
                         ),
+
+                        /// Here we add dynamically all the forms needed depending on the exercise type.
                         ...getColumnsFieldsByType(
-                          userSet.typeExercice,
+                          context,
+                          userSet.typeExercise,
                           userLine,
                           index,
                           controller,
@@ -365,15 +397,22 @@ class UserSetUpdate extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.only(right: 8.0),
                             child: DropdownButtonFormField<TimeUnit>(
+                              style: DropdownFormFieldTheme.of(context)!.textStyle,
                               iconSize: 0.0,
                               isDense: true,
                               itemHeight: 48.0,
                               key: keyRestTimeUnit,
                               value: userLine.restTimeUnit ?? TimeUnit.MIN,
-                              style: GoogleFonts.anton(),
                               items: TimeUnit.values
-                                  .map((e) => DropdownMenuItem(
-                                      value: e, child: Text(e.name.i18n(), style: GoogleFonts.anton())))
+                                  .map(
+                                    (e) => DropdownMenuItem(
+                                      value: e,
+                                      child: Text(
+                                        e.name.i18n(),
+                                        style: DropdownFormFieldTheme.of(context)!.menuItemTextStyle,
+                                      ),
+                                    ),
+                                  )
                                   .toList(),
                               onChanged: (TimeUnit? value) =>
                                   controller.changeRestTimeUnit(index, value ?? TimeUnit.MIN),
@@ -384,20 +423,24 @@ class UserSetUpdate extends StatelessWidget {
                     );
                   });
             }),
-            RowAddRemoveSet(controller: Provider.of<UserSetController>(context, listen: false)),
+            RowAddRemoveSet(controller: notifierReadOnly),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextButton.icon(
                   onPressed: () {
                     showDialog(
                       context: context,
-                      builder: (context) =>
-                          AddCommentAlertDialog(controller: Provider.of<UserSetController>(context, listen: false)),
+                      builder: (context) => AddCommentAlertDialog(controller: notifierReadOnly),
                     );
                   },
                   label: Text('comment'.i18n()),
                   icon: const Icon(Icons.note_outlined),
+                ),
+                TextButton.icon(
+                  onPressed: () => notifierReadOnly.delete(context, userSet),
+                  label: Text('delete'.i18n()),
+                  icon: const Icon(Icons.delete),
                 )
               ],
             )
@@ -456,7 +499,7 @@ class RowExerciseDetails extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                controller.userSet.nameExercice!,
+                controller.userSet.nameExercise!,
                 style: GoogleFonts.antonio(
                   fontSize: 20,
                   fontWeight: FontWeight.w900,
@@ -469,12 +512,12 @@ class RowExerciseDetails extends StatelessWidget {
                   color: Colors.grey,
                 ),
                 onPressed: () {
-                  controller.getExercise(controller.userSet.uidExercice).then(
-                    (Exercice? exercise) {
+                  controller.getExercise(controller.userSet.uidExercise).then(
+                    (Exercise? exercise) {
                       if (exercise != null) {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => StatExercicePage(exercice: exercise),
+                            builder: (context) => StatExercisePage(exercice: exercise),
                           ),
                         );
                       }

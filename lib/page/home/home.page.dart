@@ -14,8 +14,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final FitnessUserService fitnessUserService = GetIt.I.get();
-    final String? imageUrl = AuthService.getUserConnectedOrThrow().photoURL;
-
+    final String? avatarUrl = AuthService.getUserConnectedOrThrow().photoURL;
     return LayoutNotifier(
       child: SafeArea(
         child: Scaffold(
@@ -30,7 +29,7 @@ class HomePage extends StatelessWidget {
                 child: CircleAvatar(
                   radius: 20,
                   foregroundColor: Theme.of(context).primaryColor,
-                  foregroundImage: (imageUrl != null) ? CachedNetworkImageProvider(imageUrl) : null,
+                  foregroundImage: (avatarUrl != null) ? CachedNetworkImageProvider(avatarUrl) : null,
                 ),
               )
             ],

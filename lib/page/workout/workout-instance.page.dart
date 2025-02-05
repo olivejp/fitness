@@ -280,47 +280,55 @@ class WorkoutPage extends StatelessWidget {
 
                           return SingleChildScrollView(
                             child: Column(
-                              children: listUserSet.map((userSet) {
-                                final ValueNotifier isExpandedNotifier = ValueNotifier<bool>(false);
-                                return ValueListenableBuilder(
-                                  valueListenable: isExpandedNotifier,
-                                  builder: (_, isExpanded, __) => InkWell(
-                                    onTap: () => isExpandedNotifier.value = !isExpandedNotifier.value,
-                                    child: Material(
-                                      elevation: 1.0,
-                                      child: Column(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                Text(
-                                                  userSet.nameExercice!,
-                                                  style: GoogleFonts.antonio(
-                                                    fontSize: 20,
-                                                    fontWeight: FontWeight.w900,
+                              children: [
+                                ...listUserSet.map((userSet) {
+                                  final ValueNotifier isExpandedNotifier = ValueNotifier<bool>(false);
+                                  return ValueListenableBuilder(
+                                    valueListenable: isExpandedNotifier,
+                                    builder: (_, isExpanded, __) => InkWell(
+                                      onTap: () => isExpandedNotifier.value = !isExpandedNotifier.value,
+                                      child: Material(
+                                        elevation: 1.0,
+                                        child: Column(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    userSet.nameExercise!,
+                                                    style: GoogleFonts.antonio(
+                                                      fontSize: 20,
+                                                      fontWeight: FontWeight.w900,
+                                                    ),
                                                   ),
-                                                ),
-                                                IconButton(
-                                                  onPressed: () => isExpandedNotifier.value = !isExpandedNotifier.value,
-                                                  icon: Icon(
-                                                    isExpandedNotifier.value
-                                                        ? Icons.arrow_circle_up_sharp
-                                                        : Icons.arrow_circle_down_sharp,
-                                                    color: Colors.grey,
+                                                  IconButton(
+                                                    onPressed: () =>
+                                                        isExpandedNotifier.value = !isExpandedNotifier.value,
+                                                    icon: Icon(
+                                                      isExpandedNotifier.value
+                                                          ? Icons.arrow_circle_up_sharp
+                                                          : Icons.arrow_circle_down_sharp,
+                                                      color: Colors.grey,
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                          if (isExpanded) OpenUserSetInstance(userSet: userSet)
-                                        ],
+                                            if (isExpanded) OpenUserSetInstance(userSet: userSet)
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              }).toList(),
+                                  );
+                                }),
+                                Consumer<WorkoutPageNotifier>(builder: (_, notifier, __) {
+                                  return SizedBox(
+                                    height: notifier.bottomSheetIsExpanded ? containerMaxHeight : containerHeight,
+                                  );
+                                })
+                              ],
                             ),
                           );
                         }

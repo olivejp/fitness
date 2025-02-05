@@ -29,11 +29,11 @@ class Theming {
       primaryColor: Colors.amber,
       filledButtonTheme: FilledButtonThemeData(
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(Colors.orangeAccent),
-          minimumSize: MaterialStateProperty.all(
+          backgroundColor: WidgetStateProperty.all(Colors.orangeAccent),
+          minimumSize: WidgetStateProperty.all(
             const Size.fromHeight(60),
           ),
-          shape: MaterialStateProperty.all(
+          shape: WidgetStateProperty.all(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(5.0),
             ),
@@ -81,9 +81,9 @@ class Theming {
       textTheme: getTextTheme(),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: ButtonStyle(
-          foregroundColor: MaterialStateProperty.all(Colors.amber),
-          overlayColor: MaterialStateProperty.all(Colors.amber.shade50),
-          shape: MaterialStateProperty.all(
+          foregroundColor: WidgetStateProperty.all(Colors.amber),
+          overlayColor: WidgetStateProperty.all(Colors.amber.shade50),
+          shape: WidgetStateProperty.all(
             const StadiumBorder(
               side: BorderSide(
                 color: Colors.amber,
@@ -94,8 +94,8 @@ class Theming {
         ),
       ),
       checkboxTheme: CheckboxThemeData(
-        fillColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return Colors.amber;
           }
           return null;
@@ -107,8 +107,8 @@ class Theming {
   static TextButtonThemeData getTextButtonThemeData() {
     return TextButtonThemeData(
       style: ButtonStyle(
-        foregroundColor: MaterialStateProperty.all(Colors.amber),
-        textStyle: MaterialStateProperty.all(
+        foregroundColor: WidgetStateProperty.all(Colors.amber),
+        textStyle: WidgetStateProperty.all(
           GoogleFonts.nunito(fontSize: 16),
         ),
       ),
@@ -168,8 +168,8 @@ class Theming {
             ),
           ),
       checkboxTheme: CheckboxThemeData(
-        fillColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return Colors.amber;
           }
           return null;
@@ -181,8 +181,8 @@ class Theming {
   static ElevatedButtonThemeData getElevatedButtonTheme() {
     return ElevatedButtonThemeData(
       style: ButtonStyle(
-        minimumSize: MaterialStateProperty.all(const Size(double.infinity, 55)),
-        textStyle: MaterialStateProperty.all(
+        minimumSize: WidgetStateProperty.all(const Size(double.infinity, 55)),
+        textStyle: WidgetStateProperty.all(
           GoogleFonts.nunito(fontSize: 20),
         ),
       ),

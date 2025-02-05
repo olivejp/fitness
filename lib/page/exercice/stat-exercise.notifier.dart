@@ -16,7 +16,7 @@ enum TypeChart {
 }
 
 /// Controller
-class StatExercicePageNotifier extends ChangeNotifier {
+class StatExercisePageNotifier extends ChangeNotifier {
   final UserSetService userSetService = GetIt.I.get();
   final WorkoutInstanceService workoutInstanceService = GetIt.I.get();
 
@@ -45,8 +45,8 @@ class StatExercicePageNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<UserSet>> getAllUserSetByExercice(String exerciceUid) {
-    return userSetService.getForExercice(exerciceUid);
+  Future<List<UserSet>> getAllUserSetByExercise(String exerciceUid) {
+    return userSetService.getForExercise(exerciceUid);
   }
 
   Future<WorkoutInstance?> getWorkoutInstance(String uidWorkout) {

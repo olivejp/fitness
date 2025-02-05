@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:fitnc_user/page/calendar/calendar.page.dart';
-import 'package:fitnc_user/page/exercice/exercice-detail.page.dart';
-import 'package:fitnc_user/page/exercice/exercice.page.dart';
+import 'package:fitnc_user/page/exercice/exercise-detail.page.dart';
+import 'package:fitnc_user/page/exercice/exercise.page.dart';
 import 'package:fitnc_user/page/home/home.page.dart';
 import 'package:fitnc_user/page/login/login.page.dart';
 import 'package:fitnc_user/page/main/main.page.dart';

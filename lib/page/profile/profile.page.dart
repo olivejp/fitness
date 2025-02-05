@@ -1,6 +1,6 @@
 import 'package:fitnc_user/fitness_router.dart';
 import 'package:fitnc_user/notifier/application_settings_notifier.dart';
-import 'package:fitnc_user/page/exercice/exercice.page.dart';
+import 'package:fitnc_user/page/exercice/exercise.page.dart';
 import 'package:fitnc_user/page/profile/profile.notifier.dart';
 import 'package:fitness_domain/widget/firestore_param_dropdown.widget.dart';
 import 'package:fitness_domain/widget/generic_container.widget.dart';
@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:localization/localization.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 
 import '../../constants.dart';
@@ -152,13 +151,22 @@ class ProfilePage extends StatelessWidget {
                                 ElevatedButton(
                                   onPressed: () {
                                     if (_formKey.currentState?.validate() == true) {
-                                      controller.save().then((_) {
-                                        showToast('informationsUpdated'.i18n(), backgroundColor: Colors.green);
-                                      }).catchError(
-                                        (_) {
-                                          showToast('errorWhileSaving'.i18n(), backgroundColor: Colors.redAccent);
-                                        },
-                                      );
+                                      controller
+                                          .save()
+                                          .then((_) => showDialog(
+                                                context: context,
+                                                builder: (context) => AlertDialog(
+                                                  content: Text('informationsUpdated'.i18n()),
+                                                ),
+                                              ))
+                                          .onError(
+                                            (_, __) => showDialog(
+                                              context: context,
+                                              builder: (context) => AlertDialog(
+                                                content: Text('errorWhileSaving'.i18n()),
+                                              ),
+                                            ),
+                                          );
                                     }
                                   },
                                   child: Text(

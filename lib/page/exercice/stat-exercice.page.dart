@@ -1,6 +1,6 @@
-import 'package:fitnc_user/page/exercice/stat-exercice.notifier.dart';
+import 'package:fitnc_user/page/exercice/stat-exercise.notifier.dart';
 import 'package:fitnc_user/widget/bar_chart.dart';
-import 'package:fitness_domain/domain/exercice.domain.dart';
+import 'package:fitness_domain/domain/exercise.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/painting/text_style.dart' as text_style;
@@ -10,15 +10,15 @@ import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 
 /// TODO Finir les stats
-class StatExercicePage extends StatelessWidget {
-  const StatExercicePage({super.key, required this.exercice});
+class StatExercisePage extends StatelessWidget {
+  const StatExercisePage({super.key, required this.exercice});
 
-  final Exercice exercice;
+  final Exercise exercice;
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
-        value: StatExercicePageNotifier(),
+        value: StatExercisePageNotifier(),
         builder: (context, child) {
           return Scaffold(
             appBar: AppBar(
@@ -40,7 +40,7 @@ class StatExercicePage extends StatelessWidget {
             body: FutureBuilder<List<UserSet>>(
               initialData: const <UserSet>[],
               future:
-                  Provider.of<StatExercicePageNotifier>(context, listen: false).getAllUserSetByExercice(exercice.uid!),
+                  Provider.of<StatExercisePageNotifier>(context, listen: false).getAllUserSetByExercise(exercice.uid!),
               builder: (_, snapshot) {
                 if (snapshot.hasError) {
                   return SelectableText(snapshot.error.toString());
@@ -51,7 +51,7 @@ class StatExercicePage extends StatelessWidget {
                 if (snapshot.connectionState == ConnectionState.done) {
                   final List<UserSet> listUserSet = snapshot.data!;
                   if (listUserSet.isNotEmpty) {
-                    Provider.of<StatExercicePageNotifier>(context, listen: false).selectedUserSet =
+                    Provider.of<StatExercisePageNotifier>(context, listen: false).selectedUserSet =
                         listUserSet.elementAt(0);
                   }
                   return Column(
@@ -95,7 +95,7 @@ class BarButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<StatExercicePageNotifier>(
+    return Consumer<StatExercisePageNotifier>(
       builder: (context, controller, child) {
         TypeChart typeChartSelected = controller.typeChart;
         return ButtonBar(
@@ -159,7 +159,7 @@ class BarButtons extends StatelessWidget {
 class ListSeance extends StatelessWidget {
   const ListSeance({super.key, required this.exercice, required this.listUserSet});
 
-  final Exercice exercice;
+  final Exercise exercice;
   final List<UserSet> listUserSet;
 
   @override
@@ -196,7 +196,7 @@ class UserSetCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<StatExercicePageNotifier>(builder: (context, controller, child) {
+    return Consumer<StatExercisePageNotifier>(builder: (context, controller, child) {
       return InkWell(
         child: ListTile(
           selected: controller.selectedUserSet.uid == userSet.uid,
@@ -251,7 +251,7 @@ class UserSetCard extends StatelessWidget {
         ),
         onTap: () {
           if (userSet.date != null) {
-            controller.dateSelected = Tuple2(userSet.uidExercice, userSet.date!);
+            controller.dateSelected = Tuple2(userSet.uidExercise, userSet.date!);
           }
           controller.selectedUserSet = userSet;
         },

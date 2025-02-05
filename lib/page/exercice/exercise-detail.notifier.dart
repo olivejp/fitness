@@ -1,18 +1,18 @@
-import 'package:fitnc_user/service/exercice.service.dart';
+import 'package:fitnc_user/service/exercise.service.dart';
 import 'package:fitnc_user/service/muscular_group.service.dart';
-import 'package:fitness_domain/domain/exercice.domain.dart';
+import 'package:fitness_domain/domain/exercise.domain.dart';
 import 'package:fitness_domain/domain/storage-file.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 class ExerciseDetailPageNotifier extends ChangeNotifier {
-  final ExerciceService exerciseService = GetIt.I.get();
+  final ExerciseService exerciseService = GetIt.I.get();
 
-  Exercice exercise = Exercice();
+  Exercise exercise = Exercise();
 
-  void init(Exercice? exercise, Stream<List<MuscularGroup>> stream) {
+  void init(Exercise? exercise, Stream<List<MuscularGroup>> stream) {
     if (exercise == null) {
-      this.exercise = Exercice();
+      this.exercise = Exercise();
     } else {
       this.exercise = exercise;
     }

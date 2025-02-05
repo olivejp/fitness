@@ -3,7 +3,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnc_user/constants.dart';
 import 'package:fitnc_user/service/published_programme.service.dart';
-import 'package:fitness_domain/domain/exercice.domain.dart';
+import 'package:fitness_domain/domain/exercise.domain.dart';
 import 'package:fitness_domain/domain/fitness-user.domain.dart';
 import 'package:fitness_domain/domain/published_programme.domain.dart';
 import 'package:fitness_domain/domain/trainers.domain.dart';
@@ -19,8 +19,8 @@ class FitnessUserService extends AbstractFitnessStorageService<FitnessUser> {
   final String collectionName = 'users';
   final String collectionMyPrograms = 'programme';
   final String collectionMyProgramsWorkouts = 'workouts';
-  final String collectionMyExercices = 'exercices';
-  final String collectionMyGroupExercices = 'group_exercices';
+  final String collectionMyExercises = 'exercices';
+  final String collectionMyGroupExercises = 'group_exercices';
   final String collectionMyWorkoutInstance = 'workoutInstance';
 
   @override
@@ -30,6 +30,7 @@ class FitnessUserService extends AbstractFitnessStorageService<FitnessUser> {
 
   @override
   CollectionReference<Map<String, dynamic>> getCollectionReference() {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
     return firebaseFirestore.collection(collectionName);
   }
 
@@ -75,14 +76,14 @@ class FitnessUserService extends AbstractFitnessStorageService<FitnessUser> {
     return getCollectionReference().doc(user.uid).collection(collectionMyPrograms);
   }
 
-  CollectionReference<Map<String, dynamic>> getMyExerciceReference() {
+  CollectionReference<Map<String, dynamic>> getMyExerciseReference() {
     User user = AuthService.getUserConnectedOrThrow();
-    return getCollectionReference().doc(user.uid).collection(collectionMyExercices);
+    return getCollectionReference().doc(user.uid).collection(collectionMyExercises);
   }
 
-  CollectionReference<Map<String, dynamic>> getMyGroupExerciceReference() {
+  CollectionReference<Map<String, dynamic>> getMyGroupExerciseReference() {
     User user = AuthService.getUserConnectedOrThrow();
-    return getCollectionReference().doc(user.uid).collection(collectionMyGroupExercices);
+    return getCollectionReference().doc(user.uid).collection(collectionMyGroupExercises);
   }
 
   CollectionReference<Map<String, dynamic>> getMyWorkoutInstanceReference() {
@@ -96,9 +97,9 @@ class FitnessUserService extends AbstractFitnessStorageService<FitnessUser> {
         .map((event) => event.docs.map((e) => PublishedProgramme.fromJson(e.data())).toList());
   }
 
-  Stream<List<Exercice>> listenMyExercices() async* {
-    CollectionReference<Map<String, dynamic>> colRef = getMyExerciceReference();
-    yield* colRef.snapshots().map((event) => event.docs.map((e) => Exercice.fromJson(e.data())).toList());
+  Stream<List<Exercise>> listenMyExercises() async* {
+    CollectionReference<Map<String, dynamic>> colRef = getMyExerciseReference();
+    yield* colRef.snapshots().map((event) => event.docs.map((e) => Exercise.fromJson(e.data())).toList());
   }
 
   Stream<List<WorkoutInstance>> listenMyWorkoutInstance() async* {
@@ -112,10 +113,10 @@ class FitnessUserService extends AbstractFitnessStorageService<FitnessUser> {
     return query.docs.map((e) => PublishedProgramme.fromJson(e.data() as Map<String, dynamic>)).toList();
   }
 
-  Future<List<Exercice>> getMyExercices() async {
-    CollectionReference<Map<String, dynamic>> colRef = getMyExerciceReference();
+  Future<List<Exercise>> getMyExercises() async {
+    CollectionReference<Map<String, dynamic>> colRef = getMyExerciseReference();
     QuerySnapshot query = await colRef.get();
-    return query.docs.map((e) => Exercice.fromJson(e.data() as Map<String, dynamic>)).toList();
+    return query.docs.map((e) => Exercise.fromJson(e.data() as Map<String, dynamic>)).toList();
   }
 
   ///

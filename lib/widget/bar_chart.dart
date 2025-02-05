@@ -1,7 +1,7 @@
-import 'package:fitnc_user/page/exercice/stat-exercice.notifier.dart';
+import 'package:fitnc_user/page/exercice/stat-exercise.notifier.dart';
 import 'package:fitnc_user/service/debug_printer.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
-import 'package:fitness_domain/domain/exercice.domain.dart';
+import 'package:fitness_domain/domain/exercise.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 class FitnessBarChart extends StatefulWidget {
   const FitnessBarChart({super.key, required this.exercice, required this.listUserSet});
 
-  final Exercice exercice;
+  final Exercise exercice;
   final List<UserSet> listUserSet;
 
   final Color volumeColor = Colors.yellow;
@@ -75,7 +75,7 @@ class FitnessBarChartState extends State<FitnessBarChart> {
               height: 38,
             ),
             Expanded(
-              child: Consumer<StatExercicePageNotifier>(builder: (context, notifier, child) {
+              child: Consumer<StatExercisePageNotifier>(builder: (context, notifier, child) {
                 var increment = 0;
                 final List<BarChartGroupData> listBarChartGroupData = [];
 

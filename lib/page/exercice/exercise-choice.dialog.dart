@@ -2,15 +2,15 @@ import 'dart:async';
 
 import 'package:badges/badges.dart' as badges;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitnc_user/page/exercice/exercice.page.dart';
+import 'package:fitnc_user/page/exercice/exercise.page.dart';
 import 'package:fitnc_user/page/workout/workout-instance.page.dart';
 import 'package:fitnc_user/service/debug_printer.dart';
-import 'package:fitnc_user/service/exercice.service.dart';
+import 'package:fitnc_user/service/exercise.service.dart';
 import 'package:fitnc_user/service/muscular_group.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:fitnc_user/widget/network_image.widget.dart';
-import 'package:fitness_domain/domain/exercice.domain.dart';
+import 'package:fitness_domain/domain/exercise.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
 import 'package:fitness_domain/enum/type_workout.enum.dart';
@@ -47,41 +47,41 @@ class ExerciseChoiceFilterNotifier extends ChangeNotifier {
 }
 
 class ExerciseChoiceDialogController extends ChangeNotifier {
-  final ExerciceService exerciceService = GetIt.I.get();
+  final ExerciseService exerciceService = GetIt.I.get();
   final UserSetService userSetService = GetIt.I.get();
   final WorkoutInstanceService workoutInstanceService = GetIt.I.get();
 
-  final List<Exercice> listChosen = <Exercice>[];
-  StreamSubscription<List<Exercice>>? strSubExercice;
-  List<Exercice> localListExercice = [];
+  final List<Exercise> listChosen = <Exercise>[];
+  StreamSubscription<List<Exercise>>? strSubExercise;
+  List<Exercise> localListExercise = [];
 
   loadData() {
     listChosen.clear();
-    strSubExercice?.cancel();
+    strSubExercise?.cancel();
 
-    strSubExercice = exerciceService.listenAllAndRef().listen((listExercice) {
-      localListExercice = listExercice;
+    strSubExercise = exerciceService.listenAllAndRef().listen((listExercise) {
+      localListExercise = listExercise;
       notifyListeners();
     });
   }
 
   searchByGroup(List<Picto>? groupSelected) {
-    strSubExercice?.cancel();
+    strSubExercise?.cancel();
     if (groupSelected != null && groupSelected.isNotEmpty) {
-      strSubExercice = ZipStream(
+      strSubExercise = ZipStream(
           [
             exerciceService.whereListen('group', arrayContainsAny: groupSelected.map((e) => e.name).toList()),
           ],
           (values) => values.reduce((value, element) {
                 value.addAll(element);
                 return value;
-              })).listen((listExercice) {
-        localListExercice = listExercice;
+              })).listen((listExercise) {
+        localListExercise = listExercise;
         notifyListeners();
       });
     } else {
-      strSubExercice = exerciceService.listenAllAndRef().listen((listExercice) {
-        localListExercice = listExercice;
+      strSubExercise = exerciceService.listenAllAndRef().listen((listExercise) {
+        localListExercise = listExercise;
         notifyListeners();
       });
     }
@@ -104,7 +104,7 @@ class ExerciseChoiceDialogController extends ChangeNotifier {
     return instance;
   }
 
-  void toggle(Exercice exercise) {
+  void toggle(Exercise exercise) {
     if (listChosen.map((element) => element.uid).toList().contains(exercise.uid)) {
       listChosen.removeWhere((element) => element.uid == exercise.uid);
     } else {
@@ -143,11 +143,11 @@ class ExerciseChoiceDialogController extends ChangeNotifier {
   Future<List<dynamic>> _addUserSet(WorkoutInstance workoutInstance) async {
     List<Future<void>> listFutureUserSet = listChosen
         .map((exercise) => UserSet(
-            uidExercice: exercise.uid!,
+            uidExercise: exercise.uid!,
             uidWorkout: workoutInstance.uid!,
-            nameExercice: exercise.name,
-            imageUrlExercice: exercise.imageUrl,
-            typeExercice: exercise.typeExercice,
+            nameExercise: exercise.name,
+            imageUrlExercise: exercise.imageUrl,
+            typeExercise: exercise.typeExercise,
             date: DateTime.fromMicrosecondsSinceEpoch((workoutInstance.date as Timestamp).microsecondsSinceEpoch)))
         .map((e) => userSetService.save(e))
         .toList();
@@ -300,16 +300,17 @@ class ExerciseChoiceDialog extends StatelessWidget {
                   width: 1000,
                   child: Consumer<ExerciseChoiceDialogController>(
                     builder: (context, controller, snapshot) {
-                      final List<Exercice> listExercise = controller.localListExercice;
+                      final List<Exercise> listExercise = controller.localListExercise;
                       return ListView.separated(
                         shrinkWrap: true,
                         itemCount: listExercise.length,
                         itemBuilder: (context, index) {
-                          final Exercice exercice = listExercise.elementAt(index);
+                          final Exercise exercice = listExercise.elementAt(index);
                           return Consumer<ExerciseChoiceDialogController>(builder: (context, notifier, child) {
                             return ExerciseCard(
                               exercise: exercice,
                               showSelect: true,
+                              showDelete: false,
                               onTap: () => notifier.toggle(exercice),
                               selected:
                                   notifier.listChosen.map((element) => element.uid).toList().contains(exercice.uid),
@@ -339,16 +340,25 @@ class ExerciseCard extends StatelessWidget {
     required this.exercise,
     this.selected = false,
     this.showSelect = false,
+    this.showDelete = false,
+    this.onDelete,
     required this.onTap,
   });
 
-  final Exercice exercise;
+  final Exercise exercise;
   final bool selected;
   final bool showSelect;
+  final bool showDelete;
   final GestureTapCallback onTap;
+  final void Function(Exercise exercice)? onDelete;
 
   @override
   Widget build(BuildContext context) {
+    assert((showDelete && onDelete != null) || (!showDelete),
+        'If showDelete is true, an onDelete function must be provided.');
+
+    DebugPrinter.printLn('Type exercise : ${exercise.typeExercise}');
+
     return InkWell(
       onTap: onTap,
       child: SizedBox(
@@ -400,8 +410,8 @@ class ExerciseCard extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.all(3.0),
                               child: Text(
-                                exercise.typeExercice?.toLowerCase().i18n() ?? '',
-                                style: GoogleFonts.nunito(
+                                exercise.typeExercise?.name.i18n() ?? '',
+                                style: GoogleFonts.antonio(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w900,
                                 ),
@@ -415,7 +425,7 @@ class ExerciseCard extends StatelessWidget {
                           child: Text(
                             exercise.description,
                             textAlign: TextAlign.start,
-                            style: GoogleFonts.nunito(fontSize: 12),
+                            style: GoogleFonts.antonio(fontSize: 12),
                           ),
                         ),
                     ],
@@ -426,6 +436,11 @@ class ExerciseCard extends StatelessWidget {
                 Icon(
                   selected ? Icons.check_circle : Icons.circle_outlined,
                   color: selected ? Colors.green : Colors.grey,
+                ),
+              if (showDelete)
+                IconButton(
+                  onPressed: () => onDelete!(exercise),
+                  icon: const Icon(Icons.delete),
                 )
             ],
           ),

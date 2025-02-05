@@ -1,4 +1,4 @@
-import 'package:fitnc_user/page/exercice/exercice-choice.dialog.dart';
+import 'package:fitnc_user/page/exercice/exercise-choice.dialog.dart';
 import 'package:fitnc_user/widget/workout_type_choice.widget.dart';
 import 'package:fitness_domain/domain/workout-instance.domain.dart';
 import 'package:fitness_domain/enum/type_workout.enum.dart';

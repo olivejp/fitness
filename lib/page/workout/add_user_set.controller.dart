@@ -2,29 +2,45 @@ import 'dart:async';
 
 import 'package:fitnc_user/page/workout/workout-instance.page.dart';
 import 'package:fitnc_user/service/debug_printer.dart';
-import 'package:fitnc_user/service/exercice.service.dart';
+import 'package:fitnc_user/service/exercise.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
-import 'package:fitness_domain/domain/exercice.domain.dart';
+import 'package:fitness_domain/domain/exercise.domain.dart';
 import 'package:fitness_domain/domain/user.line.domain.dart';
 import 'package:fitness_domain/domain/user.set.domain.dart';
 import 'package:fitness_domain/enum/dist_unit.enum.dart';
 import 'package:fitness_domain/enum/time_unit.enum.dart';
 import 'package:fitness_domain/enum/weight_unit.enum.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 
 class UserSetController extends ChangeNotifier {
   final WorkoutInstanceService workoutInstanceService = GetIt.I.get();
   final UserSetService userSetService = GetIt.I.get();
-  final ExerciceService exerciseService = GetIt.I.get();
+  final ExerciseService exerciseService = GetIt.I.get();
 
   final List<UserLine> listLines = <UserLine>[];
   final int debounceTime = 200;
 
   UserSet userSet = UserSet();
   Timer? _debounce;
+
+  void delete(BuildContext context, UserSet userSet) {
+    userSetService
+        .delete(userSet)
+        .then(
+          (value) => notifyListeners(),
+        )
+        .onError(
+          (error, stackTrace) => showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              content: Text('$error'),
+            ),
+          ),
+        );
+  }
 
   void init(UserSet userSet) {
     if (userSet.lines.isEmpty) {
@@ -137,12 +153,12 @@ class UserSetController extends ChangeNotifier {
     userSetService.save(userSet).then((value) => notifyListeners());
   }
 
-  Future<Exercice?> getExercise(String uidExercise) {
+  Future<Exercise?> getExercise(String uidExercise) {
     return exerciseService.read(uidExercise);
   }
 
   Future<String> getExerciseImageUrl() async {
-    final Exercice? exercise = await getExercise(userSet.uidExercice);
+    final Exercise? exercise = await getExercise(userSet.uidExercise);
     if (exercise != null && exercise.imageUrl != null) {
       return exercise.imageUrl!;
     }

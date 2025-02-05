@@ -3,11 +3,11 @@ import 'dart:isolate';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnc_user/page/login/login.page.dart';
-import 'package:fitnc_user/service/exercice.service.dart';
+import 'package:fitnc_user/service/exercise.service.dart';
 import 'package:fitnc_user/service/fitness-user.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
-import 'package:fitness_domain/domain/exercice.domain.dart';
+import 'package:fitness_domain/domain/exercise.domain.dart';
 import 'package:fitness_domain/domain/fitness-user.domain.dart';
 import 'package:fitness_domain/service/auth.service.dart';
 import 'package:flutter/foundation.dart';
@@ -16,16 +16,17 @@ import 'package:get_it/get_it.dart';
 
 class AuthWidget extends StatelessWidget {
   AuthWidget({super.key});
+
   final AuthService authService = GetIt.I.get();
 
-  void cacheImages(FitnessUserService fitnessUserService, ExerciceService exerciseService) async {
+  void cacheImages(FitnessUserService fitnessUserService, ExerciseService exerciseService) async {
     List<String> listUrlToCache = [];
     FitnessUser? userConnected = await fitnessUserService.getConnectedUser();
     if (userConnected?.imageUrl != null) {
       listUrlToCache.add(userConnected!.imageUrl!);
     }
 
-    List<Exercice> listExercise = await exerciseService.getAll();
+    List<Exercise> listExercise = await exerciseService.getAll();
 
     for (var exercise in listExercise) {
       if (exercise.imageUrl != null) {

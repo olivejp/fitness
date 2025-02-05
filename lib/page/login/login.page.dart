@@ -6,7 +6,6 @@ import 'package:fitness_domain/widget/layout-display.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:localization/localization.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 
 import '../../constants.dart';
@@ -162,7 +161,12 @@ class LoginForm extends StatelessWidget {
                           )
                           .onError((error, stackTrace) => notifierReadOnly.setLoginMsgError(error.toString()));
                     } else {
-                      showToast('pleaseFillEmail'.i18n());
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          content: Text('pleaseFillEmail'.i18n()),
+                        ),
+                      );
                     }
                   },
                   child: Text(

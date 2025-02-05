@@ -1,17 +1,17 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitness_domain/domain/exercice.domain.dart';
+import 'package:fitness_domain/domain/exercise.domain.dart';
 import 'package:fitness_domain/service/abstract.service.dart';
 
-class RefExerciceService extends AbstractFitnessCrudService<Exercice> {
+class RefExerciseService extends AbstractFitnessCrudService<Exercise> {
   @override
-  Exercice fromJson(Map<String, dynamic> map) {
-    return Exercice.fromJson(map);
+  Exercise fromJson(Map<String, dynamic> map) {
+    return Exercise.fromJson(map);
   }
 
   @override
-  Stream<List<Exercice>> whereListen(Object field,
+  Stream<List<Exercise>> whereListen(Object field,
       {Object? isEqualTo,
       Object? isNotEqualTo,
       Object? isLessThan,
@@ -40,16 +40,16 @@ class RefExerciceService extends AbstractFitnessCrudService<Exercice> {
   }
 
   @override
-  Stream<List<Exercice>> listenAll() async* {
+  Stream<List<Exercise>> listenAll() async* {
     yield* getCollectionReference()
         .snapshots()
-        .map((event) => event.docs.map((e) => Exercice.fromJson(e.data())..origin = 'REF').toList());
+        .map((event) => event.docs.map((e) => Exercise.fromJson(e.data())..origin = 'REF').toList());
   }
 
   @override
-  Future<List<Exercice>> getAll() async {
+  Future<List<Exercise>> getAll() async {
     final future = await getCollectionReference().get();
-    return future.docs.map((e) => Exercice.fromJson(e.data())..origin = 'REF').toList();
+    return future.docs.map((e) => Exercise.fromJson(e.data())..origin = 'REF').toList();
   }
 
   @override

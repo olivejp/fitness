@@ -20,12 +20,12 @@ class UserSetService
     return collectionName;
   }
 
-  Future<List<UserSet>> getForExercice(String uidExercice) {
+  Future<List<UserSet>> getForExercise(String uidExercise) {
     String userUid = FirebaseAuth.instance.currentUser!.uid;
     Query query = FirebaseFirestore.instance
         .collectionGroup(collectionName)
         .where('creatorUid', isEqualTo: userUid)
-        .where('uidExercice', isEqualTo: uidExercice)
+        .where('uidExercise', isEqualTo: uidExercise)
         .where('date', isNull: false)
         .orderBy('date');
     return getFromQuery(query);

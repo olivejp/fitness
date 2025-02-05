@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:badges/badges.dart' as badges;
 import 'package:fitnc_user/fitness_router.dart';
-import 'package:fitnc_user/page/exercice/exercice-choice.dialog.dart';
-import 'package:fitnc_user/page/exercice/exercice-detail.page.dart';
-import 'package:fitnc_user/service/exercice.service.dart';
+import 'package:fitnc_user/page/exercice/exercise-choice.dialog.dart';
+import 'package:fitnc_user/page/exercice/exercise-detail.page.dart';
+import 'package:fitnc_user/service/exercise.service.dart';
 import 'package:fitnc_user/service/muscular_group.service.dart';
-import 'package:fitnc_user/service/ref-exercice.service.dart';
-import 'package:fitness_domain/domain/exercice.domain.dart';
+import 'package:fitnc_user/service/ref-exercise.service.dart';
+import 'package:fitness_domain/domain/exercise.domain.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -25,39 +25,43 @@ class Picto {
 }
 
 class ExerciseListNotifier extends ChangeNotifier {
-  final ExerciceService service = GetIt.I.get();
-  final RefExerciceService refExerciceService = GetIt.I.get();
-  StreamSubscription<List<Exercice>>? strSubExercice;
+  final ExerciseService service = GetIt.I.get();
+  final RefExerciseService refExerciseService = GetIt.I.get();
+  StreamSubscription<List<Exercise>>? strSubExercise;
 
-  List<Exercice> localListExercice = [];
+  List<Exercise> localListExercise = [];
+
+  Future<void> delete(Exercise exercise) {
+    return service.delete(exercise);
+  }
 
   loadData() {
-    strSubExercice?.cancel();
+    strSubExercise?.cancel();
 
-    strSubExercice = service.listenAllAndRef().listen((listExercice) {
-      localListExercice = listExercice;
+    strSubExercise = service.listenAllAndRef().listen((listExercise) {
+      localListExercise = listExercise;
       notifyListeners();
     });
   }
 
   searchByGroup(List<Picto>? groupSelected) {
-    strSubExercice?.cancel();
+    strSubExercise?.cancel();
     if (groupSelected != null && groupSelected.isNotEmpty) {
-      strSubExercice = ZipStream(
+      strSubExercise = ZipStream(
           [
             service.whereListen('group', arrayContainsAny: groupSelected.map((e) => e.name).toList()),
-            refExerciceService.whereListen('group', arrayContainsAny: groupSelected.map((e) => e.name).toList()),
+            refExerciseService.whereListen('group', arrayContainsAny: groupSelected.map((e) => e.name).toList()),
           ],
           (values) => values.reduce((value, element) {
                 value.addAll(element);
                 return value;
-              })).listen((listExercice) {
-        localListExercice = listExercice;
+              })).listen((listExercise) {
+        localListExercise = listExercise;
         notifyListeners();
       });
     } else {
-      strSubExercice = service.listenAllAndRef().listen((listExercice) {
-        localListExercice = listExercice;
+      strSubExercise = service.listenAllAndRef().listen((listExercise) {
+        localListExercise = listExercise;
         notifyListeners();
       });
     }
@@ -214,15 +218,50 @@ class ExercisePage extends StatelessWidget {
                   ),
                 ),
                 body: Consumer<ExerciseListNotifier>(builder: (context, notifier, child) {
-                  final List<Exercice> listExercise = notifier.localListExercice;
+                  final List<Exercise> listExercise = notifier.localListExercise;
                   return ListView.separated(
                     shrinkWrap: true,
                     itemCount: listExercise.length,
                     itemBuilder: (context, index) {
-                      final Exercice exercice = listExercise.elementAt(index);
+                      final Exercise exercice = listExercise.elementAt(index);
                       return ExerciseCard(
                         exercise: exercice,
                         showSelect: false,
+                        showDelete: true,
+                        onDelete: (exercise) => notifier
+                            .delete(exercise)
+                            .then(
+                              (_) => showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  content: Text('exerciceDeleted'.i18n()),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(),
+                                      child: Text(
+                                        'exit'.i18n(),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            )
+                            .onError(
+                              (error, stackTrace) => showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  content: Text(error!.toString()),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(),
+                                      child: Text(
+                                        'exit'.i18n(),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => ExerciseDetailPage(
@@ -273,7 +312,7 @@ class ExerciseBottomAppBar extends StatelessWidget {
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => ExerciseDetailPage(
-                      exercise: Exercice(),
+                      exercise: Exercise(),
                     ),
                   ),
                 ),
