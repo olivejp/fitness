@@ -1,34 +1,40 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:fitnc_user/repository/repository.interface.dart';
 
-import '../domain/exercice.dart';
+import '../domain/exercice.domain.dart';
 
-class ExerciceService {
-  // Get a reference your Supabase client
-  final supabase = Supabase.instance.client;
+class ExerciceRepository extends IRepository<Exercice> {
+  @override
+  String getTableName() => 'exercice';
 
-  static getTableName() => 'exercice';
-
+  @override
   Stream<Iterable<Exercice>> listenByUtilisateurId(int utilisateurId) {
-    return supabase
+    return getSupabaseClient()
         .from(getTableName())
         .stream(primaryKey: ['id'])
         .eq('utilisateur_id', utilisateurId)
         .map((rows) => rows.map((e) => Exercice.fromJson(e)));
   }
 
+  @override
   Future<List<Exercice>> getByUtilisateurId(int utilisateurId) {
-    return supabase
+    return getSupabaseClient()
         .from(getTableName())
         .select()
         .eq('utilisateur_id', utilisateurId)
         .then((value) => value.map((e) => Exercice.fromJson(e)).toList());
   }
 
-  Future<List<Exercice>> createExercice(Exercice exercice) {
-    return supabase
+  @override
+  Future<List<Exercice>> create(Exercice exercice) {
+    return getSupabaseClient()
         .from(getTableName())
         .insert(exercice.toJson())
         .select()
         .then((value) => value.map((e) => Exercice.fromJson(e)).toList());
+  }
+
+  @override
+  Future<void> delete(int id) {
+    return getSupabaseClient().from(getTableName()).delete().eq('id', id);
   }
 }

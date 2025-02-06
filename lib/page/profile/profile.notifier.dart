@@ -10,7 +10,6 @@ import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfilePageNotifier extends ChangeNotifier {
-  // final AuthService authService = GetIt.I.get();
   final SupabaseAuthService supabaseAuthService = GetIt.I.get();
   final FitnessUserService fitnessUserService = GetIt.I.get();
   FitnessUser? user;

@@ -1,21 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'exercice.dart';
+part of 'exercice.domain.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-Exercice _$ExerciseFromJson(Map<String, dynamic> json) => Exercice()
+Exercice _$ExerciceFromJson(Map<String, dynamic> json) => Exercice()
+  ..id = (json['id'] as num?)?.toInt()
+  ..created_at = json['created_at']
   ..type = $enumDecodeNullable(_$TypeExerciseEnumMap, json['type'])
-  ..video_url = json['video_url'] as String?
-  ..youtube_url = json['youtube_url'] as String?
+  ..videoUrl = json['video_url'] as String?
+  ..youtubeUrl = json['youtube_url'] as String?
   ..description = json['description'] as String;
 
-Map<String, dynamic> _$ExerciseToJson(Exercice instance) => <String, dynamic>{
+Map<String, dynamic> _$ExerciceToJson(Exercice instance) => <String, dynamic>{
+      'id': instance.id,
+      'created_at': instance.created_at,
       'type': _$TypeExerciseEnumMap[instance.type],
-      'video_url': instance.video_url,
-      'youtube_url': instance.youtube_url,
+      'video_url': instance.videoUrl,
+      'youtube_url': instance.youtubeUrl,
       'description': instance.description,
     };
 
