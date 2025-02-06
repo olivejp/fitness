@@ -21,9 +21,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'constants.dart';
 
-/**
- * Méthode main qui permet de lancer l'application.
- **/
+/// Méthode main qui permet de lancer l'application.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnc_user/page/login/login.desktop.page.dart';
 import 'package:fitnc_user/page/login/login.mobile.page.dart';
 import 'package:fitness_domain/service/display.service.dart';
@@ -7,11 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../constants.dart';
 import 'login.notifier.dart';
 
-typedef CallbackUserCredential = void Function(UserCredential userCredential);
+typedef CallbackUserCredential = void Function(User? user);
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});

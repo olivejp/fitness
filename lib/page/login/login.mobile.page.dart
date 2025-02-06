@@ -164,10 +164,10 @@ class ElevatedLoadingButton extends StatelessWidget {
 
     return FilledButton(
       style: ButtonStyle(
-        minimumSize: MaterialStateProperty.all(
+        minimumSize: WidgetStateProperty.all(
           const Size.fromHeight(60),
         ),
-        shape: MaterialStateProperty.all(
+        shape: WidgetStateProperty.all(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5.0),
           ),

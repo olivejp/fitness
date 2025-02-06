@@ -1,23 +1,23 @@
 import 'dart:isolate';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnc_user/page/login/login.page.dart';
 import 'package:fitnc_user/service/exercise.service.dart';
 import 'package:fitnc_user/service/fitness-user.service.dart';
+import 'package:fitnc_user/service/supabase/supabase.auth.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:fitness_domain/domain/exercise.domain.dart';
 import 'package:fitness_domain/domain/fitness-user.domain.dart';
-import 'package:fitness_domain/service/auth.service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthWidget extends StatelessWidget {
   AuthWidget({super.key});
 
-  final AuthService authService = GetIt.I.get();
+  final SupabaseAuthService supabaseAuthService = GetIt.I.get();
 
   void cacheImages(FitnessUserService fitnessUserService, ExerciseService exerciseService) async {
     List<String> listUrlToCache = [];
@@ -64,9 +64,9 @@ class AuthWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AuthService authService = GetIt.I.get();
+    final SupabaseAuthService supabaseAuthService = GetIt.I.get();
     return StreamBuilder<User?>(
-      stream: authService.listenUserConnected(),
+      stream: supabaseAuthService.listenUserConnected(),
       builder: (_, AsyncSnapshot<User?> snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
           final User? user = snapshot.data;
@@ -83,32 +83,3 @@ class AuthWidget extends StatelessWidget {
     );
   }
 }
-
-// class CrashlyticsWidget extends StatelessWidget {
-//   const CrashlyticsWidget({super.key, required this.user, required this.child});
-//   final User user;
-//   final Widget child;
-//
-//   void logUser(User user) {
-//     FirebaseCrashlytics.instance.setUserIdentifier(user.uid);
-//     FirebaseCrashlytics.instance.log("New customer is connected !");
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return FutureBuilder<void>(
-//       future: FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true),
-//       builder: (_, snapshot) {
-//         if (snapshot.connectionState == ConnectionState.done) {
-//           logUser(user);
-//           return const MainPage();
-//         }
-//         return const Scaffold(
-//           body: Center(
-//             child: CircularProgressIndicator(),
-//           ),
-//         );
-//       },
-//     );
-//   }
-// }

@@ -1,30 +1,31 @@
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnc_user/service/debug_printer.dart';
 import 'package:fitnc_user/service/fitness-user.service.dart';
+import 'package:fitnc_user/service/supabase/supabase.auth.service.dart';
 import 'package:fitness_domain/domain/fitness-user.domain.dart';
 import 'package:fitness_domain/domain/storage-file.dart';
-import 'package:fitness_domain/service/auth.service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfilePageNotifier extends ChangeNotifier {
-  final AuthService authService = GetIt.I.get();
+  // final AuthService authService = GetIt.I.get();
+  final SupabaseAuthService supabaseAuthService = GetIt.I.get();
   final FitnessUserService fitnessUserService = GetIt.I.get();
   FitnessUser? user;
 
   ProfilePageNotifier() {
     DebugPrinter.printLn('Creating ProfilePageNotifier');
-    authService.listenUserConnected().listen(setUser);
+    supabaseAuthService.listenUserConnected().listen(setUser);
   }
 
   void setUser(User? userConnected) {
     DebugPrinter.printLn('setUser : $userConnected');
-    fitnessUserService.read(userConnected!.uid).then((FitnessUser? fitnessUser) {
+    fitnessUserService.read(userConnected!.id).then((FitnessUser? fitnessUser) {
       DebugPrinter.printLn('FitnessUser : $fitnessUser');
       user = fitnessUser ?? FitnessUser()
-        ..uid = userConnected.uid
+        ..uid = userConnected.id
         ..email = userConnected.email;
       notifyListeners();
     });
@@ -44,6 +45,6 @@ class ProfilePageNotifier extends ChangeNotifier {
   }
 
   Future<void> signOut() {
-    return authService.signOut();
+    return supabaseAuthService.signOut();
   }
 }

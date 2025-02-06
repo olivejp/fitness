@@ -8,7 +8,7 @@ import 'package:fitnc_user/page/login/login.page.dart';
 import 'package:fitnc_user/page/main/main.page.dart';
 import 'package:fitnc_user/page/profile/profile.page.dart';
 import 'package:fitnc_user/page/sign_up/sign-up.page.dart';
-import 'package:fitness_domain/service/auth.service.dart';
+import 'package:fitnc_user/service/supabase/supabase.auth.service.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -96,11 +96,11 @@ class FitnessRouter {
   static GoRouter getRouter() {
     FutureOr<String?> redirectFunction(BuildContext context, GoRouterState state) {
       DebugPrinter.printLn('Redirect fullPath: ${state.fullPath}');
-      final AuthService authService = GetIt.I.get();
+      final SupabaseAuthService supabaseAuthService = GetIt.I.get();
 
       /// A chaque redirection (context.go()) on vérifie que l'utilisateur est bien connecté.
       /// Sinon on redirige vers la page /sign-in.
-      if (![signUp, signIn].contains(state.fullPath) && !authService.isConnected()) {
+      if (![signUp, signIn].contains(state.fullPath) && !supabaseAuthService.isConnected()) {
         return signIn;
       }
       return null;

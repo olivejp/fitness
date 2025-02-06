@@ -66,7 +66,7 @@ class _QuillEditorFlowState extends State<QuillEditorFlow> {
     );
 
     _controller.document.changes.listen((event) {
-      FFAppState().htmlText = event.source.toString();
+      // FFAppState().htmlText = event.source.toString();
     });
   }
 }

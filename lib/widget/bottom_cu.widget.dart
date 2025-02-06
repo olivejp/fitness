@@ -8,7 +8,6 @@ class BottomCu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
-      height: 50,
       color: Colors.transparent,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

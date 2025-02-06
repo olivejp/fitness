@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnc_user/fitness_router.dart';
 import 'package:fitnc_user/page/sign_up/sign-up.form.dart';
 import 'package:fitnc_user/page/sign_up/sign-up.notifier.dart';
@@ -8,11 +7,12 @@ import 'package:fitness_domain/service/display.service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../constants.dart';
 import '../login/login.desktop.page.dart';
 
-typedef CallbackUserCredential = void Function(UserCredential userCredential);
+typedef CallbackUserCredential = void Function(User? user);
 
 const double maxWidth = 600;
 const double padding = 30;

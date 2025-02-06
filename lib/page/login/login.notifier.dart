@@ -1,10 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnc_user/fitness_router.dart';
 import 'package:fitnc_user/service/config.service.dart';
-import 'package:fitness_domain/service/auth.service.dart';
+import 'package:fitnc_user/service/debug_printer.dart';
+import 'package:fitnc_user/service/supabase/supabase.auth.service.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../constants.dart';
 
@@ -17,7 +18,7 @@ class LoginPageNotifier extends ChangeNotifier {
   String? resetPasswordCode;
   String? newPassword;
 
-  final AuthService authService = GetIt.I.get();
+  final SupabaseAuthService supabaseAuthService = GetIt.I.get();
   final ConfigService configService = GetIt.I.get();
 
   LoginPageNotifier() {
@@ -41,16 +42,20 @@ class LoginPageNotifier extends ChangeNotifier {
 
     if (formKey.currentState?.validate() == true) {
       setIsLoading(true);
-      String emailTrimmed = _email!.trim();
-      authService.signInWithEmailPassword(emailTrimmed, _password!).then((value) {
-        cleanPassword();
+      final String emailTrimmed = _email!.trim();
+
+      DebugPrinter.printLn("loginWithEmailAndPassword $emailTrimmed $password");
+
+      supabaseAuthService.loginWithEmailAndPassword(emailTrimmed, password!).then((value) {
         setIsLoading(false);
-        context.go(FitnessRouter.home);
+        if (context.mounted) {
+          context.go(FitnessRouter.home);
+        }
       }).catchError((onError) {
-        cleanPassword();
+        DebugPrinter.printError("loginWithEmailAndPassword $onError", null);
         setIsLoading(false);
-        if (onError is FirebaseAuthException) {
-          _loginMsgError = onError.message!;
+        if (onError is AuthApiException) {
+          _loginMsgError = onError.message;
         }
       });
     }
@@ -97,16 +102,9 @@ class LoginPageNotifier extends ChangeNotifier {
 
   Future<void> sendPasswordResetEmail() {
     if (_email != null) {
-      return FirebaseAuth.instance.sendPasswordResetEmail(email: _email!);
+      return supabaseAuthService.resetPasswordForEmail(_email!);
     } else {
       return Future.error("Email can't be null.");
     }
-  }
-
-  Future<void> confirmPasswordReset() async {
-    if (resetPasswordCode != null && newPassword != null) {
-      return await FirebaseAuth.instance.confirmPasswordReset(code: resetPasswordCode!, newPassword: newPassword!);
-    }
-    return;
   }
 }

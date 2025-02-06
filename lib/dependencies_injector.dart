@@ -5,6 +5,7 @@ import 'package:fitnc_user/service/fitness-user.service.dart';
 import 'package:fitnc_user/service/muscular_group.service.dart';
 import 'package:fitnc_user/service/published_programme.service.dart';
 import 'package:fitnc_user/service/ref-exercise.service.dart';
+import 'package:fitnc_user/service/supabase/supabase.auth.service.dart';
 import 'package:fitnc_user/service/trainers.service.dart';
 import 'package:fitnc_user/service/user-set.service.dart';
 import 'package:fitnc_user/service/workout-instance.service.dart';
@@ -15,6 +16,7 @@ import 'package:get_it/get_it.dart';
 
 class GetItDependenciesInjector {
   static initialize() {
+    GetIt.I.registerSingleton(SupabaseAuthService());
     GetIt.I.registerSingleton(MuscularGroupService());
     GetIt.I.registerSingleton(ConfigService());
     GetIt.I.registerSingleton(ParamService.getInstance());
