@@ -7,7 +7,7 @@ part of 'exercice.domain.dart';
 // **************************************************************************
 
 Exercice _$ExerciceFromJson(Map<String, dynamic> json) => Exercice()
-  ..id = (json['id'] as num?)?.toInt()
+  ..id = json['id'] as String?
   ..created_at = json['created_at']
   ..type = $enumDecodeNullable(_$TypeExerciseEnumMap, json['type'])
   ..videoUrl = json['video_url'] as String?

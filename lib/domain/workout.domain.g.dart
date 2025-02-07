@@ -7,7 +7,7 @@ part of 'workout.domain.dart';
 // **************************************************************************
 
 Workout _$WorkoutFromJson(Map<String, dynamic> json) => Workout()
-  ..id = (json['id'] as num?)?.toInt()
+  ..id = json['id'] as String?
   ..created_at = json['created_at']
   ..timerType = json['timer_type'] as String?
   ..description = json['description'] as String?

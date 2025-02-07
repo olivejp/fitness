@@ -1,66 +1,91 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fitnc_user/service/fitness-user.service.dart';
-import 'package:fitness_domain/domain/fitness-user.domain.dart';
-import 'package:fitness_domain/service/auth.service.dart';
+import 'package:fitnc_user/domain/utilisateur.domain.dart';
+import 'package:fitnc_user/repository/utilisateur.repository.dart';
+import 'package:fitnc_user/service/supabase/supabase.auth.service.dart';
 import 'package:fitness_domain/widget/layout-display.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:localization/localization.dart';
+import 'package:provider/provider.dart';
+
+class HomePageNotifier extends ChangeNotifier {
+  Utilisateur? _utilisateur;
+
+  Utilisateur? get utilisateur => _utilisateur;
+
+  set utilisateur(Utilisateur? value) {
+    _utilisateur = value;
+    notifyListeners();
+  }
+
+  void init() {
+    final UtilisateurRepository utilisateurRepository = GetIt.I.get();
+    final SupabaseAuthService supabaseAuthService = GetIt.I.get();
+    utilisateurRepository.getById(supabaseAuthService.getConnectedUser()?.id).then((value) {
+      utilisateur = value;
+    });
+  }
+}
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final FitnessUserService fitnessUserService = GetIt.I.get();
-    final String? avatarUrl = AuthService.getUserConnectedOrThrow().photoURL;
     return LayoutNotifier(
-      child: SafeArea(
-        child: Scaffold(
-          appBar: AppBar(
-            toolbarHeight: 45,
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.white,
-            centerTitle: false,
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 20),
-                child: CircleAvatar(
-                  radius: 20,
-                  foregroundColor: Theme.of(context).primaryColor,
-                  foregroundImage: (avatarUrl != null) ? CachedNetworkImageProvider(avatarUrl) : null,
+      child: ChangeNotifierProvider.value(
+        value: HomePageNotifier(),
+        builder: (context, child) {
+          final HomePageNotifier homePageNotifier = Provider.of<HomePageNotifier>(context, listen: false);
+          homePageNotifier.init();
+          return SafeArea(
+            child: Scaffold(
+              appBar: AppBar(
+                toolbarHeight: 45,
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.white,
+                centerTitle: false,
+                actions: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20),
+                    child: Consumer<HomePageNotifier>(
+                      builder: (_, HomePageNotifier controller, __) => CircleAvatar(
+                        radius: 20,
+                        foregroundColor: Theme.of(context).primaryColor,
+                        foregroundImage: (controller.utilisateur?.photoUrl != null)
+                            ? CachedNetworkImageProvider(controller.utilisateur!.photoUrl!)
+                            : null,
+                      ),
+                    ),
+                  )
+                ],
+                title: Consumer<HomePageNotifier>(
+                  builder: (_, HomePageNotifier controller, __) {
+                    String name = '${controller.utilisateur?.nom} ${controller.utilisateur?.prenom}';
+                    return Text(
+                      '${'welcome'.i18n()} $name 👋',
+                      style: GoogleFonts.antonio(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    );
+                  },
                 ),
-              )
-            ],
-            title: FutureBuilder<FitnessUser?>(
-              future: fitnessUserService.getConnectedUser(),
-              builder: (_, snapshot) {
-                String? name = '';
-                if (snapshot.hasData) {
-                  name = snapshot.data!.prenom;
-                }
-                return Text(
-                  '${'welcome'.i18n()} $name 👋',
-                  style: GoogleFonts.antonio(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                  ),
-                );
-              },
+              ),
+              body: const SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    MyInfos(),
+                  ],
+                ),
+              ),
             ),
-          ),
-          body: const SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                MyInfos(),
-              ],
-            ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

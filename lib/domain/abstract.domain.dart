@@ -1,6 +1,6 @@
 abstract class AbstractDomain {
   AbstractDomain();
 
-  int? id;
+  String? id;
   dynamic created_at;
 }

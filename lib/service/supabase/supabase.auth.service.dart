@@ -5,6 +5,10 @@ class SupabaseAuthService {
   // Get a reference your Supabase client
   final supabase = Supabase.instance.client;
 
+  User? getConnectedUser() {
+    return supabase.auth.currentUser;
+  }
+
   /// Méthode permettant la création d'un compte utilisateur.
   Future<User?> signUp(String email, String password) async {
     DebugPrinter.printLn('signUp');
