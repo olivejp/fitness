@@ -1,5 +1,5 @@
+import 'package:fitnc_user/enum/muscular_group.dart';
 import 'package:fitnc_user/service/exercise.service.dart';
-import 'package:fitnc_user/service/muscular_group.service.dart';
 import 'package:fitness_domain/domain/exercise.domain.dart';
 import 'package:fitness_domain/domain/storage-file.dart';
 import 'package:flutter/material.dart';

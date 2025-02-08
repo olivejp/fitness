@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:fitnc_user/enum/muscular_group.dart';
+import 'package:fitnc_user/enum/muscular_part.dart';
 import 'package:fitnc_user/service/muscular_group.service.dart';
 import 'package:fitness_domain/constants.dart';
 import 'package:flutter/material.dart';

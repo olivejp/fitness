@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:badges/badges.dart' as badges;
+import 'package:fitnc_user/enum/muscular_part.dart';
 import 'package:fitnc_user/fitness_router.dart';
 import 'package:fitnc_user/page/exercice/exercise-choice.dialog.dart';
 import 'package:fitnc_user/page/exercice/exercise-detail.page.dart';

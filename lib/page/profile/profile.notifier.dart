@@ -20,7 +20,7 @@ class ProfilePageNotifier extends ChangeNotifier {
 
   void setUser(User? userConnected) {
     DebugPrinter.printLn('setUser : $userConnected');
-    utilisateurRepository.getById(userConnected!.id).then((Utilisateur? utilisateur) {
+    utilisateurRepository.get(userConnected!.id).then((Utilisateur? utilisateur) {
       DebugPrinter.printLn('FitnessUser : $utilisateur');
       user = utilisateur;
       notifyListeners();
