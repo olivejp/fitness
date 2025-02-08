@@ -1,1 +1,9 @@
-enum TimeUnit { HOUR, MIN, SEC }
+enum TimeUnit {
+  HOUR("Heure"),
+  MIN("Minute"),
+  SEC("Seconde");
+
+  final String libelle;
+
+  const TimeUnit(this.libelle);
+}

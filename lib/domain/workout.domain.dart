@@ -8,8 +8,6 @@ part 'workout.domain.g.dart';
 class Workout extends AbstractDomain {
   Workout();
 
-  factory Workout.fromJson(Map<String, dynamic> data) => _$WorkoutFromJson(data);
-
   @JsonKey(name: 'timer_type')
   String? timerType;
 
@@ -18,6 +16,7 @@ class Workout extends AbstractDomain {
   @JsonKey(name: 'total_time')
   int? totalTime;
 
-  @override
+  factory Workout.fromJson(Map<String, dynamic> data) => _$WorkoutFromJson(data);
+
   Map<String, dynamic> toJson() => _$WorkoutToJson(this);
 }

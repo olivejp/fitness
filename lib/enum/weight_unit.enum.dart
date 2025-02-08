@@ -1,4 +1,8 @@
 enum WeightUnit {
-  KG,
-  LB,
+  KG("Kilos"),
+  LB("Pounds");
+
+  final String libelle;
+
+  const WeightUnit(this.libelle);
 }
