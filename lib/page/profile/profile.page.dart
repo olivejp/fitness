@@ -1,10 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fitnc_user/fitness_router.dart';
 import 'package:fitnc_user/notifier/application_settings_notifier.dart';
 import 'package:fitnc_user/page/exercice/exercise.page.dart';
 import 'package:fitnc_user/page/profile/profile.notifier.dart';
 import 'package:fitness_domain/widget/firestore_param_dropdown.widget.dart';
 import 'package:fitness_domain/widget/generic_container.widget.dart';
-import 'package:fitness_domain/widget/storage_image.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -46,13 +46,11 @@ class ProfilePage extends StatelessWidget {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      StorageImageWidget(
-                                        radius: 80,
-                                        imageUrl: controller.user?.imageUrl,
-                                        storageFile: controller.user?.storageFile,
-                                        onSaved: controller.setStoragePair,
-                                        onDeleted: () => controller.setStoragePair(null),
-                                      ),
+                                      CircleAvatar(
+                                        maxRadius: 15,
+                                        minRadius: 5,
+                                        foregroundImage: CachedNetworkImageProvider(controller.user!.photoUrl!),
+                                      )
                                     ],
                                   ),
                                 ),
@@ -69,8 +67,8 @@ class ProfilePage extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: bottomPadding),
                                   child: FitnessDecorationTextFormField(
-                                      controller: TextEditingController(text: controller.user?.name),
-                                      onChanged: (String name) => controller.user?.name = name,
+                                      controller: TextEditingController(text: controller.user?.nom),
+                                      onChanged: (String name) => controller.user?.nom = name,
                                       labelText: 'name'.i18n(),
                                       validator: (String? value) {
                                         if (value == null || value.isEmpty) {

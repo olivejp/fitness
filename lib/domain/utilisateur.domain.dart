@@ -16,8 +16,9 @@ class Utilisateur extends AbstractDomain {
   String? nom;
   String? prenom;
   String? email;
-  int? telephone;
+  String? telephone1;
   String? description;
+  String? sexe;
 
   @JsonKey(name: "photo_url")
   String? photoUrl;

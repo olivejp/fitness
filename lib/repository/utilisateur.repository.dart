@@ -49,4 +49,17 @@ class UtilisateurRepository extends IRepository<Utilisateur> {
   Future<void> delete(int id) {
     return getSupabaseClient().from(getTableName()).delete().eq('id', id);
   }
+
+  Future<Utilisateur?> update(Utilisateur utilisateur) {
+    if (utilisateur.id == null) {
+      return Future.value(null);
+    } else {
+      return getSupabaseClient()
+          .from(getTableName())
+          .update(utilisateur.toJson())
+          .eq('id', utilisateur.id!)
+          .single()
+          .then((value) => Utilisateur.fromJson(value));
+    }
+  }
 }

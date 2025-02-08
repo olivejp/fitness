@@ -1,18 +1,17 @@
 import 'dart:async';
 
+import 'package:fitnc_user/domain/utilisateur.domain.dart';
+import 'package:fitnc_user/repository/utilisateur.repository.dart';
 import 'package:fitnc_user/service/debug_printer.dart';
-import 'package:fitnc_user/service/fitness-user.service.dart';
 import 'package:fitnc_user/service/supabase/supabase.auth.service.dart';
-import 'package:fitness_domain/domain/fitness-user.domain.dart';
-import 'package:fitness_domain/domain/storage-file.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfilePageNotifier extends ChangeNotifier {
   final SupabaseAuthService supabaseAuthService = GetIt.I.get();
-  final FitnessUserService fitnessUserService = GetIt.I.get();
-  FitnessUser? user;
+  final UtilisateurRepository utilisateurRepository = GetIt.I.get();
+  Utilisateur? user;
 
   ProfilePageNotifier() {
     DebugPrinter.printLn('Creating ProfilePageNotifier');
@@ -21,23 +20,16 @@ class ProfilePageNotifier extends ChangeNotifier {
 
   void setUser(User? userConnected) {
     DebugPrinter.printLn('setUser : $userConnected');
-    fitnessUserService.read(userConnected!.id).then((FitnessUser? fitnessUser) {
-      DebugPrinter.printLn('FitnessUser : $fitnessUser');
-      user = fitnessUser ?? FitnessUser()
-        ..uid = userConnected.id
-        ..email = userConnected.email;
+    utilisateurRepository.getById(userConnected!.id).then((Utilisateur? utilisateur) {
+      DebugPrinter.printLn('FitnessUser : $utilisateur');
+      user = utilisateur;
       notifyListeners();
     });
   }
 
-  void setStoragePair(StorageFile? stFile) {
-    user?.storageFile = stFile ?? StorageFile();
-    user?.imageUrl = null;
-  }
-
   Future<void> save() async {
     if (user != null) {
-      await fitnessUserService.save(user!);
+      await utilisateurRepository.update(user!);
     } else {
       throw Exception('No Trainer domain to save');
     }
