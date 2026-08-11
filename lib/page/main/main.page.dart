@@ -1,43 +1,44 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fitnc_user/l10n/l10n.dart';
 import 'package:fitnc_user/page/calendar/calendar.page.dart';
-import 'package:fitnc_user/page/home/home.page.dart';
 import 'package:fitnc_user/page/profile/profile.page.dart';
-import 'package:fitnc_user/page/search/search.page.dart';
-import 'package:fitnc_user/service/workout-instance.service.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
-import '../../constants.dart';
-import 'main.controller.dart';
+import 'package:fitnc_user/constants.dart';
+import 'package:fitnc_user/page/main/main.notifier.dart';
 
-class MainPage extends StatelessWidget {
-  MainPage({Key? key}) : super(key: key);
+class MainPage extends StatefulWidget {
+  const MainPage({Key? key}) : super(key: key);
 
-  final WorkoutInstanceService workoutInstanceService = Get.find();
-  final MainController controller = Get.put(MainController());
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  final MainNotifier notifier = MainNotifier();
+
+  @override
+  void dispose() {
+    notifier.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         bottomNavigationBar: HomeBottomAppBar2(
-          controller: controller,
+          notifier: notifier,
         ),
-        body: Stack(
-          children: [
-            Obx(() {
-              switch (controller.currentIndex.value) {
-                case IndexPage.calendar:
-                  return CalendarPage();
-                case IndexPage.search:
-                  return SearchPage();
-                case IndexPage.profile:
-                  return ProfilePage();
-                default:
-                  throw Exception('Page not found');
-              }
-            }),
-          ],
+        body: ValueListenableBuilder<IndexPage>(
+          valueListenable: notifier.currentIndex,
+          builder: (_, IndexPage index, __) {
+            switch (index) {
+              case IndexPage.calendar:
+                return const CalendarPage();
+              case IndexPage.profile:
+                return const ProfilePage();
+            }
+          },
         ),
       ),
     );
@@ -47,11 +48,11 @@ class MainPage extends StatelessWidget {
 class HomeBottomAppBar2 extends StatelessWidget {
   const HomeBottomAppBar2({
     Key? key,
-    required this.controller,
+    required this.notifier,
     this.iconSizedBox = 20,
   }) : super(key: key);
 
-  final MainController controller;
+  final MainNotifier notifier;
   final double iconSizedBox;
 
   @override
@@ -59,7 +60,7 @@ class HomeBottomAppBar2 extends StatelessWidget {
     return BottomAppBar(
       clipBehavior: Clip.antiAlias,
       child: BottomIconInherited(
-        selectedColor: Theme.of(context).primaryColor,
+        selectedColor: Theme.of(context).colorScheme.primary,
         unselectedColor: Colors.grey,
         height: 60,
         width: 80,
@@ -68,23 +69,18 @@ class HomeBottomAppBar2 extends StatelessWidget {
           children: [
             Flexible(
               child: BottomIcon(
-                label: 'calendar'.tr,
+                label: context.l10n.calendar,
                 iconData: Icons.calendar_today,
                 indexPage: IndexPage.calendar,
+                notifier: notifier,
               ),
             ),
             Flexible(
               child: BottomIcon(
-                label: 'search'.tr,
-                iconData: Icons.school_outlined,
-                indexPage: IndexPage.search,
-              ),
-            ),
-            Flexible(
-              child: BottomIcon(
-                label: 'profile'.tr,
+                label: context.l10n.profile,
                 iconData: Icons.person,
                 indexPage: IndexPage.profile,
+                notifier: notifier,
               ),
             ),
           ],
@@ -121,17 +117,18 @@ class BottomIconInherited extends InheritedWidget {
 }
 
 class BottomIcon extends StatelessWidget {
-  BottomIcon(
+  const BottomIcon(
       {Key? key,
       required this.label,
       required this.iconData,
-      required this.indexPage})
+      required this.indexPage,
+      required this.notifier})
       : super(key: key);
 
   final String label;
   final IconData iconData;
   final IndexPage indexPage;
-  final MainController controller = Get.find();
+  final MainNotifier notifier;
 
   @override
   Widget build(BuildContext context) {
@@ -142,7 +139,7 @@ class BottomIcon extends StatelessWidget {
     return InkWell(
       radius: 25,
       borderRadius: const BorderRadius.all(Radius.circular(25)),
-      onTap: () => controller.currentIndex.value = indexPage,
+      onTap: () => notifier.currentIndex.value = indexPage,
       child: SizedBox(
         height: height,
         width: width,
@@ -150,118 +147,21 @@ class BottomIcon extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Obx(() => Icon(iconData,
-                color: controller.currentIndex.value == indexPage
-                    ? selectedColor
-                    : unselectedColor)),
-            Obx(
-              () => Text(
-                label,
-                style: TextStyle(
-                    color: controller.currentIndex.value == indexPage
-                        ? selectedColor
-                        : unselectedColor),
-              ),
+            ValueListenableBuilder<IndexPage>(
+              valueListenable: notifier.currentIndex,
+              builder: (_, IndexPage current, __) {
+                final Color color =
+                    current == indexPage ? selectedColor : unselectedColor;
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(iconData, color: color),
+                    Text(label, style: TextStyle(color: color)),
+                  ],
+                );
+              },
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class HomeBottomAppBar extends StatelessWidget {
-  const HomeBottomAppBar({
-    Key? key,
-    required this.controller,
-    this.iconSizedBox = 20,
-  }) : super(key: key);
-
-  final MainController controller;
-  final double iconSizedBox;
-
-  @override
-  Widget build(BuildContext context) {
-    return BottomAppBar(
-      clipBehavior: Clip.antiAlias,
-      child: Obx(
-        () => BottomNavigationBarTheme(
-          data: BottomNavigationBarThemeData(
-            selectedItemColor: Theme.of(context).primaryColor,
-            unselectedItemColor: Colors.grey,
-          ),
-          child: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            elevation: 0,
-            showSelectedLabels: true,
-            showUnselectedLabels: true,
-            currentIndex: controller.currentIndex.value.index,
-            items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                label: 'calendar'.tr,
-                activeIcon: const Icon(
-                  Icons.calendar_today,
-                ),
-                icon: SizedBox(
-                  height: iconSizedBox,
-                  width: iconSizedBox,
-                  child: IconButton(
-                    padding: const EdgeInsets.all(0),
-                    onPressed: () =>
-                        controller.currentIndex.value = IndexPage.calendar,
-                    icon: const Icon(
-                      Icons.calendar_today,
-                    ),
-                  ),
-                ),
-              ),
-              BottomNavigationBarItem(
-                label: 'search'.tr,
-                activeIcon: const Icon(
-                  Icons.explore_rounded,
-                ),
-                icon: SizedBox(
-                  height: iconSizedBox,
-                  width: iconSizedBox,
-                  child: IconButton(
-                    padding: const EdgeInsets.all(0),
-                    onPressed: () =>
-                        controller.currentIndex.value = IndexPage.search,
-                    icon: const Icon(
-                      Icons.explore_rounded,
-                    ),
-                  ),
-                ),
-              ),
-              BottomNavigationBarItem(
-                label: 'profile'.tr,
-                icon: SizedBox(
-                  height: iconSizedBox,
-                  width: iconSizedBox,
-                  child: IconButton(
-                    padding: const EdgeInsets.all(0),
-                    icon: Obx(
-                      () {
-                        if (controller.user.value?.imageUrl != null) {
-                          return CircleAvatar(
-                            radius: 30,
-                            foregroundImage: CachedNetworkImageProvider(
-                                controller.user.value!.imageUrl!),
-                          );
-                        }
-                        return CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Theme.of(context).primaryColor,
-                        );
-                      },
-                    ),
-                    onPressed: () =>
-                        controller.currentIndex.value = IndexPage.profile,
-                  ),
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );

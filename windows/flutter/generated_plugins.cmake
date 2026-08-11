@@ -3,11 +3,16 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  connectivity_plus_windows
-  url_launcher_windows
+  audioplayers_windows
+  cloud_firestore
+  connectivity_plus
+  firebase_auth
+  firebase_core
+  firebase_storage
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
+  jni
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

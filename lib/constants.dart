@@ -1,15 +1,34 @@
 import 'package:flutter/material.dart';
 
-enum IndexPage { calendar, search, profile }
+enum IndexPage { calendar, profile }
 
-class FitnessMobileConstants {
+enum TypeExercice { REPS_WEIGHT, REPS_ONLY, TIME, DIST }
+
+///
+/// Constantes de l'application.
+///
+/// Cette classe résulte de la fusion des deux classes de constantes qui
+/// coexistaient — celle de l'application et celle de l'ex-package
+/// `fitness_domain` — et qui se recouvraient
+/// sur `appTitle`, `textFormFieldHeight` et `firebaseRegion`. Le « Mobile » du
+/// nom d'origine distinguait cette application de l'application entraîneur :
+/// il n'a plus d'objet depuis que le domaine n'est plus partagé.
+///
+/// Deux constantes ont disparu au passage, faute d'appelant : `bottomAppBar` et
+/// `routePoliciesMobile`.
+///
+class FitnessConstants {
   static const double textFormFieldHeight = 60;
-  static const double bottomAppBar = 55;
   static const String appTitle = 'Fitness Nc';
   static const String firebaseRegion = 'australia-southeast1';
   static const String profileCommandLineArgument = 'PROFILE';
   static const String imageLogin = 'images/fitness_login_page/AmaniGymReversed';
   static const String imageLoginExtension = '.jpg';
+
+  // Routes déclarées dans lib/router.dart.
+  static const String routeLogin = '/login';
+  static const String routeSignUp = '/sign_up';
+  static const String routeHome = '/home';
 }
 
 class FitnessNcColors {

@@ -1,0 +1,255 @@
+{
+  "@@locale": "en",
+  "plus": "Plus",
+  "@plus": {
+    "description": "plus"
+  },
+  "home": "Home",
+  "@home": {
+    "description": "home"
+  },
+  "updateDate": "Update date",
+  "@updateDate": {
+    "description": "updateDate"
+  },
+  "validate": "Validate",
+  "@validate": {
+    "description": "validate"
+  },
+  "today": "Today",
+  "@today": {
+    "description": "today"
+  },
+  "weeks": "weeks",
+  "@weeks": {
+    "description": "weeks"
+  },
+  "addComment": "Add a comment",
+  "@addComment": {
+    "description": "addComment"
+  },
+  "comment": "Comment...",
+  "@comment": {
+    "description": "comment"
+  },
+  "createExercise": "Create an exercise",
+  "@createExercise": {
+    "description": "createExercise"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "delete"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "cancel"
+  },
+  "searching": "Search...",
+  "@searching": {
+    "description": "searching"
+  },
+  "exerciseChoice": "Exercise choice",
+  "@exerciseChoice": {
+    "description": "exerciseChoice"
+  },
+  "addExercise": "Add an exercise",
+  "@addExercise": {
+    "description": "addExercise"
+  },
+  "addWorkout": "Add a new workout",
+  "@addWorkout": {
+    "description": "addWorkout"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "save"
+  },
+  "back": "Back",
+  "@back": {
+    "description": "back"
+  },
+  "displayStat": "Display stats",
+  "@displayStat": {
+    "description": "displayStat"
+  },
+  "description": "Description",
+  "@description": {
+    "description": "description"
+  },
+  "optional": "Optional",
+  "@optional": {
+    "description": "optional"
+  },
+  "options": "Options",
+  "@options": {
+    "description": "options"
+  },
+  "exerciseType": "Exercise type",
+  "@exerciseType": {
+    "description": "exerciseType"
+  },
+  "name": "Name",
+  "@name": {
+    "description": "name"
+  },
+  "surname": "First name",
+  "@surname": {
+    "description": "surname"
+  },
+  "sex": "Sex",
+  "@sex": {
+    "description": "sex"
+  },
+  "mail": "Mail",
+  "@mail": {
+    "description": "mail"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "password"
+  },
+  "showPassword": "Show password",
+  "@showPassword": {
+    "description": "showPassword"
+  },
+  "hidePassword": "Hide password",
+  "@hidePassword": {
+    "description": "hidePassword"
+  },
+  "noEmptyPassword": "Password can't be empty",
+  "@noEmptyPassword": {
+    "description": "noEmptyPassword"
+  },
+  "retypePassword": "Type your password again",
+  "@retypePassword": {
+    "description": "retypePassword"
+  },
+  "noIdenticalPassword": "Passwords are not identical.",
+  "@noIdenticalPassword": {
+    "description": "noIdenticalPassword"
+  },
+  "phone": "Phone",
+  "@phone": {
+    "description": "phone"
+  },
+  "darkMode": "Dark mode",
+  "@darkMode": {
+    "description": "darkMode"
+  },
+  "signOut": "Sign out",
+  "@signOut": {
+    "description": "signOut"
+  },
+  "manageExercise": "Manage exercises",
+  "@manageExercise": {
+    "description": "manageExercise"
+  },
+  "errorWhileSaving": "Error while saving",
+  "@errorWhileSaving": {
+    "description": "errorWhileSaving"
+  },
+  "informationsUpdated": "Your informations have been updated.",
+  "@informationsUpdated": {
+    "description": "informationsUpdated"
+  },
+  "pleaseFillYourName": "Please fill name field.",
+  "@pleaseFillYourName": {
+    "description": "pleaseFillYourName"
+  },
+  "pleaseFillYourFirstName": "Please fill firstname field.",
+  "@pleaseFillYourFirstName": {
+    "description": "pleaseFillYourFirstName"
+  },
+  "pleaseFillExerciseName": "Please fill exercise name.",
+  "@pleaseFillExerciseName": {
+    "description": "pleaseFillExerciseName"
+  },
+  "pleaseFillEmail": "Please fill email field.",
+  "@pleaseFillEmail": {
+    "description": "pleaseFillEmail"
+  },
+  "emailNotCorrect": "Email address has incorrect format.",
+  "@emailNotCorrect": {
+    "description": "emailNotCorrect"
+  },
+  "showMore": "Show more",
+  "@showMore": {
+    "description": "showMore"
+  },
+  "stats": "Stats",
+  "@stats": {
+    "description": "stats"
+  },
+  "calendar": "Calendar",
+  "@calendar": {
+    "description": "calendar"
+  },
+  "profile": "Profile",
+  "@profile": {
+    "description": "profile"
+  },
+  "tracking": "Tracking",
+  "@tracking": {
+    "description": "tracking"
+  },
+  "signUp": "Sign up",
+  "@signUp": {
+    "description": "signUp"
+  },
+  "signIn": "Sign in",
+  "@signIn": {
+    "description": "signIn"
+  },
+  "haveAnAccount": "Already get an account ?",
+  "@haveAnAccount": {
+    "description": "haveAnAccount"
+  },
+  "iUnderstood": "I understood",
+  "@iUnderstood": {
+    "description": "iUnderstood"
+  },
+  "lostPassword": "Password lost",
+  "@lostPassword": {
+    "description": "lostPassword"
+  },
+  "lostPasswordQuestion": "Lost your password ?",
+  "@lostPasswordQuestion": {
+    "description": "lostPasswordQuestion"
+  },
+  "noAccount": "You need an account ?",
+  "@noAccount": {
+    "description": "noAccount"
+  },
+  "connectToYourAccount": "Connect to your account",
+  "@connectToYourAccount": {
+    "description": "connectToYourAccount"
+  },
+  "descriptionLostPassword": "An email has been send to update your password.\n\nGo to your inbox and click on the link provided.\n\nThen choose a new password.\n\nCome back on the login page and try to sign in again.",
+  "@descriptionLostPassword": {
+    "description": "descriptionLostPassword"
+  },
+  "continueLabel": "Continue",
+  "@continueLabel": {
+    "description": "continueLabel"
+  },
+  "startupFailed": "Startup failed",
+  "@startupFailed": {
+    "description": "startupFailed"
+  },
+  "startupFailedDescription": "The application could not reach its services. Check your connection, then try again.",
+  "@startupFailedDescription": {
+    "description": "startupFailedDescription"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "retry"
+  },
+  "noConnection": "No internet connection",
+  "@noConnection": {
+    "description": "noConnection"
+  },
+  "deletePhoto": "Delete photo",
+  "@deletePhoto": {
+    "description": "deletePhoto"
+  }
+}

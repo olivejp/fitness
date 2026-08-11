@@ -3,14 +3,14 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnc_user/service/fitness-user.service.dart';
-import 'package:fitness_domain/domain/workout-instance.domain.dart';
-import 'package:fitness_domain/service/abstract.service.dart';
-import 'package:fitness_domain/service/auth.service.dart';
-import 'package:get/get.dart';
+import 'package:fitnc_user/di.dart';
+import 'package:fitnc_user/domain/workout-instance.domain.dart';
+import 'package:fitnc_user/service/abstract.service.dart';
+import 'package:fitnc_user/service/auth.service.dart';
 
 class WorkoutInstanceService extends AbstractFitnessStorageService<WorkoutInstance> {
-  final FitnessUserService fitnessUserService = Get.find();
-  final AuthService authService = Get.find();
+  final FitnessUserService fitnessUserService = di<FitnessUserService>();
+  final AuthService authService = di<AuthService>();
 
   Stream<List<WorkoutInstance>> listenByDate(DateTime dateTime) {
     DateTime dateMinus = DateTime(dateTime.year, dateTime.month, dateTime.day);

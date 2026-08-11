@@ -1,5 +1,5 @@
 /// Timeseries chart example
-import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:community_charts_flutter/community_charts_flutter.dart' as charts;
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 

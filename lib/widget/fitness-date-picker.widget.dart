@@ -174,7 +174,7 @@ class MonthDropDown extends StatelessWidget {
               text: TextSpan(
                 text: monthList.elementAt(i),
                 style: TextStyle(
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).colorScheme.primary,
                   fontSize: 18,
                 ),
                 children: [

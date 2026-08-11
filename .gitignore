@@ -46,3 +46,5 @@ app.*.map.json
 /android/app/release
 
 android_key.txt
+# Localisations générées par gen-l10n (régénérées à chaque pub get / build).
+/lib/l10n/gen/

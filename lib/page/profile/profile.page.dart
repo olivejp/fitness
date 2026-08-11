@@ -1,81 +1,37 @@
-import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitnc_user/controller/dark-mode.controller.dart';
+import 'package:fitnc_user/service/dark-mode.service.dart';
+import 'package:fitnc_user/l10n/l10n.dart';
 import 'package:fitnc_user/page/exercice/exercice.page.dart';
-import 'package:fitnc_user/service/fitness-user.service.dart';
-import 'package:fitness_domain/constants.dart';
-import 'package:fitness_domain/domain/fitness-user.domain.dart';
-import 'package:fitness_domain/domain/storage-file.dart';
-import 'package:fitness_domain/service/auth.service.dart';
-import 'package:fitness_domain/widget/firestore_param_dropdown.widget.dart';
-import 'package:fitness_domain/widget/generic_container.widget.dart';
-import 'package:fitness_domain/widget/storage_image.widget.dart';
+import 'package:fitnc_user/constants.dart';
+import 'package:fitnc_user/di.dart';
+import 'package:fitnc_user/domain/fitness-user.domain.dart';
+import 'package:fitnc_user/widget/firestore-param-dropdown.widget.dart';
+import 'package:fitnc_user/widget/generic-container.widget.dart';
+import 'package:fitnc_user/widget/storage-image.widget.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:fitnc_user/page/profile/profile.notifier.dart';
 
-import '../../constants.dart';
 
-class ProfilePageController extends GetxController {
-  final AuthService authService = Get.find();
-  final FitnessUserService fitnessUserService = Get.find();
-  final Rx<FitnessUser?> user = FitnessUser().obs;
-  StreamSubscription? subUserConnected;
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({Key? key}) : super(key: key);
 
   @override
-  void onInit() {
-    super.onInit();
-
-    User currentUser = AuthService.getUserConnectedOrThrow();
-
-    subUserConnected?.cancel();
-    subUserConnected =
-        authService.listenUserConnected().listen((User? userConnected) {
-      fitnessUserService
-          .read(userConnected!.uid)
-          .then((FitnessUser? fitnessUser) {
-        user.value = fitnessUser ?? FitnessUser()
-          ..uid = currentUser.uid
-          ..email = currentUser.email;
-      });
-    });
-  }
-
-  @override
-  void onClose() {
-    subUserConnected?.cancel();
-  }
-
-  void setStoragePair(StorageFile? stFile) {
-    user.update((FitnessUser? user) {
-      if (user != null) {
-        user.storageFile = stFile ?? StorageFile();
-        user.imageUrl = null;
-      }
-    });
-  }
-
-  Future<void> save() async {
-    if (user.value != null) {
-      await fitnessUserService.save(user.value!);
-    } else {
-      throw Exception('No Trainer domain to save');
-    }
-  }
-
-  Future<void> signOut() {
-    return authService.signOut();
-  }
+  State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class ProfilePage extends StatelessWidget {
-  ProfilePage({Key? key}) : super(key: key);
-
-  final ProfilePageController controller = Get.put(ProfilePageController());
-  final DarkModeController darkModeController = Get.find();
+class _ProfilePageState extends State<ProfilePage> {
+  final ProfileNotifier notifier = ProfileNotifier();
+  final DarkModeService darkModeService = di<DarkModeService>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    notifier.dispose();
+    super.dispose();
+  }
 
   static const double bottomPadding = 10;
   static const double globalHorizontalPadding = 30;
@@ -103,14 +59,15 @@ class ProfilePage extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Obx(
-                                () => StorageImageWidget(
+                              ValueListenableBuilder<FitnessUser?>(
+                                valueListenable: notifier.user,
+                                builder: (_, FitnessUser? user, __) => StorageImageWidget(
                                   radius: 80,
-                                  imageUrl: controller.user.value?.imageUrl,
-                                  storageFile: controller.user.value?.storageFile,
-                                  onSaved: controller.setStoragePair,
+                                  imageUrl: user?.imageUrl,
+                                  storageFile: user?.storageFile,
+                                  onSaved: notifier.setStoragePair,
                                   onDeleted: () =>
-                                      controller.setStoragePair(null),
+                                      notifier.setStoragePair(null),
                                 ),
                               ),
                             ],
@@ -118,9 +75,10 @@ class ProfilePage extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 20),
-                          child: Obx(
-                            () => Text(
-                              '${controller.user.value?.email}',
+                          child: ValueListenableBuilder<FitnessUser?>(
+                            valueListenable: notifier.user,
+                            builder: (_, FitnessUser? user, __) => Text(
+                              '${user?.email}',
                               style: const TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
@@ -130,19 +88,20 @@ class ProfilePage extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(bottom: bottomPadding),
-                          child: Obx(
-                            () => FitnessDecorationTextFormField(
+                          child: ValueListenableBuilder<FitnessUser?>(
+                            valueListenable: notifier.user,
+                            builder: (_, FitnessUser? user, __) => FitnessDecorationTextFormField(
                                 controller: TextEditingController(
-                                    text: controller.user.value?.name),
+                                    text: user?.name),
                                 inputBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(5))),
                                 onChanged: (String name) =>
-                                    controller.user.value?.name = name,
-                                labelText: 'name'.tr,
+                                    user?.name = name,
+                                labelText: context.l10n.name,
                                 validator: (String? value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'pleaseFillYourName'.tr;
+                                    return context.l10n.pleaseFillYourName;
                                   }
                                   return null;
                                 }),
@@ -150,19 +109,20 @@ class ProfilePage extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(bottom: bottomPadding),
-                          child: Obx(
-                            () => FitnessDecorationTextFormField(
+                          child: ValueListenableBuilder<FitnessUser?>(
+                            valueListenable: notifier.user,
+                            builder: (_, FitnessUser? user, __) => FitnessDecorationTextFormField(
                                 controller: TextEditingController(
-                                    text: controller.user.value?.prenom),
+                                    text: user?.prenom),
                                 inputBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(5))),
                                 onChanged: (String firstName) =>
-                                    controller.user.value?.prenom = firstName,
-                                labelText: 'surname'.tr,
+                                    user?.prenom = firstName,
+                                labelText: context.l10n.surname,
                                 validator: (String? value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'pleaseFillYourFirstName'.tr;
+                                    return context.l10n.pleaseFillYourFirstName;
                                   }
                                   return null;
                                 }),
@@ -170,7 +130,9 @@ class ProfilePage extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(bottom: bottomPadding),
-                          child: Obx(() {
+                          child: ValueListenableBuilder<FitnessUser?>(
+                            valueListenable: notifier.user,
+                            builder: (_, FitnessUser? user, __) {
                             return ParamDropdownButton(
                               decoration: InputDecoration(
                                 border: const OutlineInputBorder(
@@ -178,26 +140,28 @@ class ProfilePage extends StatelessWidget {
                                     Radius.circular(5),
                                   ),
                                 ),
-                                labelText: 'sex'.tr,
+                                labelText: context.l10n.sex,
                                 constraints: const BoxConstraints(
-                                    maxHeight: FitnessMobileConstants
+                                    maxHeight: FitnessConstants
                                         .textFormFieldHeight),
                                 contentPadding:
                                     const EdgeInsets.symmetric(horizontal: 10),
                               ),
                               paramName: 'sexe',
-                              initialValue: controller.user.value?.sexe,
+                              initialValue: user?.sexe,
                               onChanged: (String? onChangedValue) =>
-                                  controller.user.value!.sexe = onChangedValue,
+                                  user!.sexe = onChangedValue,
                             );
                           }),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(bottom: bottomPadding),
-                          child: Obx(() {
+                          child: ValueListenableBuilder<FitnessUser?>(
+                            valueListenable: notifier.user,
+                            builder: (_, FitnessUser? user, __) {
                             TextEditingController control = TextEditingController(
-                                text: (controller.user.value?.telephone1) != null
-                                    ? controller.user.value!.telephone1.toString()
+                                text: (user?.telephone1) != null
+                                    ? user!.telephone1.toString()
                                     : '');
                             return TextFormField(
                               controller: control,
@@ -207,9 +171,9 @@ class ProfilePage extends StatelessWidget {
                                 FilteringTextInputFormatter.digitsOnly
                               ],
                               onChanged: (String value) =>
-                                  controller.user.value?.telephone1 = value,
+                                  user?.telephone1 = value,
                               decoration: InputDecoration(
-                                labelText: 'phone'.tr,
+                                labelText: context.l10n.phone,
                                 border: const OutlineInputBorder(
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(5),
@@ -224,13 +188,13 @@ class ProfilePage extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('darkMode'.tr),
+                              Text(context.l10n.darkMode),
                               ValueListenableBuilder<bool>(
-                                valueListenable: darkModeController.notifier,
+                                valueListenable: darkModeService.notifier,
                                 builder: (_, isDarkMode, __) => Checkbox(
                                   value: isDarkMode,
                                   onChanged: (_) {
-                                    darkModeController.switchDarkMode();
+                                    darkModeService.switchDarkMode();
                                   },
                                 ),
                               ),
@@ -240,19 +204,19 @@ class ProfilePage extends StatelessWidget {
                         ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState?.validate() == true) {
-                              controller.save().then((_) {
-                                showToast('informationsUpdated'.tr,
+                              notifier.save().then((_) {
+                                showToast(context.l10n.informationsUpdated,
                                     backgroundColor: Colors.green);
                               }).catchError(
                                 (_) {
-                                  showToast('errorWhileSaving'.tr,
+                                  showToast(context.l10n.errorWhileSaving,
                                       backgroundColor: Colors.redAccent);
                                 },
                               );
                             }
                           },
                           child: Text(
-                            'save'.tr,
+                            context.l10n.save,
                             style: const TextStyle(color: Colors.white),
                           ),
                         ),
@@ -267,7 +231,7 @@ class ProfilePage extends StatelessWidget {
                               );
                             },
                             child: Text(
-                              'manageExercise'.tr,
+                              context.l10n.manageExercise,
                               style: const TextStyle(color: Colors.white),
                             ),
                           ),
@@ -276,9 +240,9 @@ class ProfilePage extends StatelessWidget {
                           padding: const EdgeInsets.only(
                               top: 8, bottom: bottomPadding),
                           child: ElevatedButton(
-                            onPressed: () => controller.signOut().then((value) => Get.offNamed(FitnessConstants.routeLogin)),
+                            onPressed: () => notifier.signOut().then((value) => context.go(FitnessConstants.routeLogin)),
                             child: Text(
-                              'signOut'.tr,
+                              context.l10n.signOut,
                               style: const TextStyle(color: Colors.red),
                             ),
                           ),

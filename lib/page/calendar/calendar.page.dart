@@ -1,29 +1,40 @@
-import 'package:date_picker_timeline/date_picker_timeline.dart';
-import 'package:fitnc_user/page/exercice/exercice-choice.dialog.dart';
-import 'package:fitnc_user/page/workout/workout-instance.page.dart';
+import 'package:fitnc_user/l10n/l10n.dart';
+import 'package:fitnc_user/page/exercice-choice/exercice-choice.widget.dart';
+import 'package:fitnc_user/page/workout-instance/workout-instance.page.dart';
 import 'package:fitnc_user/widget/fitness-date-picker.widget.dart';
-import 'package:fitness_domain/domain/user.set.domain.dart';
-import 'package:fitness_domain/domain/workout-instance.domain.dart';
-import 'package:fitness_domain/widget/generic_container.widget.dart';
+import 'package:fitnc_user/domain/user-set.domain.dart';
+import 'package:fitnc_user/domain/workout-instance.domain.dart';
+import 'package:fitnc_user/widget/generic-container.widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
-import 'calendar.page.controller.dart';
+import 'package:fitnc_user/page/calendar/calendar.notifier.dart';
 
-class CalendarPage extends StatelessWidget {
-  CalendarPage({Key? key}) : super(key: key);
+class CalendarPage extends StatefulWidget {
+  const CalendarPage({Key? key}) : super(key: key);
 
-  final CalendarController controller = Get.put(CalendarController());
+  @override
+  State<CalendarPage> createState() => _CalendarPageState();
+}
+
+class _CalendarPageState extends State<CalendarPage> {
+  final CalendarNotifier notifier = CalendarNotifier();
+
+  @override
+  void dispose() {
+    notifier.dispose();
+    super.dispose();
+  }
 
   void goToExerciseChoice(BuildContext context) {
-    controller.initialDate = controller.selectedDate;
+    notifier.initialDate.value = notifier.selectedDate.value;
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => ExerciseChoiceDialog(
           isCreation: true,
-          date: controller.selectedDate,
+          date: notifier.selectedDate.value,
           workoutInstance: null,
         ),
       ),
@@ -32,8 +43,6 @@ class CalendarPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    controller.initialDate = DateTime.now();
-    controller.selectedDate = DateTime.now();
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () => goToExerciseChoice(context),
@@ -47,20 +56,20 @@ class CalendarPage extends StatelessWidget {
           Material(
             elevation: 5,
             child: StreamBuilder<List<WorkoutInstance>>(
-                stream: controller.workoutInstanceService.listenAll(),
+                stream: notifier.workoutInstanceService.listenAll(),
                 builder: (_, snapshot) {
                   List<WorkoutInstance> list =
                       snapshot.hasData ? snapshot.data! : [];
-                  return Timeline(list: list);
+                  return Timeline(list: list, notifier: notifier);
                 }),
           ),
           Expanded(
-            child: Obx(
-              () => StreamList<WorkoutInstance>(
-                stream: controller
-                    .listenWorkoutInstanceByDate(controller.selectedDate),
+            child: ValueListenableBuilder<DateTime>(
+              valueListenable: notifier.selectedDate,
+              builder: (_, DateTime selectedDate, __) => StreamList<WorkoutInstance>(
+                stream: notifier.listenWorkoutInstanceByDate(selectedDate),
                 builder: (BuildContext context, WorkoutInstance domain) =>
-                    WorkoutInstanceCard(instance: domain),
+                    WorkoutInstanceCard(instance: domain, notifier: notifier),
                 padding: const EdgeInsets.only(top: 10),
                 separatorBuilder: (_, index) => const Divider(
                   height: 20,
@@ -94,19 +103,21 @@ class Timeline extends StatelessWidget {
   const Timeline({
     Key? key,
     required this.list,
+    required this.notifier,
   }) : super(key: key);
 
   final List<WorkoutInstance> list;
+  final CalendarNotifier notifier;
 
   @override
   Widget build(BuildContext context) {
-    final CalendarController controller = Get.find();
-    return Obx(
-      () => FitnessDatePicker(
+    return ValueListenableBuilder<DateTime>(
+      valueListenable: notifier.initialDate,
+      builder: (_, DateTime initialDate, __) => FitnessDatePicker(
         heigthMonth: 48,
-        initialDate: controller.initialDate,
+        initialDate: initialDate,
         onDateChange: (date) {
-          controller.selectedDate = date;
+          notifier.selectedDate.value = date;
         },
         selectedDayTextStyle: const TextStyle(
           color: Colors.white,
@@ -119,11 +130,11 @@ class Timeline extends StatelessWidget {
               padding: const EdgeInsets.only(right: 8),
               child: OutlinedButton(
                 onPressed: () {
-                  controller.initialDate = DateTime.now();
-                  controller.selectedDate = DateTime.now();
+                  notifier.initialDate.value = DateTime.now();
+                  notifier.selectedDate.value = DateTime.now();
                 },
                 child: Text(
-                  'today'.tr,
+                  context.l10n.today,
                   style: GoogleFonts.comfortaa(),
                 ),
               ),
@@ -168,7 +179,7 @@ class CalendarDayCard extends StatelessWidget {
         border: (selected)
             ? Border(
                 bottom: BorderSide(
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).colorScheme.primary,
                   width: 4,
                 ),
               )
@@ -185,7 +196,7 @@ class CalendarDayCard extends StatelessWidget {
                 child: Text(
                   dateTime.day.toString(),
                   style: GoogleFonts.comfortaa(
-                    color: selected ? Theme.of(context).primaryColor : null,
+                    color: selected ? Theme.of(context).colorScheme.primary : null,
                     fontSize: 18,
                   ),
                 ),
@@ -199,7 +210,7 @@ class CalendarDayCard extends StatelessWidget {
                           Icons.circle,
                           size: 5,
                           color:
-                              selected ? Theme.of(context).primaryColor : null,
+                              selected ? Theme.of(context).colorScheme.primary : null,
                         ))
                     .toList(),
               ),
@@ -212,9 +223,11 @@ class CalendarDayCard extends StatelessWidget {
 }
 
 class WorkoutInstanceCard extends StatelessWidget {
-  WorkoutInstanceCard({Key? key, required this.instance}) : super(key: key);
+  const WorkoutInstanceCard(
+      {Key? key, required this.instance, required this.notifier})
+      : super(key: key);
 
-  final CalendarController controller = Get.find();
+  final CalendarNotifier notifier;
   final WorkoutInstance instance;
 
   @override
@@ -257,7 +270,7 @@ class WorkoutInstanceCard extends StatelessWidget {
                             ),
                           ),
                           StreamBuilder<bool>(
-                              stream: controller.areAllChecked(instance.uid!),
+                              stream: notifier.areAllChecked(instance.uid!),
                               initialData: false,
                               builder: (_, snapshot) {
                                 if (snapshot.hasData && snapshot.data!) {
@@ -277,10 +290,10 @@ class WorkoutInstanceCard extends StatelessWidget {
                       ),
                       PopupMenuButton<int>(
                         iconSize: 24,
-                        tooltip: 'showMore'.tr,
+                        tooltip: context.l10n.showMore,
                         icon: const Icon(Icons.more_horiz, color: Colors.grey),
                         onSelected: (value) {
-                          controller.initialDate = controller.selectedDate;
+                          notifier.initialDate.value = notifier.selectedDate.value;
                           switch (value) {
                             case 1:
                               showDialog(
@@ -300,18 +313,18 @@ class WorkoutInstanceCard extends StatelessWidget {
                                     actions: [
                                       TextButton.icon(
                                         onPressed: () {
-                                          controller.updateDate(
+                                          notifier.updateDate(
                                               instance, dateSelected);
                                           Navigator.of(context).pop();
                                         },
                                         icon: const Icon(Icons.check),
-                                        label: Text('validate'.tr),
+                                        label: Text(context.l10n.validate),
                                       ),
                                       TextButton.icon(
                                         onPressed: () =>
                                             Navigator.of(context).pop(),
                                         icon: const Icon(Icons.clear),
-                                        label: Text('cancel'.tr),
+                                        label: Text(context.l10n.cancel),
                                       )
                                     ],
                                   );
@@ -319,7 +332,7 @@ class WorkoutInstanceCard extends StatelessWidget {
                               );
                               break;
                             case 2:
-                              controller.deleteWorkout(instance);
+                              notifier.deleteWorkout(instance);
                               break;
                           }
                         },
@@ -329,7 +342,7 @@ class WorkoutInstanceCard extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text('updateDate'.tr),
+                                Text(context.l10n.updateDate),
                                 const Icon(
                                   Icons.calendar_today_outlined,
                                   color: Colors.grey,
@@ -342,7 +355,7 @@ class WorkoutInstanceCard extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text('delete'.tr),
+                                Text(context.l10n.delete),
                                 const Icon(
                                   Icons.delete,
                                   color: Colors.grey,
@@ -358,7 +371,7 @@ class WorkoutInstanceCard extends StatelessWidget {
                 ),
                 StreamList<UserSet>(
                   showLoading: true,
-                  stream: controller.listenUserSet(instance),
+                  stream: notifier.listenUserSet(instance),
                   physics: const NeverScrollableScrollPhysics(),
                   builder: (context, set) {
                     return Padding(
@@ -379,7 +392,7 @@ class WorkoutInstanceCard extends StatelessWidget {
                           ),
                           Flexible(
                             child: IconButton(
-                              onPressed: () => controller.deleteUserSet(set),
+                              onPressed: () => notifier.deleteUserSet(set),
                               icon: const Icon(Icons.delete,
                                   color: Colors.grey, size: 20),
                             ),
@@ -406,7 +419,7 @@ class WorkoutInstanceCard extends StatelessWidget {
                             Icons.add_circle_outline_outlined,
                           ),
                           label: Text(
-                            'addExercise'.tr,
+                            context.l10n.addExercise,
                           ),
                         ),
                       ],

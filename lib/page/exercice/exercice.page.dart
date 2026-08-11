@@ -1,10 +1,11 @@
-import 'package:fitnc_user/page/exercice/add_exercice.page.dart';
+import 'package:fitnc_user/l10n/l10n.dart';
+import 'package:fitnc_user/page/add-exercice/add-exercice.page.dart';
 import 'package:fitnc_user/service/exercice.service.dart';
-import 'package:fitnc_user/widget/network_image.widget.dart';
-import 'package:fitness_domain/domain/exercice.domain.dart';
-import 'package:fitness_domain/widget/generic_container.widget.dart';
+import 'package:fitnc_user/widget/network-image.widget.dart';
+import 'package:fitnc_user/di.dart';
+import 'package:fitnc_user/domain/exercice.domain.dart';
+import 'package:fitnc_user/widget/generic-container.widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class ExercisePage extends StatelessWidget {
   const ExercisePage({Key? key}) : super(key: key);
@@ -12,7 +13,7 @@ class ExercisePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ExerciceService exerciceService = Get.find();
+    final ExerciceService exerciceService = di<ExerciceService>();
     return SafeArea(
       child: Scaffold(
         body: Stack(
@@ -75,7 +76,7 @@ class ExerciseBottomAppBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TextButton.icon(
-                label: Text('createExercise'.tr),
+                label: Text(context.l10n.createExercise),
                 icon: const Icon(Icons.add_circle_outline_rounded),
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(
@@ -87,7 +88,7 @@ class ExerciseBottomAppBar extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: Text('back'.tr),
+                child: Text(context.l10n.back),
               ),
             ],
           ),
@@ -113,7 +114,7 @@ class ExerciseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ExerciceService service = Get.find();
+    final ExerciceService service = di<ExerciceService>();
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -139,14 +140,14 @@ class ExerciseCard extends StatelessWidget {
               ),
               PopupMenuButton<dynamic>(
                 iconSize: iconSize,
-                tooltip: 'showMore'.tr,
+                tooltip: context.l10n.showMore,
                 icon: const Icon(Icons.more_vert, color: Colors.grey),
                 itemBuilder: (_) => <PopupMenuEntry<dynamic>>[
                   PopupMenuItem<dynamic>(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text('stats'.tr),
+                        Text(context.l10n.stats),
                         const Icon(
                           Icons.bar_chart_outlined,
                           color: Colors.grey,
@@ -160,7 +161,7 @@ class ExerciseCard extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text('delete'.tr),
+                        Text(context.l10n.delete),
                         const Icon(
                           Icons.delete,
                           color: Colors.grey,
